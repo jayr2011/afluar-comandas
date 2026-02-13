@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { ProdutosController } from '@/app/controller/productController'
+import { ProdutosController } from '@/controller/productController'
 
 /**
  * API routes for produtos.
