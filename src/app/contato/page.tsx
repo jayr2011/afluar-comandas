@@ -131,7 +131,7 @@ export default function Contato() {
               const CardContent = (
                 <>
                   <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
                     <div className="flex-1">

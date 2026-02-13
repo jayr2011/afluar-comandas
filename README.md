@@ -19,6 +19,7 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 ## 📋 Funcionalidades
 
 ### Implementadas ✅
+
 - ✅ Cardápio de produtos com imagens, descrições e preços
 - ✅ Carrinho de compras com gerenciamento de estado (Zustand)
 - ✅ Sistema de checkout com coleta de dados do cliente
@@ -34,6 +35,7 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 - ✅ Hooks customizados para lógica reutilizável
 
 ### Em Desenvolvimento 🔄
+
 - 🔄 Integração com Mercado Pago para pagamentos
 - 🔄 Integração com WhatsApp para notificações
 - 🔄 Painel administrativo completo
@@ -41,7 +43,7 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 
 ## 🗂️ Estrutura do Projeto
 
-```
+```text
 afluar/
 ├── src/
 │   ├── app/                        # Rotas e páginas (App Router)
@@ -83,6 +85,7 @@ afluar/
 ## 🛠️ Instalação e Configuração
 
 ### Pré-requisitos
+
 - Node.js 18+ instalado
 - Conta no [Supabase](https://supabase.com)
 - (Opcional) Conta no [Mercado Pago](https://www.mercadopago.com.br/developers)
@@ -90,26 +93,29 @@ afluar/
 ### Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/jayr2011/afluar-entregas.git
 cd afluar-entregas
 ```
 
-2. Instale as dependências:
+1. Instale as dependências:
+
 ```bash
 npm install
 ```
 
-3. Configure as variáveis de ambiente:
+1. Configure as variáveis de ambiente:
 
 Crie um arquivo `.env.local` na raiz do projeto:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
 MERCADO_PAGO_ACCESS_TOKEN=seu_token_do_mercado_pago
 ```
 
-4. Configure o banco de dados no Supabase:
+1. Configure o banco de dados no Supabase:
 
 Execute o SQL abaixo no SQL Editor do Supabase:
 
@@ -150,7 +156,8 @@ CREATE INDEX idx_produtos_categoria ON produtos(categoria);
 CREATE INDEX idx_produtos_disponivel ON produtos(disponivel);
 ```
 
-5. Inicie o servidor de desenvolvimento:
+1. Inicie o servidor de desenvolvimento:
+
 ```bash
 npm run dev
 ```
@@ -169,6 +176,7 @@ npm run lint     # Executa o linter ESLint
 ## 🎯 Tipos de Dados
 
 ### Pedido
+
 ```typescript
 interface Pedido {
   id: string;
@@ -188,6 +196,7 @@ interface Pedido {
 ```
 
 ### Carrinho
+
 ```typescript
 interface CartItem {
   id: string;
@@ -200,6 +209,7 @@ interface CartItem {
 ```
 
 ### Produto
+
 ```typescript
 interface Produto {
   id: string;
@@ -212,17 +222,8 @@ interface Produto {
 }
 ```
 
-## 🚀 Deploy
-
-### Vercel (Recomendado)
-O deploy mais fácil é usando a [Vercel Platform](https://vercel.com):
-
-1. Faça push do código para o GitHub
-2. Importe o projeto na Vercel
-3. Configure as variáveis de ambiente
-4. Deploy automático!
-
 ### Variáveis de Ambiente Necessárias
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `MERCADO_PAGO_ACCESS_TOKEN` (quando implementado)
@@ -232,6 +233,7 @@ Veja a [documentação de deploy do Next.js](https://nextjs.org/docs/app/buildin
 ## 🎨 Personalização
 
 ### Temas e Cores
+
 O projeto utiliza Tailwind CSS com configuração customizada. Edite `src/app/globals.css` para personalizar o tema:
 
 ```css
@@ -243,18 +245,8 @@ O projeto utiliza Tailwind CSS com configuração customizada. Edite `src/app/gl
 ```
 
 ### Componentes UI
+
 Os componentes shadcn/ui estão em `src/components/ui/` e podem ser personalizados conforme necessário.
-
-## 🧪 Próximos Passos
-
-- [ ] Implementar testes com Jest e React Testing Library
-- [ ] Configurar CI/CD com GitHub Actions
-- [ ] Adicionar Sistema de autenticação de usuários
-- [ ] Implementar painel administrativo completo
-- [ ] Integrar pagamentos com Mercado Pago
-- [ ] Adicionar notificações via WhatsApp
-- [ ] Implementar sistema de avaliações
-- [ ] Adicionar rastreamento de pedidos em tempo real
 
 ## 📄 Licença
 

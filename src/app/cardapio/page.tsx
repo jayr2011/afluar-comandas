@@ -17,7 +17,7 @@ export default function Cardapio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-primary/5">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Carregando cardápio...</p>
@@ -28,7 +28,7 @@ export default function Cardapio() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-primary/5">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
         <div className="text-center max-w-md px-4">
           <ShoppingCart className="h-16 w-16 text-primary/30 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-foreground mb-2">Ops!</h2>
@@ -46,7 +46,7 @@ export default function Cardapio() {
 
   if (produtos.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-primary/5">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
         <div className="text-center max-w-md px-4">
           <ShoppingCart className="h-16 w-16 text-primary/30 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-foreground mb-2">Cardápio em breve</h2>
@@ -65,7 +65,7 @@ export default function Cardapio() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5">
+    <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>

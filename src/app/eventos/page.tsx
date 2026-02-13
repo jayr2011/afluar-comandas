@@ -118,7 +118,7 @@ export default function Eventos() {
                   }`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`h-14 w-14 rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform ${
+                    <div className={`h-14 w-14 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform ${
                       evento.destaque ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'
                     }`}>
                       <Icon className="h-7 w-7" />
@@ -184,7 +184,7 @@ export default function Eventos() {
       </section>
 
       {/* Destaque da Vista */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+      <section className="py-20 px-4 bg-linear-to-br from-primary/10 via-primary/5 to-background">
         <div className="container mx-auto max-w-4xl">
           <div className="bg-card rounded-3xl shadow-2xl overflow-hidden border border-primary/20">
             <div className="p-8 md:p-12 text-center">
