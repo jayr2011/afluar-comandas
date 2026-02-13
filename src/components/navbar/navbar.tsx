@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, ShoppingCart } from "lucide-react"
+import { Menu, ShoppingCart, Home, Award, UtensilsCrossed, Calendar, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,51 +11,66 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
+  SheetClose,
 } from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
 
 const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/experiencia", label: "Experiência" },
-  { href: "/cardapio", label: "Cardápio" },
-  { href: "/eventos", label: "Eventos" },
-  { href: "/contato", label: "Contato" },
+  { href: "/", label: "Ínicio", icon: Home },
+  { href: "/experiencia", label: "Experiência", icon: Award },
+  { href: "/cardapio", label: "Cardápio", icon: UtensilsCrossed },
+  { href: "/eventos", label: "Eventos", icon: Calendar },
+  { href: "/contato", label: "Contato", icon: Phone },
 ]
 
 export function Navbar() {
-  // Descomente quando integrar com Zustand
-  // const { items } = useCartStore()
-  // const totalItems = items.reduce((acc, item) => acc + item.quantidade, 0)
-  const totalItems = 0 // Temporário
+  const totalItems = 3
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full bg-primary border-b border-primary/20 shadow-lg">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="font-bold text-xl">Afluar</span>
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="h-12 w-12 bg-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl text-primary transition-transform group-hover:scale-110">
+            A
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-2xl text-primary-foreground tracking-tight">
+              Afluar
+            </span>
+            <span className="text-xs text-primary-foreground/70 -mt-1">
+              Delivery
+            </span>
+          </div>
         </Link>
 
         {/* Navigation Menu - Desktop */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="text-sm font-medium text-primary-foreground/90 hover:text-primary-foreground transition-colors relative group"
             >
               {item.label}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-foreground transition-all group-hover:w-full"></span>
             </Link>
           ))}
         </nav>
 
         {/* Botão Carrinho e Menu Mobile */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Carrinho */}
-          <Button variant="outline" size="icon" className="relative" asChild>
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md" 
+            asChild
+          >
             <Link href="/carrinho">
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary">
                   {totalItems}
                 </Badge>
               )}
@@ -65,26 +80,55 @@ export function Navbar() {
           {/* Menu Mobile */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="secondary" 
+                size="icon"
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11"
+              >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+            <SheetContent 
+              side="right" 
+              className="w-80 bg-gradient-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&>button]:text-primary-foreground [&>button]:hover:bg-primary-foreground/10"
+            >
+              <SheetHeader className="space-y-4">
+                <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">
+                  Menu
+                </SheetTitle>
+                <Separator className="bg-primary-foreground/20" />
               </SheetHeader>
-              <nav className="flex flex-col gap-4 mt-8">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="text-lg font-medium hover:text-primary transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+
+              <nav className="flex flex-col gap-2 mt-8">
+                {navItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <SheetClose asChild key={item.href}>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-4 px-4 py-4 rounded-lg text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-all group"
+                      >
+                        <Icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                        <span className="text-lg font-medium">{item.label}</span>
+                      </Link>
+                    </SheetClose>
+                  )
+                })}
               </nav>
+
+              {/* Footer do Menu */}
+              <div className="absolute bottom-8 left-0 right-0 px-6">
+                <Separator className="bg-primary-foreground/20 mb-4" />
+                <div className="text-center">
+                  <p className="text-sm text-primary-foreground/70">
+                    Afluar Delivery
+                  </p>
+                  <p className="text-xs text-primary-foreground/50 mt-1">
+                    Pedidos online com entrega
+                  </p>
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
