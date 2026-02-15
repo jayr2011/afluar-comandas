@@ -1,5 +1,3 @@
-'use client'
-
 import { Calendar, Users, Sparkles, Heart, PartyPopper, Wine, Camera, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

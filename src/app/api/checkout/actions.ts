@@ -1,5 +1,3 @@
-'use server'
-
 import { supabase } from '@/lib/supabase'
 import { Pedido } from '@/types/database'
 import { CartItem } from '@/types/carrinho'

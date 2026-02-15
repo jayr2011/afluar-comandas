@@ -1,5 +1,3 @@
-'use client'
-
 import { MapPin, Clock, ExternalLink } from "lucide-react"
 import { FaInstagram, FaWhatsapp } from "react-icons/fa"
 import { Button } from "@/components/ui/button"

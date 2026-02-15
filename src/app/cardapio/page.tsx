@@ -1,5 +1,4 @@
 'use client'
-
 import { Button } from "@/components/ui/button"
 import { useProdutos } from '@/hooks/useProducts'
 import { ProductCard } from "@/components/peoduct-card/cart-item-card"

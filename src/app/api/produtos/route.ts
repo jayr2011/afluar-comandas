@@ -1,77 +1,107 @@
 import { NextResponse } from 'next/server'
-import { ProdutosController } from '@/controller/productController'
+import { ProdutosService } from '@/services/productsService'
+
+const productsService = new ProdutosService()
 
 /**
- * API routes for produtos.
- *
- * Query params (GET):
- * - `categoria` (string): filtra produtos pela categoria.
- * - `destaque` (string): se 'true', retorna apenas produtos em destaque.
- *
- * Responses:
- * - 200: dados dos produtos (array ou objeto).
- * - 201: produto criado (POST).
- * - 400: requisição inválida ou erro de validação.
- * - 500: erro interno ao listar produtos.
+ * @file src/app/api/produtos/route.ts
+ * @description Endpoints da API para gestão de produtos.
+ * Utiliza o Next.js App Router (Route Handlers).
  */
-const produtosController = new ProdutosController()
 
+/**
+ * Manipulador para requisições GET.
+ *
+ * Responsável por listar produtos com suporte a filtros via Query Parameters.
+ * Conecta-se à camada de serviço para obter os dados.
+ *
+ * @param {Request} request - Objeto de requisição nativo do Next.js/Web API.
+ * @returns {Promise<NextResponse>} Retorna um JSON com array de produtos ou objeto de erro.
+ *
+ * @example
+ * // Listar todos os produtos
+ * GET /api/produtos
+ *
+ * @example
+ * // Filtrar por categoria
+ * GET /api/produtos?categoria=Pratos%20Principais
+ *
+ * @example
+ * // Listar apenas destaques
+ * GET /api/produtos?destaque=true
+ */
 export async function GET(request: Request) {
-  /**
-   * GET /api/produtos
-   *
-   * - Se o query param `categoria` estiver presente, retorna produtos daquela categoria.
-   * - Se `destaque=true`, retorna apenas produtos em destaque.
-   * - Caso contrário, retorna todos os produtos.
-   *
-   * Retorna um JSON com o array de produtos ou um objeto de erro com status apropriado.
-   */
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
   const destaque = searchParams.get('destaque')
 
-  if (categoria) {
-    const result = await produtosController.listarPorCategoria(categoria)
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 })
-    }
-    return NextResponse.json(result.data)
-  }
+  try {
+    let dados
 
-  if (destaque === 'true') {
-    const result = await produtosController.listarDestaques()
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 })
+    if (categoria) {
+      dados = await productsService.findByCategoria(categoria)
+    } else if (destaque === 'true') {
+      dados = await productsService.findDestaques()
+    } else {
+      dados = await productsService.findAll()
     }
-    return NextResponse.json(result.data)
-  }
 
-  const result = await produtosController.listarProdutos()
-  if (!result.success) {
-    return NextResponse.json({ error: result.error }, { status: 500 })
+    return NextResponse.json(dados)
+
+  } catch (error) {
+    console.error('Erro fatal ao buscar produtos:', error)
+
+    return NextResponse.json(
+      { error: 'Erro interno ao processar a lista de produtos' },
+      { status: 500 }
+    )
   }
-  
-  return NextResponse.json(result.data)
 }
 
+/**
+ * Manipulador para requisições POST.
+ *
+ * Recebe dados JSON e cria um novo produto no sistema.
+ * Inclui validações básicas de integridade dos dados.
+ *
+ * @param {Request} request - Deve conter um corpo JSON com { nome, preco, categoria, ... }
+ * @returns {Promise<NextResponse>} Retorna o produto criado (201) ou erro de validação (400).
+ */
 export async function POST(request: Request) {
   try {
-    /**
-     * POST /api/produtos
-     *
-     * Cria um novo produto. Espera um corpo JSON compatível com o tipo `Produto` (sem `id`).
-     * Retorna 201 com o produto criado quando bem‑sucedido ou 400 com mensagem de erro
-     * quando os dados forem inválidos/insuficientes.
-     */
     const body = await request.json()
-    const result = await produtosController.criarProduto(body)
-    
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 })
+
+    if (!body.nome || body.nome.trim().length < 3) {
+      return NextResponse.json(
+        { error: 'Nome inválido: deve ter pelo menos 3 caracteres.' },
+        { status: 400 }
+      )
     }
+
+    if (!body.preco || typeof body.preco !== 'number' || body.preco <= 0) {
+      return NextResponse.json(
+        { error: 'Preço inválido: deve ser um número maior que zero.' },
+        { status: 400 }
+      )
+    }
+
+    if (!body.categoria) {
+      return NextResponse.json(
+        { error: 'Categoria é obrigatória.' },
+        { status: 400 }
+      )
+    }
+
+    const novoProduto = await productsService.create(body)
     
-    return NextResponse.json(result.data, { status: 201 })
+    return NextResponse.json(novoProduto, { status: 201 })
+
   } catch (error) {
-    return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
+    console.error('Erro ao criar produto:', error)
+
+    return NextResponse.json(
+      { error: 'Dados inválidos ou formato de requisição incorreto.' },
+      { status: 400 }
+    )
   }
 }

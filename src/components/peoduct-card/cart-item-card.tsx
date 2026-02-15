@@ -38,8 +38,6 @@ export const ProductCard = memo(({ product, children}: ProductCardProps) => {
           alt={product.nome}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-500"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          loading={'lazy'}
           onLoadingComplete={() => setImageLoading(false)}
         />
         

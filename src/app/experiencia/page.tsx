@@ -1,10 +1,8 @@
-'use client'
-
 import { Waves, Leaf, UtensilsCrossed, Sparkles } from "lucide-react"
 
 export default function Experiencia() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5">
+    <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
