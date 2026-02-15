@@ -1,11 +1,10 @@
 'use client'
 
-import Image from "next/image"
-import { ShoppingCart, Plus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Produto } from '@/types/produtos'
 import { useProdutos } from '@/hooks/useProducts'
+import { ProductCard } from "@/components/peoduct-card/cart-item-card"
+import { Loader2, ShoppingCart, Plus } from 'lucide-react'
+import type { Produto } from '@/types/produtos'
 
 export default function Cardapio() {
   const { produtos, loading, error, refetch } = useProdutos()
@@ -88,65 +87,21 @@ export default function Cardapio() {
         </div>
       </section>
 
-      {/* Menu Grid */}
+      {/* Menu Grid - AGORA COM PRODUCTCARD */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             {produtos.map((produto) => (
-              <div
-                key={produto.id}
-                className="bg-card rounded-2xl shadow-xl overflow-hidden border border-primary/10 hover:shadow-2xl transition-all duration-300 group"
-              >
-                {/* Imagem do Produto */}
-                <div className="relative w-full h-64 bg-primary/10 overflow-hidden">
-                  <Image
-                    src={produto.imagem}
-                    alt={produto.nome}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={produto.destaque}
-                  />
-                  
-                  {produto.destaque && (
-                    <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground z-10">
-                      Destaque
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Conteúdo */}
-                <div className="p-6">
-                  <p className="text-sm text-primary font-medium mb-2">
-                    {produto.categoria}
-                  </p>
-
-                  <h3 className="text-2xl font-bold text-foreground mb-3">
-                    {produto.nome}
-                  </h3>
-
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    {produto.descricao}
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-3xl font-bold text-primary">
-                        R$ {produto.preco.toFixed(2)}
-                      </p>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => handleAddToCart(produto)}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                      size="lg"
-                    >
-                      <Plus className="h-5 w-5" />
-                      Adicionar
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <ProductCard key={produto.id} product={produto} priority={produto.destaque}>
+                <Button 
+                  onClick={() => handleAddToCart(produto)}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                  size="lg"
+                >
+                  <Plus className="h-5 w-5" />
+                  Adicionar
+                </Button>
+              </ProductCard>
             ))}
           </div>
         </div>

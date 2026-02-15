@@ -6,7 +6,7 @@ import { Produto } from '@/types/produtos'
  */
 const produtosDB: Produto[] = [
   {
-    id: 1,
+    id: '1',
     nome: "Pirarucu Grelhado ao Tucupi",
     descricao: "Peixe amazônico grelhado no ponto perfeito, acompanhado de tucupi negro artesanal, jambu fresco e farofa crocante. Uma explosão de sabores da Amazônia.",
     preco: 89.90,
@@ -15,7 +15,7 @@ const produtosDB: Produto[] = [
     imagem: "/produtos/pirarucu.webp"
   },
   {
-    id: 2,
+    id: '2',
     nome: "Açaí Artesanal Premium",
     descricao: "Açaí puro batido na hora, com textura cremosa e aveludada. Acompanha granola caseira, frutas frescas e mel de abelhas amazônicas.",
     preco: 32.90,
@@ -44,10 +44,10 @@ export class ProdutosService {
 
   /**
    * Busca produto por `id`.
-   * @param {number} id - Identificador do produto.
+   * @param {string} id - Identificador do produto.
    * @returns {Promise<Produto|null>} Produto encontrado ou `null` se não existir.
    */
-  async findById(id: number): Promise<Produto | null> {
+  async findById(id: string): Promise<Produto | null> {
     await new Promise(resolve => setTimeout(resolve, 50))
     return produtosDB.find(p => p.id === id) || null
   }
@@ -72,14 +72,14 @@ export class ProdutosService {
   }
 
   /**
-   * Cria um novo produto e atribui um `id` incremental.
+   * Cria um novo produto e atribui um `id` único.
    * @param {Omit<Produto, 'id'>} produto - Dados do produto (sem `id`).
    * @returns {Promise<Produto>} Produto criado com `id` definido.
    */
   async create(produto: Omit<Produto, 'id'>): Promise<Produto> {
     const novoProduto = {
       ...produto,
-      id: Math.max(...produtosDB.map(p => p.id)) + 1
+      id: String(Math.max(...produtosDB.map(p => Number(p.id) || 0)) + 1)
     }
     produtosDB.push(novoProduto)
     return novoProduto
@@ -87,11 +87,11 @@ export class ProdutosService {
 
   /**
    * Atualiza campos do produto especificado por `id`.
-   * @param {number} id - Identificador do produto a ser atualizado.
+   * @param {string} id - Identificador do produto a ser atualizado.
    * @param {Partial<Produto>} produto - Campos a atualizar.
    * @returns {Promise<Produto|null>} Produto atualizado ou `null` se não existir.
    */
-  async update(id: number, produto: Partial<Produto>): Promise<Produto | null> {
+  async update(id: string, produto: Partial<Produto>): Promise<Produto | null> {
     const index = produtosDB.findIndex(p => p.id === id)
     if (index === -1) return null
     
@@ -101,10 +101,10 @@ export class ProdutosService {
 
   /**
    * Remove um produto pelo `id`.
-   * @param {number} id - Identificador do produto a remover.
+   * @param {string} id - Identificador do produto a remover.
    * @returns {Promise<boolean>} `true` se removido, `false` se não encontrado.
    */
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const index = produtosDB.findIndex(p => p.id === id)
     if (index === -1) return false
     
