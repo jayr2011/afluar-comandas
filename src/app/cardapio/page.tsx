@@ -4,13 +4,21 @@ import { useProdutos } from '@/hooks/useProducts'
 import { ProductCard } from "@/components/product-card"
 import { Loader2, ShoppingCart, Plus } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
+import { useCartStore } from '@/store/cartStore'
 
 export default function Cardapio() {
   const { produtos, loading, error, refetch } = useProdutos()
+  const addItem = useCartStore((state) => state.addItem)
 
   const handleAddToCart = (produto: Produto) => {
-    console.log('Adicionar ao carrinho:', produto.nome)
-    alert(`${produto.nome} adicionado ao carrinho!`)
+    addItem({
+      id: produto.id,
+      nome: produto.nome,
+      descricao: produto.descricao,
+      preco: produto.preco,
+      imagem_url: produto.imagem,
+      quantidade: 1,
+    })
   }
 
   if (loading) {

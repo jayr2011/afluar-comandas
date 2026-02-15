@@ -14,6 +14,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
+import { useCartStore } from "@/store/cartStore"
 
 const navItems = [
   { href: "/", label: "Ínicio", icon: Home },
@@ -24,7 +25,7 @@ const navItems = [
 ]
 
 export function Navbar() {
-  const totalItems = 3
+  const totalItems = useCartStore((state) => state.getTotalItems())
   const pathname = usePathname()
 
   const isActive = (href: string) => {

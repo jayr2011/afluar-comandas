@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartItem } from "@/types/carrinho"
 import { Minus, Plus, Trash2 } from "lucide-react"
 
@@ -20,7 +21,18 @@ export function CartItemRow({ item, onRemove, onDecreaseQty, onIncreaseQty }: Ca
 
 			<div className="flex-1">
 				<h3 className="font-semibold text-lg">{item.nome}</h3>
-				{item.descricao && <p className="text-sm text-muted-foreground">{item.descricao}</p>}
+				{item.descricao && (
+					<Accordion type="single" collapsible className="w-full">
+						<AccordionItem value={`descricao-${item.id}`}>
+							<AccordionTrigger>
+								Descrição do prato
+							</AccordionTrigger>
+							<AccordionContent className="text-muted-foreground">
+								{item.descricao}
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+				)}
 				<p className="font-bold mt-2">R$ {item.preco.toFixed(2)}</p>
 			</div>
 
