@@ -1,7 +1,7 @@
 'use client'
 import { Button } from "@/components/ui/button"
 import { useProdutos } from '@/hooks/useProducts'
-import { ProductCard } from "@/components/peoduct-card/cart-item-card"
+import { ProductCard } from "@/components/product-card"
 import { Loader2, ShoppingCart, Plus } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
 

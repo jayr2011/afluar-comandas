@@ -1,7 +1,7 @@
-// src/components/navbar.tsx
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Menu, ShoppingCart, Home, Award, UtensilsCrossed, Calendar, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +25,12 @@ const navItems = [
 
 export function Navbar() {
   const totalItems = 3
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/"
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-primary border-b border-primary/20 shadow-lg">
@@ -50,10 +56,19 @@ export function Navbar() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-primary-foreground/90 hover:text-primary-foreground transition-colors relative group"
+              aria-current={isActive(item.href) ? "page" : undefined}
+              className={`text-sm font-medium transition-colors relative group ${
+                isActive(item.href)
+                  ? "text-primary-foreground"
+                  : "text-primary-foreground/80 hover:text-primary-foreground"
+              }`}
             >
               {item.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-foreground transition-all group-hover:w-full"></span>
+              <span
+                className={`absolute -bottom-1 left-0 h-0.5 bg-primary-foreground transition-all ${
+                  isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              ></span>
             </Link>
           ))}
         </nav>
@@ -91,7 +106,7 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent 
               side="right" 
-              className="w-80 bg-gradient-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&>button]:text-primary-foreground [&>button]:hover:bg-primary-foreground/10"
+              className="w-80 bg-linear-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&>button]:text-primary-foreground [&>button]:hover:bg-primary-foreground/10"
             >
               <SheetHeader className="space-y-4">
                 <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">
@@ -107,10 +122,21 @@ export function Navbar() {
                     <SheetClose asChild key={item.href}>
                       <Link
                         href={item.href}
-                        className="flex items-center gap-4 px-4 py-4 rounded-lg text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-all group"
+                        aria-current={isActive(item.href) ? "page" : undefined}
+                        className={`flex items-center gap-4 px-4 py-4 rounded-lg transition-all group ${
+                          isActive(item.href)
+                            ? "text-primary-foreground bg-primary-foreground/15"
+                            : "text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                        }`}
                       >
-                        <Icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                        <span className="text-lg font-medium">{item.label}</span>
+                        <Icon
+                          className={`h-5 w-5 transition-transform ${
+                            isActive(item.href) ? "scale-110" : "group-hover:scale-110"
+                          }`}
+                        />
+                        <span className={`text-lg ${isActive(item.href) ? "font-semibold" : "font-medium"}`}>
+                          {item.label}
+                        </span>
                       </Link>
                     </SheetClose>
                   )
