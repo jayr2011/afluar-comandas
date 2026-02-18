@@ -6,6 +6,8 @@ import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Cardapio() {
   let produtos
   let error: string | null = null
