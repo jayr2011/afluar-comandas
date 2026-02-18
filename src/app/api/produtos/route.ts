@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ProdutosService } from '@/services/productsService'
+import { getCachedProdutos, getCachedDestaques } from '@/services/productsService'
 
 const productsService = new ProdutosService()
 
@@ -12,15 +13,14 @@ export async function GET(request: Request) {
     let dados
 
     if (categoria) {
-      dados = await productsService.findByCategoria(categoria)
+      dados = await getCachedProdutos(categoria)
     } else if (destaque === 'true') {
-      dados = await productsService.findDestaques()
+      dados = await getCachedDestaques()
     } else {
-      dados = await productsService.findAll()
+      dados = await getCachedProdutos()
     }
 
     return NextResponse.json(dados)
-
   } catch (error) {
     console.error('Erro fatal ao buscar produtos:', error)
 
@@ -50,16 +50,12 @@ export async function POST(request: Request) {
     }
 
     if (!body.categoria) {
-      return NextResponse.json(
-        { error: 'Categoria é obrigatória.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Categoria é obrigatória.' }, { status: 400 })
     }
 
     const novoProduto = await productsService.create(body)
-    
-    return NextResponse.json(novoProduto, { status: 201 })
 
+    return NextResponse.json(novoProduto, { status: 201 })
   } catch (error) {
     console.error('Erro ao criar produto:', error)
 

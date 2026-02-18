@@ -1,6 +1,26 @@
 import { Produto } from '@/types/produtos'
 import { supabase } from '@/lib/supabase'
+import { cacheTag } from 'next/cache'
 
+export async function getCachedProdutos(categoria?: string) {
+  'use cache'
+  cacheTag('produtos')
+  const service = new ProdutosService()
+  if (categoria) return service.findByCategoria(categoria)
+  return service.findAll()
+}
+
+export async function getCachedProduto(id: string) {
+  'use cache'
+  cacheTag('produtos', id)
+  return new ProdutosService().findById(id)
+}
+
+export async function getCachedDestaques() {
+  'use cache'
+  cacheTag('produtos')
+  return new ProdutosService().findDestaques()
+}
 export class ProdutosService {
   async findAll(): Promise<Produto[]> {
     const { data, error } = await supabase.from('produtos').select('*')
@@ -33,7 +53,12 @@ export class ProdutosService {
   }
 
   async update(id: string, produto: Partial<Produto>): Promise<Produto | null> {
-    const { data, error } = await supabase.from('produtos').update(produto).eq('id', id).select().single()
+    const { data, error } = await supabase
+      .from('produtos')
+      .update(produto)
+      .eq('id', id)
+      .select()
+      .single()
     if (error) throw error
     return data || null
   }

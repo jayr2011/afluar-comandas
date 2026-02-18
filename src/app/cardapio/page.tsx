@@ -1,16 +1,15 @@
-'use client'
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { useProdutos } from '@/hooks/useProducts'
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from '@/components/product-card'
 import { Loader2, ShoppingCart, Plus } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
 import { useCartStore } from '@/store/cartStore'
-import { EmptyState, ErrorState } from "@/components/feedback"
+import { EmptyState, ErrorState } from '@/components/feedback'
 
 export default function Cardapio() {
   const { produtos, loading, error, refetch } = useProdutos()
-  const addProduct = useCartStore((state) => state.addProduct)
+  const addProduct = useCartStore(state => state.addProduct)
 
   const handleAddToCart = (produto: Produto) => {
     addProduct(produto)
@@ -63,18 +62,18 @@ export default function Cardapio() {
       {/* Hero Section */}
       <section className="relative py-4 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
-        
+
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <ShoppingCart className="h-4 w-4" />
               Cardápio
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
               Sabores da Amazônia
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-muted-foreground font-light">
               Cada prato conta uma história
             </p>
@@ -86,9 +85,14 @@ export default function Cardapio() {
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
-            {produtos.map((produto) => (
-              <ProductCard key={produto.id} product={produto} priority={produto.destaque} href={`/cardapio/${produto.id}`}>
-                <Button 
+            {produtos.map(produto => (
+              <ProductCard
+                key={produto.id}
+                product={produto}
+                priority={produto.destaque}
+                href={`/cardapio/${produto.id}`}
+              >
+                <Button
                   onClick={() => handleAddToCart(produto)}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
                   size="lg"
@@ -111,7 +115,7 @@ export default function Cardapio() {
           <p className="text-lg text-muted-foreground mb-8">
             Entre em contato conoscos para conhecer todo o nosso menu especial
           </p>
-          <Button 
+          <Button
             asChild
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
