@@ -1,17 +1,18 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 
-interface CardSkeletonProps {
+interface CardSkeletonProps extends React.ComponentProps<typeof Card> {
   children?: React.ReactNode
   className?: string
 }
 
-export function CardSkeleton({ children, className = '' }: CardSkeletonProps) {
+export function CardSkeleton({ children, className = '', ...props }: CardSkeletonProps) {
   return (
-    <Card className={`rounded-2xl shadow-xl overflow-hidden border border-primary/10 ${className}`}>
-      <CardContent className="p-6">
-        {children}
-      </CardContent>
+    <Card
+      className={`rounded-2xl shadow-xl overflow-hidden border border-primary/10 ${className}`}
+      {...props}
+    >
+      <CardContent className="p-6">{children}</CardContent>
     </Card>
   )
 }
@@ -22,11 +23,7 @@ interface SkeletonSectionProps {
 }
 
 export function SkeletonSection({ children, className = '' }: SkeletonSectionProps) {
-  return (
-    <div className={`space-y-4 ${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`space-y-4 ${className}`}>{children}</div>
 }
 
 // Skeletons específicos reutilizáveis
@@ -42,14 +39,17 @@ export function TitleSkeleton({ className = '' }: { className?: string }) {
   return <Skeleton className={`h-8 w-3/4 ${className}`} />
 }
 
-export function TextSkeleton({ lines = 2, className = '' }: { lines?: number; className?: string }) {
+export function TextSkeleton({
+  lines = 2,
+  className = '',
+}: {
+  lines?: number
+  className?: string
+}) {
   return (
     <div className={`space-y-2 ${className}`}>
       {[...Array(lines)].map((_, i) => (
-        <Skeleton 
-          key={i} 
-          className={`h-4 ${i === 0 ? 'w-full' : 'w-5/6'}`} 
-        />
+        <Skeleton key={i} className={`h-4 ${i === 0 ? 'w-full' : 'w-5/6'}`} />
       ))}
     </div>
   )

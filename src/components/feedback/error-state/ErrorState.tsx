@@ -18,22 +18,30 @@ export function ErrorState({
   fullScreen = false,
   className,
 }: ErrorStateProps) {
+  const baseId = crypto.randomUUID()
+  const titleId = `error-title-${baseId}`
+  const messageId = `error-message-${baseId}`
+
   const content = (
-    <div
-      className={cn(
-        'text-center max-w-md px-4',
-        className
-      )}
+    <section
+      role="alert"
+      aria-labelledby={titleId}
+      aria-describedby={messageId}
+      className={cn('text-center max-w-md px-4', className)}
     >
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center mb-4" aria-hidden="true">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-          <Icon className="h-8 w-8" strokeWidth={1.5} />
+          <Icon className="h-8 w-8" strokeWidth={1.5} aria-hidden="true" />
         </div>
       </div>
-      <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
-      <p className="text-muted-foreground mb-6">{message}</p>
+      <h2 id={titleId} className="text-2xl font-bold text-foreground mb-2">
+        {title}
+      </h2>
+      <p id={messageId} className="text-muted-foreground mb-6">
+        {message}
+      </p>
       {action && <div className="flex justify-center">{action}</div>}
-    </div>
+    </section>
   )
 
   if (fullScreen) {
@@ -44,9 +52,5 @@ export function ErrorState({
     )
   }
 
-  return (
-    <div className="flex items-center justify-center py-16">
-      {content}
-    </div>
-  )
+  return <div className="flex items-center justify-center py-16">{content}</div>
 }

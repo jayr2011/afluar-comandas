@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/store/cartStore'
 
 const navItems = [
-  { href: '/', label: 'Ínicio', icon: Home },
+  { href: '/', label: 'Início', icon: Home },
   { href: '/experiencia', label: 'Experiência', icon: Award },
   { href: '/cardapio', label: 'Cardápio', icon: UtensilsCrossed },
   { href: '/eventos', label: 'Eventos', icon: Calendar },
@@ -34,10 +34,23 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-primary border-b border-primary/20 shadow-lg">
+    <header
+      role="banner"
+      className="sticky top-0 z-50 w-full bg-primary border-b border-primary/20 shadow-lg"
+    >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:px-4 focus:py-2 focus:bg-primary-foreground focus:text-primary focus:rounded-md focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
+      >
+        Pular para o conteúdo principal
+      </a>
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link
+          href="/"
+          className="flex items-center space-x-3 group"
+          aria-label="Afluar Delivery - Página inicial"
+        >
           <div className="h-12 w-12 bg-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl text-primary transition-transform group-hover:scale-110">
             A
           </div>
@@ -50,7 +63,7 @@ export function Navbar() {
         </Link>
 
         {/* Navigation Menu - Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav aria-label="Menu principal" className="hidden md:flex items-center gap-8">
           {navItems.map(item => (
             <Link
               key={item.href}
@@ -67,7 +80,8 @@ export function Navbar() {
                 className={`absolute -bottom-1 left-0 h-0.5 bg-primary-foreground transition-all ${
                   isActive(item.href) ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}
-              ></span>
+                aria-hidden="true"
+              />
             </Link>
           ))}
         </nav>
@@ -75,13 +89,17 @@ export function Navbar() {
         {/* Botão Carrinho e Menu Mobile */}
         <div className="flex items-center gap-3">
           {/* Carrinho */}
-          <Link href="/carrinho">
-            <Button
-              variant="secondary"
-              size="icon"
-              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
+          <Button
+            asChild
+            variant="secondary"
+            size="icon"
+            className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
+          >
+            <Link
+              href="/carrinho"
+              aria-label={cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'}
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden="true" />
               {Boolean(cartCount) ? (
                 <Badge
                   key={String(cartCount)}
@@ -90,8 +108,8 @@ export function Navbar() {
                   {cartCount}
                 </Badge>
               ) : null}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
 
           {/* Menu Mobile */}
           <Sheet>
@@ -101,8 +119,8 @@ export function Navbar() {
                 size="icon"
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11"
               >
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Abrir menu</span>
+                <Menu className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only">Abrir menu de navegação</span>
               </Button>
             </SheetTrigger>
             <SheetContent
@@ -113,10 +131,10 @@ export function Navbar() {
                 <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">
                   Menu
                 </SheetTitle>
-                <Separator className="bg-primary-foreground/20" />
+                <Separator className="bg-primary-foreground/20" aria-hidden="true" />
               </SheetHeader>
 
-              <nav className="flex flex-col gap-2 mt-8">
+              <nav aria-label="Menu de navegação" className="flex flex-col gap-2 mt-8">
                 {navItems.map(item => {
                   const Icon = item.icon
                   return (
@@ -131,6 +149,7 @@ export function Navbar() {
                         }`}
                       >
                         <Icon
+                          aria-hidden="true"
                           className={`h-5 w-5 transition-transform ${
                             isActive(item.href) ? 'scale-110' : 'group-hover:scale-110'
                           }`}
@@ -148,7 +167,7 @@ export function Navbar() {
 
               {/* Footer do Menu */}
               <div className="absolute bottom-8 left-0 right-0 px-6">
-                <Separator className="bg-primary-foreground/20 mb-4" />
+                <Separator className="bg-primary-foreground/20 mb-4" aria-hidden="true" />
                 <div className="text-center">
                   <p className="text-sm text-primary-foreground/70">Afluar Delivery</p>
                   <p className="text-xs text-primary-foreground/50 mt-1">

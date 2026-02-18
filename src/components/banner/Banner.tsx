@@ -72,7 +72,7 @@ export function Banner({ slides, className }: BannerProps) {
       onMouseLeave={handleMouseLeave}
       aria-label="Carrossel de banners promocionais"
     >
-      <div className="sr-only" aria-live="polite" aria-atomic="true">
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {currentSlide && `Slide ${currentIndex + 1} de ${totalSlides}: ${currentSlide.alt}`}
       </div>
       <CarouselContent className="ml-0">
@@ -80,7 +80,8 @@ export function Banner({ slides, className }: BannerProps) {
           <CarouselItem
             key={slide.key ?? slide.src}
             className="pl-0"
-            aria-label={`Slide ${index + 1} de ${totalSlides}`}
+            aria-label={`Slide ${index + 1} de ${totalSlides}: ${slide.alt}`}
+            aria-current={index === currentIndex ? 'true' : undefined}
           >
             <Card className="overflow-hidden border-0 rounded-none shadow-none">
               <CardContent
@@ -104,11 +105,11 @@ export function Banner({ slides, className }: BannerProps) {
       </CarouselContent>
       <CarouselPrevious
         className="left-2 sm:left-4 border-white/20 bg-black/20 hover:bg-black/40 hover:border-white/40"
-        aria-label="Slide anterior"
+        aria-label="Ver slide anterior"
       />
       <CarouselNext
         className="right-2 sm:right-4 border-white/20 bg-black/20 hover:bg-black/40 hover:border-white/40"
-        aria-label="Próximo slide"
+        aria-label="Ver próximo slide"
       />
     </Carousel>
   )

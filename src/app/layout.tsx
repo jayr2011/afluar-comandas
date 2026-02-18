@@ -27,7 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <Navbar />
-        <main className="min-h-screen">{children}</main>
+        <main id="main-content" className="min-h-screen">
+          {children}
+        </main>
         <Suspense fallback={<div>Loading...</div>}>
           <Footer />
         </Suspense>

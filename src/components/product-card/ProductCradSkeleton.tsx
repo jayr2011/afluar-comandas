@@ -1,11 +1,11 @@
-import { 
-  CardSkeleton, 
-  ImageSkeleton, 
-  CategorySkeleton, 
-  TitleSkeleton, 
-  TextSkeleton, 
-  PriceSkeleton, 
-  ButtonSkeleton 
+import {
+  CardSkeleton,
+  ImageSkeleton,
+  CategorySkeleton,
+  TitleSkeleton,
+  TextSkeleton,
+  PriceSkeleton,
+  ButtonSkeleton,
 } from '@/components/ui/card-skeleton'
 
 interface ProductCardSkeletonProps {
@@ -13,19 +13,19 @@ interface ProductCardSkeletonProps {
   className?: string
 }
 
-export function ProductCardSkeleton({ 
-  showButton = true, 
-  className = '' 
+export function ProductCardSkeleton({
+  showButton = true,
+  className = '',
 }: ProductCardSkeletonProps) {
   return (
-    <CardSkeleton className={className}>
+    <CardSkeleton className={className} aria-hidden="true">
       <ImageSkeleton />
-      
+
       <div className="space-y-4">
         <CategorySkeleton />
         <TitleSkeleton />
         <TextSkeleton lines={2} />
-        
+
         <div className="flex items-center justify-between">
           <PriceSkeleton />
           {showButton && <ButtonSkeleton />}

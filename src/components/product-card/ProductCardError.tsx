@@ -1,12 +1,6 @@
-import { ShoppingCart } from "lucide-react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { ShoppingCart } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 interface ProductCardErrorProps {
   title?: string
@@ -16,27 +10,37 @@ interface ProductCardErrorProps {
 }
 
 export function ProductCardError({
-  title = "Ops!",
-  message = "Não foi possível carregar os produtos. Tente novamente mais tarde.",
+  title = 'Ops!',
+  message = 'Não foi possível carregar os produtos. Tente novamente mais tarde.',
   children,
   className,
 }: ProductCardErrorProps) {
+  const baseId = crypto.randomUUID()
+  const titleId = `product-card-error-title-${baseId}`
+  const messageId = `product-card-error-message-${baseId}`
+
   return (
-    <Card className={cn("max-w-2xl mx-auto", className)}>
+    <Card
+      role="alert"
+      aria-labelledby={titleId}
+      aria-describedby={messageId}
+      className={cn('max-w-2xl mx-auto', className)}
+    >
       <CardHeader>
-        <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <ShoppingCart className="h-6 w-6" />
+        <div
+          className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground"
+          aria-hidden="true"
+        >
+          <ShoppingCart className="h-6 w-6" aria-hidden="true" />
         </div>
-        <CardTitle className="text-center text-2xl">{title}</CardTitle>
-        <CardDescription className="text-center text-base">
+        <CardTitle id={titleId} className="text-center text-2xl">
+          {title}
+        </CardTitle>
+        <CardDescription id={messageId} className="text-center text-base">
           {message}
         </CardDescription>
       </CardHeader>
-      {children && (
-        <CardContent className="flex justify-center">
-          {children}
-        </CardContent>
-      )}
+      {children && <CardContent className="flex justify-center">{children}</CardContent>}
     </Card>
   )
 }
