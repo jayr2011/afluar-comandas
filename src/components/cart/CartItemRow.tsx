@@ -15,8 +15,8 @@ interface CartItemRowProps {
 export function CartItemRow({ item, onRemove, onDecreaseQty, onIncreaseQty }: CartItemRowProps) {
 	return (
 		<div className="flex gap-4 p-4 border rounded-lg">
-			{item.imagem_url && (
-				<img src={item.imagem_url} alt={item.nome} className="w-24 h-24 object-cover rounded" />
+			{item.imagem && (
+				<img src={item.imagem} alt={item.nome} className="w-24 h-24 object-cover rounded" />
 			)}
 
 			<div className="flex-1">

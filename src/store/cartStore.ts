@@ -1,9 +1,13 @@
 import { create } from 'zustand'
 import { CartItem } from '@/types/carrinho'
+import { Produto } from '@/types/produtos'
 
 interface CartStore {
   items: CartItem[]
+  /** Adiciona item ao carrinho (aceita CartItem completo ou Produto + quantidade) */
   addItem: (item: CartItem) => void
+  /** Atalho para adicionar produto pelo card (converte para CartItem internamente) */
+  addProduct: (produto: Produto, quantidade?: number) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, qty: number) => void
   clearCart: () => void
@@ -28,6 +32,21 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
     return {
       items: [...state.items, item],
+    }
+  }),
+  addProduct: (produto, quantidade = 1) => set((state) => {
+    const existingItem = state.items.find((i) => i.id === produto.id)
+    if (existingItem) {
+      return {
+        items: state.items.map((i) =>
+          i.id === produto.id
+            ? { ...i, quantidade: i.quantidade + quantidade }
+            : i
+        ),
+      }
+    }
+    return {
+      items: [...state.items, { ...produto, quantidade }],
     }
   }),
   removeItem: (id) => set((state) => ({ 

@@ -1,7 +1,7 @@
 "use client"
 
 import { CartItem } from "@/types/carrinho"
-import { CartItemRow } from "./cart-item-row"
+import { CartItemRow } from "./CartItemRow"
 
 interface CartItemsListProps {
 	items: CartItem[]
@@ -10,7 +10,7 @@ interface CartItemsListProps {
 	onIncreaseQty?: (item: CartItem) => void
 }
 
-export function CartItemsList({
+export function CartItemList({
 	items,
 	onRemoveItem,
 	onDecreaseQty,

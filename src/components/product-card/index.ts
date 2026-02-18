@@ -1,2 +1,4 @@
-export { ProductCard } from "./cart-item-card"
-export type { Product } from "./cart-item-card"
+export { ProductCard } from "./ProductCard"
+export { ProductCardSkeleton } from "./ProductCradSkeleton"
+export { ProductCardError } from "./ProductCardError"
+export type { Product } from "./ProductCard"

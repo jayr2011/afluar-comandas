@@ -5,20 +5,14 @@ import { ProductCard } from "@/components/product-card"
 import { Loader2, ShoppingCart, Plus } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
 import { useCartStore } from '@/store/cartStore'
+import { EmptyState, ErrorState } from "@/components/feedback"
 
 export default function Cardapio() {
   const { produtos, loading, error, refetch } = useProdutos()
-  const addItem = useCartStore((state) => state.addItem)
+  const addProduct = useCartStore((state) => state.addProduct)
 
   const handleAddToCart = (produto: Produto) => {
-    addItem({
-      id: produto.id,
-      nome: produto.nome,
-      descricao: produto.descricao,
-      preco: produto.preco,
-      imagem_url: produto.imagem,
-      quantidade: 1,
-    })
+    addProduct(produto)
   }
 
   if (loading) {
@@ -34,39 +28,32 @@ export default function Cardapio() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
-        <div className="text-center max-w-md px-4">
-          <ShoppingCart className="h-16 w-16 text-primary/30 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">Ops!</h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
-          <Button 
-            onClick={refetch}
-            className="bg-primary hover:bg-primary/90"
-          >
+      <ErrorState
+        title="Ops!"
+        message={error}
+        fullScreen
+        action={
+          <Button onClick={refetch} className="bg-primary hover:bg-primary/90">
             Tentar Novamente
           </Button>
-        </div>
-      </div>
+        }
+      />
     )
   }
 
   if (produtos.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
-        <div className="text-center max-w-md px-4">
-          <ShoppingCart className="h-16 w-16 text-primary/30 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">Cardápio em breve</h2>
-          <p className="text-muted-foreground mb-6">
-            Estamos preparando nossos pratos especiais para você!
-          </p>
-          <Button 
-            asChild
-            className="bg-primary hover:bg-primary/90"
-          >
+      <EmptyState
+        icon={ShoppingCart}
+        title="Cardápio em breve"
+        description="Estamos preparando nossos pratos especiais para você!"
+        fullScreen
+        action={
+          <Button asChild className="bg-primary hover:bg-primary/90">
             <a href="/contato">Fale Conosco</a>
           </Button>
-        </div>
-      </div>
+        }
+      />
     )
   }
 

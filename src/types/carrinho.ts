@@ -1,11 +1,12 @@
-import { CardapioItem } from "./database";
+import { Produto } from "./produtos";
 
-export interface CartItem extends CardapioItem {
-    quantidade: number;
+/** Item do carrinho com todas as informações do produto para uso em cards e telas */
+export interface CartItem extends Produto {
+  quantidade: number;
 }
 
 export interface Carrinho {
-    itens: CartItem[];
-    valorTotal: number;
-    quantidadeTotal: number;
+  itens: CartItem[];
+  valorTotal: number;
+  quantidadeTotal: number;
 }
