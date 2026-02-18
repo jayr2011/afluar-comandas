@@ -1,9 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import Autoplay from 'embla-carousel-autoplay'
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
@@ -19,16 +25,7 @@ interface BannerProps {
 }
 
 export function Banner({ slides, className }: BannerProps) {
-  const [api, setApi] = useState<CarouselApi>()
-  const [current, setCurrent] = useState(0)
-
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }))
-
-  useEffect(() => {
-    if (!api) return
-    setCurrent(api.selectedScrollSnap())
-    api.on('select', () => setCurrent(api.selectedScrollSnap()))
-  }, [api])
 
   if (slides.length === 0) return null
 
@@ -36,13 +33,12 @@ export function Banner({ slides, className }: BannerProps) {
     <Carousel
       opts={{ loop: true, align: 'start' }}
       plugins={[plugin.current]}
-      setApi={setApi}
       className="relative w-full"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="ml-0">
-        {slides.map((slide, index) => (
+        {slides.map(slide => (
           <CarouselItem key={slide.key ?? slide.src} className="pl-0">
             <Card className="overflow-hidden border-0 rounded-none shadow-none">
               <CardContent
@@ -57,20 +53,8 @@ export function Banner({ slides, className }: BannerProps) {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-10">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => api?.scrollTo(index)}
-            className={cn(
-              'h-2 rounded-full transition-all shadow-sm',
-              current === index ? 'w-6 bg-primary' : 'w-2 bg-white/60 hover:bg-white/80'
-            )}
-            aria-label={`Ir para slide ${index + 1}`}
-          />
-        ))}
-      </div>
+      <CarouselPrevious className="left-2 sm:left-4 border-white/20 bg-black/20 hover:bg-black/40 hover:border-white/40" />
+      <CarouselNext className="right-2 sm:right-4 border-white/20 bg-black/20 hover:bg-black/40 hover:border-white/40" />
     </Carousel>
   )
 }
