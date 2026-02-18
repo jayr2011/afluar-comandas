@@ -1,51 +1,27 @@
-'use client'
-
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { useProdutos } from '@/hooks/useProducts'
-import { ProductCard } from '@/components/product-card'
-import { Loader2, ShoppingCart, Plus } from 'lucide-react'
-import type { Produto } from '@/types/produtos'
-import { useCartStore } from '@/store/cartStore'
+import { ShoppingCart } from 'lucide-react'
+import { getCachedProdutos } from '@/services/productsService'
+import { CardapioGrid } from './CardapioGrid'
+import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
-import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
 
-export default function Cardapio() {
-  const { produtos, loading, error, refetch } = useProdutos()
-  const addProduct = useCartStore(state => state.addProduct)
+export default async function Cardapio() {
+  let produtos
+  let error: string | null = null
 
-  const handleAddToCart = (produto: Produto) => {
-    addProduct(produto)
-    showAddToCartToast(produto.nome)
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando cardápio...</p>
-        </div>
-      </div>
-    )
+  try {
+    produtos = await getCachedProdutos()
+  } catch (err) {
+    console.error('Erro ao carregar cardápio:', err)
+    error = 'Não foi possível carregar o cardápio. Tente novamente.'
   }
 
   if (error) {
-    return (
-      <ErrorState
-        title="Ops!"
-        message={error}
-        fullScreen
-        action={
-          <Button onClick={refetch} className="bg-primary hover:bg-primary/90">
-            Tentar Novamente
-          </Button>
-        }
-      />
-    )
+    return <ErrorState title="Ops!" message={error} fullScreen action={<CardapioErrorAction />} />
   }
 
-  if (produtos.length === 0) {
+  if (!produtos || produtos.length === 0) {
     return (
       <EmptyState
         icon={ShoppingCart}
@@ -65,7 +41,7 @@ export default function Cardapio() {
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       {/* Hero Section */}
       <section className="relative py-4 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
+        <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left" />
 
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center mb-12">
@@ -85,28 +61,10 @@ export default function Cardapio() {
         </div>
       </section>
 
-      {/* Menu Grid - AGORA COM PRODUCTCARD */}
+      {/* Menu Grid */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-8">
-            {produtos.map(produto => (
-              <ProductCard
-                key={produto.id}
-                product={produto}
-                priority={produto.destaque}
-                href={`/cardapio/${produto.id}`}
-              >
-                <Button
-                  onClick={() => handleAddToCart(produto)}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                  size="lg"
-                >
-                  <Plus className="h-5 w-5" />
-                  Adicionar
-                </Button>
-              </ProductCard>
-            ))}
-          </div>
+          <CardapioGrid produtos={produtos} />
         </div>
       </section>
 
@@ -117,7 +75,7 @@ export default function Cardapio() {
             Não encontrou o que procura?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Entre em contato conoscos para conhecer todo o nosso menu especial
+            Entre em contato conosco para conhecer todo o nosso menu especial
           </p>
           <Button
             asChild

@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator'
 export function Footer() {
   const whatsappLink = 'https://wa.me/5591999999999'
   const instagramLink = 'https://instagram.com/afluar.entregas'
-  const sectionId = `footer-social-${crypto.randomUUID()}`
+  const sectionId = `footer-social`
 
   return (
     <footer
@@ -66,7 +66,7 @@ export function Footer() {
         <Separator className="bg-border/40 my-6" aria-hidden="true" />
 
         <div className="text-center text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Afluar Entregas. Todos os direitos reservados.</p>
+          <p>© 2026 Afluar Entregas. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
