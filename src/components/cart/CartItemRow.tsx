@@ -30,7 +30,7 @@ export function CartItemRow({ item, onRemove, onDecreaseQty, onIncreaseQty }: Ca
 					)}
 
 					<div className="flex-1 min-w-0">
-						<h3 className="font-semibold text-base sm:text-lg break-words hover:underline">
+						<h3 className="font-semibold text-base sm:text-lg wrap-break-word hover:underline">
 							{item.nome}
 						</h3>
 				</div>

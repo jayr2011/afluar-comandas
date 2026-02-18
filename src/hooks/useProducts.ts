@@ -4,23 +4,11 @@ import { useState, useEffect, useCallback } from 'react'
 import { Produto } from '@/types/produtos'
 import { useProductsStore } from '@/store/productsStore'
 
-/**
- * Opções para o hook `useProdutos`.
- * - `categoria`: filtra os produtos por categoria.
- * - `destaque`: quando true, busca apenas produtos em destaque.
- */
 interface UseProdutosOptions {
   categoria?: string
   destaque?: boolean
 }
 
-/**
- * Forma do objeto retornado pelo hook `useProdutos`.
- * - `produtos`: array de produtos carregados.
- * - `loading`: indicador de carregamento.
- * - `error`: mensagem de erro ou `null`.
- * - `refetch`: função para recarregar manualmente os produtos.
- */
 interface UseProdutosReturn {
   produtos: Produto[]
   loading: boolean
@@ -28,18 +16,6 @@ interface UseProdutosReturn {
   refetch: () => void
 }
 
-/**
- * Hook para buscar produtos da API `/api/produtos` com suporte a filtros.
- *
- * Usage:
- * const { produtos, loading, error, refetch } = useProdutos({ categoria: 'Sobremesas' })
- *
- * O hook realiza a requisição automaticamente quando `options.categoria` ou
- * `options.destaque` mudam.
- *
- * @param {UseProdutosOptions} options - Filtros opcionais para a busca.
- * @returns {UseProdutosReturn} Estado e utilitários para consumo em componentes.
- */
 export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [loading, setLoading] = useState(true)
@@ -85,10 +61,6 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
   }
 }
 
-/**
- * Hook para buscar um único produto por ID.
- * @param id - ID do produto (quando null/undefined, não faz requisição)
- */
 export function useProduct(id: string | null | undefined): {
   produto: Produto | null
   loading: boolean
