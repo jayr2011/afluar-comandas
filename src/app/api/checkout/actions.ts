@@ -20,7 +20,6 @@ const cartItemSchema = z.looseObject({
 
 const cartSchema = z.array(cartItemSchema).min(1, 'Carrinho vazio')
 
-/** Cria apenas a preferência do Mercado Pago para a tela de pagamento. O pedido é registrado só após o pagamento. */
 export async function criarPreferenciaPagamento(
   carrinho: CartItem[]
 ): Promise<{ preferenceId: string; amount: number }> {

@@ -3,7 +3,6 @@ import { getSupabaseAdmin } from '@/lib/supabase'
 import { paymentClient } from '@/lib/mercadopago'
 import { randomUUID } from 'crypto'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
-/** Formato mínimo do item para a API (carrinho pode vir com campos a mais). */
 type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
 
 function parseNumber(v: unknown): number | null {
@@ -39,7 +38,6 @@ function toCartItem(x: unknown): CartItemPayload | null {
 }
 
 export async function POST(request: NextRequest) {
-  // Debug: verificar se as variáveis estão disponíveis
   const hasPaymentClient = !!paymentClient
   console.log('[process-payment] Início - paymentClient disponível:', hasPaymentClient)
 
@@ -93,18 +91,24 @@ export async function POST(request: NextRequest) {
       transaction_amount: transactionAmount,
       payment_method_id: (body.payment_method_id as string) || (body.paymentMethodId as string),
       token: body.token as string,
-      issuer_id: body.issuer_id as string | undefined,
-      installments: (body.installments as number) || 1,
+      issuer_id: body.issuer_id ? Number(body.issuer_id) : undefined,
+      installments: Number(body.installments) || 1,
       payer: body.payer as { email: string; identification?: { type: string; number: string } },
       description: `Pedido - ${validatedForm.nome}`,
     }
 
     console.log('[process-payment] Dados do pagamento:', JSON.stringify(paymentData).slice(0, 500))
+    console.log(
+      '[process-payment] transaction_amount:',
+      paymentData.transaction_amount,
+      typeof paymentData.transaction_amount
+    )
+    console.log('[process-payment] issuer_id:', paymentData.issuer_id, typeof paymentData.issuer_id)
 
     result = (await paymentClient.create({
-      payment: paymentData,
+      body: paymentData,
       requestOptions: { idempotencyKey },
-    } as never)) as unknown as Record<string, unknown>
+    })) as unknown as Record<string, unknown>
   } catch (err) {
     console.error('Erro ao processar pagamento MP:', err)
     return NextResponse.json(
@@ -113,7 +117,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Documentação MP: resposta 201 traz id e status no body. PaymentResponse tem id e status no topo.
   const rawId = result?.id ?? (result as { body?: { id?: number } })?.body?.id
   const paymentId = rawId != null ? String(rawId) : null
   const status =
@@ -139,7 +142,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Sempre criamos o pedido quando o MP aceitou a requisição (retornou id). Status do pedido reflete o do pagamento.
   const approved = statusStr === 'approved' || statusStr === 'authorized'
 
   const { data: pedido, error: insertError } = await getSupabaseAdmin()

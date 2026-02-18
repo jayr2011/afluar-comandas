@@ -50,7 +50,11 @@ export function CheckoutPaymentBrick({
       const res = await fetch('/api/checkout/process-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...param.formData, orderData }),
+        body: JSON.stringify({
+          ...param.formData,
+          transaction_amount: Number(amount),
+          orderData,
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -60,7 +64,7 @@ export function CheckoutPaymentBrick({
       const orderId = data.orderId as string | undefined
       router.push(orderId ? `/checkout/sucesso?pedido=${orderId}` : '/checkout/sucesso')
     },
-    [orderData, clearCart, router]
+    [amount, orderData, clearCart, router] // ← adicionar 'amount' nas dependências
   )
 
   if (!publicKey) {
