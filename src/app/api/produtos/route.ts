@@ -10,7 +10,7 @@ const produtoSchema = z.object({
   descricao: z.string().max(500).optional().default(''),
   preco: z.number().positive().max(9999.99),
   categoria: z.string().min(1).max(100),
-  imagem: z.string().url().optional().default(''),
+  imagem: z.string().optional().default(''),
   destaque: z.boolean().optional().default(false),
   ingredientes: z.string().max(1000).optional().default(''),
 })
