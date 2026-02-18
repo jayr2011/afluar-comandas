@@ -11,7 +11,6 @@ import { useProduct } from '@/hooks/useProducts'
 import { useCartStore } from '@/store/cartStore'
 import { ErrorState } from '@/components/feedback'
 import { IngredientesSection } from '@/components/ingredientes-section'
-import { RandomBanner } from '@/components/random-banner'
 import { ArrowLeft, Plus, ShoppingCart } from 'lucide-react'
 
 export default function ProdutoDetalhePage() {
@@ -70,8 +69,7 @@ export default function ProdutoDetalhePage() {
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       <section className="relative py-4 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left" />
-        <div className="container mx-auto max-w-4xl relative z-10 space-y-6">
-          <RandomBanner />
+        <div className="container mx-auto max-w-4xl relative z-10">
           <Button
             asChild
             variant="ghost"
