@@ -1,1 +1,0 @@
-export { RandomBanner } from './RandomBanner'
