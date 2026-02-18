@@ -6,6 +6,7 @@ export interface Produto {
   categoria: string
   destaque: boolean
   imagem: string
+  ingredientes?: string
 }
 
 export interface CategoriaEnum {

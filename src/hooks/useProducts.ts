@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Produto } from '@/types/produtos'
+import { useProductsStore } from '@/store/productsStore'
 
 /**
  * Opções para o hook `useProdutos`.
@@ -63,6 +64,7 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
       
       const data = await response.json()
       setProdutos(data)
+      useProductsStore.getState().setProducts(data)
     } catch (err) {
       console.error('Erro ao carregar produtos:', err)
       setError('Não foi possível carregar o cardápio. Tente novamente.')
@@ -80,5 +82,75 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
     loading,
     error,
     refetch: fetchProdutos
+  }
+}
+
+/**
+ * Hook para buscar um único produto por ID.
+ * @param id - ID do produto (quando null/undefined, não faz requisição)
+ */
+export function useProduct(id: string | null | undefined): {
+  produto: Produto | null
+  loading: boolean
+  error: string | null
+  refetch: () => void
+} {
+  const cached = useProductsStore((state) => (id ? state.getProductById(id) : undefined))
+  const setProduct = useProductsStore((state) => state.setProduct)
+  const [produto, setProduto] = useState<Produto | null>(cached ?? null)
+  const [loading, setLoading] = useState(!!id && !cached)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchProduto = useCallback(async () => {
+    if (!id) {
+      setProduto(null)
+      setLoading(false)
+      return
+    }
+    const fromCache = useProductsStore.getState().getProductById(id)
+    if (fromCache) {
+      setProduto(fromCache)
+      setLoading(false)
+      return
+    }
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await fetch(`/api/produtos/${id}`)
+      if (!response.ok) {
+        if (response.status === 404) throw new Error('Produto não encontrado')
+        throw new Error('Erro ao carregar produto')
+      }
+      const data = await response.json()
+      setProduto(data)
+      setProduct(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível carregar o produto.')
+      setProduto(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [id, setProduct])
+
+  useEffect(() => {
+    if (!id) {
+      setProduto(null)
+      setLoading(false)
+      return
+    }
+    if (cached) {
+      setProduto(cached)
+      setLoading(false)
+      return
+    }
+    setProduto(null)
+    fetchProduto()
+  }, [id, cached?.id, fetchProduto])
+
+  return {
+    produto,
+    loading,
+    error,
+    refetch: fetchProduto
   }
 }

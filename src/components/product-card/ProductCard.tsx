@@ -2,6 +2,7 @@
 
 import { memo, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -30,18 +31,15 @@ interface ProductCardProps {
   children?: React.ReactNode
   priority?: boolean
   className?: string
+  /** Quando fornecido, imagem e conteúdo viram link para a página do produto */
+  href?: string
 }
 
-export const ProductCard = memo(({ product, children, className }: ProductCardProps) => {
+export const ProductCard = memo(({ product, children, className, href }: ProductCardProps) => {
   const [imageLoading, setImageLoading] = useState(true)
 
-  return (
-    <Card
-      className={cn(
-        'overflow-hidden rounded-2xl shadow-xl border-primary/10 hover:shadow-2xl transition-all duration-300 group p-0 gap-0',
-        className
-      )}
-    >
+  const contentBlock = (
+    <>
       {/* Imagem do Produto */}
       <div className="relative w-full h-64 bg-primary/10 overflow-hidden">
         {imageLoading && (
@@ -52,7 +50,7 @@ export const ProductCard = memo(({ product, children, className }: ProductCardPr
           alt={product.nome}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-500"
-          onLoadingComplete={() => setImageLoading(false)}
+          onLoad={() => setImageLoading(false)}
         />
         {product.destaque && (
           <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground z-10">
@@ -73,6 +71,23 @@ export const ProductCard = memo(({ product, children, className }: ProductCardPr
         </CardDescription>
         <Separator className="mb-6" />
       </CardContent>
+    </>
+  )
+
+  return (
+    <Card
+      className={cn(
+        'overflow-hidden rounded-2xl shadow-xl border-primary/10 hover:shadow-2xl transition-all duration-300 group p-0 gap-0',
+        className
+      )}
+    >
+      {href ? (
+        <Link href={href} className="block [&:hover]:opacity-100">
+          {contentBlock}
+        </Link>
+      ) : (
+        contentBlock
+      )}
       <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0">
         <p className="text-3xl font-bold text-primary">
           R$ {product.preco.toFixed(2)}

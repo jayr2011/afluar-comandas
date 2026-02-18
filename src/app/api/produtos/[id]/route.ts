@@ -1,0 +1,31 @@
+import { NextResponse } from 'next/server'
+import { ProdutosService } from '@/services/productsService'
+
+const productsService = new ProdutosService()
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID do produto é obrigatório' }, { status: 400 })
+  }
+
+  try {
+    const produto = await productsService.findById(id)
+
+    if (!produto) {
+      return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 })
+    }
+
+    return NextResponse.json(produto)
+  } catch (error) {
+    console.error('Erro ao buscar produto:', error)
+    return NextResponse.json(
+      { error: 'Erro interno ao processar a requisição' },
+      { status: 500 }
+    )
+  }
+}

@@ -87,7 +87,7 @@ export default function Cardapio() {
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             {produtos.map((produto) => (
-              <ProductCard key={produto.id} product={produto} priority={produto.destaque}>
+              <ProductCard key={produto.id} product={produto} priority={produto.destaque} href={`/cardapio/${produto.id}`}>
                 <Button 
                   onClick={() => handleAddToCart(produto)}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"

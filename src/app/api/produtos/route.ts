@@ -3,33 +3,6 @@ import { ProdutosService } from '@/services/productsService'
 
 const productsService = new ProdutosService()
 
-/**
- * @file src/app/api/produtos/route.ts
- * @description Endpoints da API para gestão de produtos.
- * Utiliza o Next.js App Router (Route Handlers).
- */
-
-/**
- * Manipulador para requisições GET.
- *
- * Responsável por listar produtos com suporte a filtros via Query Parameters.
- * Conecta-se à camada de serviço para obter os dados.
- *
- * @param {Request} request - Objeto de requisição nativo do Next.js/Web API.
- * @returns {Promise<NextResponse>} Retorna um JSON com array de produtos ou objeto de erro.
- *
- * @example
- * // Listar todos os produtos
- * GET /api/produtos
- *
- * @example
- * // Filtrar por categoria
- * GET /api/produtos?categoria=Pratos%20Principais
- *
- * @example
- * // Listar apenas destaques
- * GET /api/produtos?destaque=true
- */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
@@ -58,15 +31,6 @@ export async function GET(request: Request) {
   }
 }
 
-/**
- * Manipulador para requisições POST.
- *
- * Recebe dados JSON e cria um novo produto no sistema.
- * Inclui validações básicas de integridade dos dados.
- *
- * @param {Request} request - Deve conter um corpo JSON com { nome, preco, categoria, ... }
- * @returns {Promise<NextResponse>} Retorna o produto criado (201) ou erro de validação (400).
- */
 export async function POST(request: Request) {
   try {
     const body = await request.json()
