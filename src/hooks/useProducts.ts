@@ -51,7 +51,7 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
 
   useEffect(() => {
     fetchProdutos()
-  }, [options.categoria, options.destaque])
+  }, [options.categoria, options.destaque, fetchProdutos])
 
   return {
     produtos,
@@ -117,7 +117,7 @@ export function useProduct(id: string | null | undefined): {
     }
     setProduto(null)
     fetchProduto()
-  }, [id, cached?.id, fetchProduto])
+  }, [id, cached?.id, fetchProduto, cached])
 
   return {
     produto,

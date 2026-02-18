@@ -11,7 +11,7 @@ import { useProduct } from '@/hooks/useProducts'
 import { useCartStore } from '@/store/cartStore'
 import { ErrorState } from '@/components/feedback'
 import { IngredientesSection } from '@/components/ingredientes-section'
-import { ArrowLeft, Plus, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Plus } from 'lucide-react'
 
 export default function ProdutoDetalhePage() {
   const params = useParams()

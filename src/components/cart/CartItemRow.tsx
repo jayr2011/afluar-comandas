@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartItem } from "@/types/carrinho"
 import { Minus, Plus, Trash2 } from "lucide-react"
+import Image from "next/image"
 
 interface CartItemRowProps {
 	item: CartItem
@@ -22,7 +23,7 @@ export function CartItemRow({ item, onRemove, onDecreaseQty, onIncreaseQty }: Ca
 					className="flex gap-3 sm:gap-4 min-w-0 flex-1 hover:opacity-90 transition-opacity"
 				>
 					{item.imagem && (
-						<img
+						<Image
 							src={item.imagem}
 							alt={item.nome}
 							className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded shrink-0"

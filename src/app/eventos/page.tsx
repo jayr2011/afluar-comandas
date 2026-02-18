@@ -200,7 +200,7 @@ export default function Eventos() {
               </p>
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 italic">
-                "Cada mesa tem vista para o rio. Cada momento se torna uma memória eterna."
+                {"Cada mesa tem vista para o rio. Cada momento se torna uma memória eterna."}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
