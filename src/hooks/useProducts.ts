@@ -31,13 +31,13 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
       if (options.destaque) params.append('destaque', 'true')
 
       const url = `/api/produtos${params.toString() ? `?${params.toString()}` : ''}`
-      
+
       const response = await fetch(url)
-      
+
       if (!response.ok) {
         throw new Error('Erro ao carregar produtos')
       }
-      
+
       const data = await response.json()
       setProdutos(data)
       useProductsStore.getState().setProducts(data)
@@ -51,13 +51,13 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
 
   useEffect(() => {
     fetchProdutos()
-  }, [options.categoria, options.destaque, fetchProdutos])
+  }, [options.categoria, options.destaque])
 
   return {
     produtos,
     loading,
     error,
-    refetch: fetchProdutos
+    refetch: fetchProdutos,
   }
 }
 
@@ -67,8 +67,8 @@ export function useProduct(id: string | null | undefined): {
   error: string | null
   refetch: () => void
 } {
-  const cached = useProductsStore((state) => (id ? state.getProductById(id) : undefined))
-  const setProduct = useProductsStore((state) => state.setProduct)
+  const cached = useProductsStore(state => (id ? state.getProductById(id) : undefined))
+  const setProduct = useProductsStore(state => state.setProduct)
   const [produto, setProduto] = useState<Produto | null>(cached ?? null)
   const [loading, setLoading] = useState(!!id && !cached)
   const [error, setError] = useState<string | null>(null)
@@ -117,12 +117,12 @@ export function useProduct(id: string | null | undefined): {
     }
     setProduto(null)
     fetchProduto()
-  }, [id, cached?.id, fetchProduto, cached])
+  }, [id, cached?.id, fetchProduto])
 
   return {
     produto,
     loading,
     error,
-    refetch: fetchProduto
+    refetch: fetchProduto,
   }
 }
