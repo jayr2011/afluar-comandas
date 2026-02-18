@@ -1,16 +1,19 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
+const FALLBACK_SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://wstlpvtejgyfkcuucjbt.supabase.co'
+const FALLBACK_SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_ALVZ52w_umDOLgSBm75WwA__uC4rypS'
+
 let supabaseClient: SupabaseClient | null = null
 
 function getSupabaseUrl(): string {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  if (!url) throw new Error('NEXT_PUBLIC_SUPABASE_URL não está definida.')
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || FALLBACK_SUPABASE_URL
   return url
 }
 
 function getSupabaseAnonKey(): string {
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!key) throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY não está definida.')
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || FALLBACK_SUPABASE_ANON_KEY
   return key
 }
 
@@ -36,7 +39,9 @@ export function getSupabaseAdmin(): SupabaseClient {
   }
   if (!supabaseAdmin) {
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-    if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY não está definida.')
+    if (!key) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY não está definida. Configure no painel da Vercel.')
+    }
     supabaseAdmin = createClient(getSupabaseUrl(), key, { auth: { persistSession: false } })
   }
   return supabaseAdmin
