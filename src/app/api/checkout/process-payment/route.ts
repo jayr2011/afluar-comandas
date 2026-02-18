@@ -39,6 +39,10 @@ function toCartItem(x: unknown): CartItemPayload | null {
 }
 
 export async function POST(request: NextRequest) {
+  // Debug: verificar se as variáveis estão disponíveis
+  const hasPaymentClient = !!paymentClient
+  console.log('[process-payment] Início - paymentClient disponível:', hasPaymentClient)
+
   if (!paymentClient) {
     return NextResponse.json({ error: 'Pagamento não configurado' }, { status: 503 })
   }
@@ -46,6 +50,7 @@ export async function POST(request: NextRequest) {
   let body: Record<string, unknown> & { orderData?: { formData?: unknown; cart?: unknown[] } }
   try {
     body = await request.json()
+    console.log('[process-payment] Body recebido:', JSON.stringify(body).slice(0, 500))
   } catch {
     return NextResponse.json({ error: 'Body inválido' }, { status: 400 })
   }
@@ -80,21 +85,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Valor do pedido inválido' }, { status: 400 })
   }
 
-  const paymentFormData = Object.fromEntries(
-    Object.entries(body).filter(([key]) => key !== 'orderData')
-  )
-  const paymentBody = {
-    ...paymentFormData,
-    transaction_amount: transactionAmount,
-    description: `Pedido - ${validatedForm.nome}`,
-  }
-
   const idempotencyKey = randomUUID()
 
   let result: Record<string, unknown>
   try {
+    const paymentData = {
+      transaction_amount: transactionAmount,
+      payment_method_id: (body.payment_method_id as string) || (body.paymentMethodId as string),
+      token: body.token as string,
+      issuer_id: body.issuer_id as string | undefined,
+      installments: (body.installments as number) || 1,
+      payer: body.payer as { email: string; identification?: { type: string; number: string } },
+      description: `Pedido - ${validatedForm.nome}`,
+    }
+
+    console.log('[process-payment] Dados do pagamento:', JSON.stringify(paymentData).slice(0, 500))
+
     result = (await paymentClient.create({
-      body: paymentBody as never,
+      payment: paymentData,
       requestOptions: { idempotencyKey },
     } as never)) as unknown as Record<string, unknown>
   } catch (err) {

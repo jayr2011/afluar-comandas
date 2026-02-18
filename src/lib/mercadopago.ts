@@ -5,6 +5,8 @@ if (!accessToken) {
   console.warn(
     'MERCADOPAGO_ACCESS_TOKEN ou MP_ACCESS_TOKEN não definida – pagamentos desabilitados'
   )
+} else {
+  console.log('[mercadopago] Access token configurado (últimos 10 chars):', accessToken.slice(-10))
 }
 
 const client = accessToken
