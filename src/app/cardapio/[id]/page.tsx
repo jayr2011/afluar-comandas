@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -11,20 +11,20 @@ import { useProduct } from '@/hooks/useProducts'
 import { useCartStore } from '@/store/cartStore'
 import { ErrorState } from '@/components/feedback'
 import { IngredientesSection } from '@/components/ingredientes-section'
+import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
 import { ArrowLeft, Plus } from 'lucide-react'
 
 export default function ProdutoDetalhePage() {
   const params = useParams()
-  const router = useRouter()
   const id = params.id as string
   const { produto, loading, error, refetch } = useProduct(id)
-  const addProduct = useCartStore((state) => state.addProduct)
+  const addProduct = useCartStore(state => state.addProduct)
   const [imageLoading, setImageLoading] = useState(true)
 
   const handleAddToCart = () => {
     if (produto) {
       addProduct(produto)
-      router.push('/carrinho')
+      showAddToCartToast(produto.nome)
     }
   }
 
@@ -89,9 +89,7 @@ export default function ProdutoDetalhePage() {
             <div className="grid md:grid-cols-2 gap-0">
               {/* Imagem */}
               <div className="relative w-full aspect-square md:aspect-auto md:min-h-[400px] bg-primary/10">
-                {imageLoading && (
-                  <Skeleton className="absolute inset-0 w-full h-full" />
-                )}
+                {imageLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
                 <Image
                   src={produto.imagem}
                   alt={produto.nome}
@@ -111,12 +109,8 @@ export default function ProdutoDetalhePage() {
               {/* Conteúdo */}
               <div className="p-8 md:p-10 flex flex-col gap-6">
                 <div>
-                  <p className="text-sm font-medium text-primary mb-2">
-                    {produto.categoria}
-                  </p>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                    {produto.nome}
-                  </h1>
+                  <p className="text-sm font-medium text-primary mb-2">{produto.categoria}</p>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4">{produto.nome}</h1>
                   <p className="text-lg text-muted-foreground leading-relaxed mb-6">
                     {produto.descricao}
                   </p>
@@ -125,9 +119,7 @@ export default function ProdutoDetalhePage() {
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
-                  <p className="text-3xl font-bold text-primary">
-                    R$ {produto.preco.toFixed(2)}
-                  </p>
+                  <p className="text-3xl font-bold text-primary">R$ {produto.preco.toFixed(2)}</p>
                   <Button
                     onClick={handleAddToCart}
                     size="lg"

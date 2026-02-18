@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Menu, ShoppingCart, Home, Award, UtensilsCrossed, Calendar, Phone } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Menu, ShoppingCart, Home, Award, UtensilsCrossed, Calendar, Phone } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Sheet,
   SheetContent,
@@ -12,24 +12,24 @@ import {
   SheetHeader,
   SheetTitle,
   SheetClose,
-} from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
-import { useCartStore } from "@/store/cartStore"
+} from '@/components/ui/sheet'
+import { Separator } from '@/components/ui/separator'
+import { useCartStore } from '@/store/cartStore'
 
 const navItems = [
-  { href: "/", label: "Ínicio", icon: Home },
-  { href: "/experiencia", label: "Experiência", icon: Award },
-  { href: "/cardapio", label: "Cardápio", icon: UtensilsCrossed },
-  { href: "/eventos", label: "Eventos", icon: Calendar },
-  { href: "/contato", label: "Contato", icon: Phone },
+  { href: '/', label: 'Ínicio', icon: Home },
+  { href: '/experiencia', label: 'Experiência', icon: Award },
+  { href: '/cardapio', label: 'Cardápio', icon: UtensilsCrossed },
+  { href: '/eventos', label: 'Eventos', icon: Calendar },
+  { href: '/contato', label: 'Contato', icon: Phone },
 ]
 
 export function Navbar() {
-  const totalItems = useCartStore((state) => state.getTotalItems())
+  const cartCount = useCartStore(state => state.getTotalItems())
   const pathname = usePathname()
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/"
+    if (href === '/') return pathname === '/'
     return pathname === href || pathname.startsWith(`${href}/`)
   }
 
@@ -45,29 +45,27 @@ export function Navbar() {
             <span className="font-bold text-2xl text-primary-foreground tracking-tight">
               Afluar
             </span>
-            <span className="text-xs text-primary-foreground/70 -mt-1">
-              Delivery
-            </span>
+            <span className="text-xs text-primary-foreground/70 -mt-1">Delivery</span>
           </div>
         </Link>
 
         {/* Navigation Menu - Desktop */}
         <nav className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
+              aria-current={isActive(item.href) ? 'page' : undefined}
               className={`text-sm font-medium transition-colors relative group ${
                 isActive(item.href)
-                  ? "text-primary-foreground"
-                  : "text-primary-foreground/80 hover:text-primary-foreground"
+                  ? 'text-primary-foreground'
+                  : 'text-primary-foreground/80 hover:text-primary-foreground'
               }`}
             >
               {item.label}
               <span
                 className={`absolute -bottom-1 left-0 h-0.5 bg-primary-foreground transition-all ${
-                  isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
+                  isActive(item.href) ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}
               ></span>
             </Link>
@@ -77,27 +75,29 @@ export function Navbar() {
         {/* Botão Carrinho e Menu Mobile */}
         <div className="flex items-center gap-3">
           {/* Carrinho */}
-          <Button 
-            variant="secondary" 
-            size="icon" 
-            className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md" 
-            asChild
-          >
-            <Link href="/carrinho">
+          <Link href="/carrinho">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
+            >
               <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary">
-                  {totalItems}
+              {Boolean(cartCount) ? (
+                <Badge
+                  key={String(cartCount)}
+                  className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary animate-cart-badge"
+                >
+                  {cartCount}
                 </Badge>
-              )}
-            </Link>
-          </Button>
+              ) : null}
+            </Button>
+          </Link>
 
           {/* Menu Mobile */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 size="icon"
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11"
               >
@@ -105,9 +105,9 @@ export function Navbar() {
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent 
-              side="right" 
-              className="w-80 bg-linear-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&>button]:text-primary-foreground [&>button]:hover:bg-primary-foreground/10"
+            <SheetContent
+              side="right"
+              className="w-80 bg-linear-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&_button]:text-primary-foreground [&_button]:hover:bg-primary-foreground/10"
             >
               <SheetHeader className="space-y-4">
                 <SheetTitle className="text-2xl font-bold text-primary-foreground text-left">
@@ -117,25 +117,27 @@ export function Navbar() {
               </SheetHeader>
 
               <nav className="flex flex-col gap-2 mt-8">
-                {navItems.map((item) => {
+                {navItems.map(item => {
                   const Icon = item.icon
                   return (
                     <SheetClose asChild key={item.href}>
                       <Link
                         href={item.href}
-                        aria-current={isActive(item.href) ? "page" : undefined}
+                        aria-current={isActive(item.href) ? 'page' : undefined}
                         className={`flex items-center gap-4 px-4 py-4 rounded-lg transition-all group ${
                           isActive(item.href)
-                            ? "text-primary-foreground bg-primary-foreground/15"
-                            : "text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                            ? 'text-primary-foreground bg-primary-foreground/15'
+                            : 'text-primary-foreground/90 hover:text-primary-foreground hover:bg-primary-foreground/10'
                         }`}
                       >
                         <Icon
                           className={`h-5 w-5 transition-transform ${
-                            isActive(item.href) ? "scale-110" : "group-hover:scale-110"
+                            isActive(item.href) ? 'scale-110' : 'group-hover:scale-110'
                           }`}
                         />
-                        <span className={`text-lg ${isActive(item.href) ? "font-semibold" : "font-medium"}`}>
+                        <span
+                          className={`text-lg ${isActive(item.href) ? 'font-semibold' : 'font-medium'}`}
+                        >
                           {item.label}
                         </span>
                       </Link>
@@ -148,9 +150,7 @@ export function Navbar() {
               <div className="absolute bottom-8 left-0 right-0 px-6">
                 <Separator className="bg-primary-foreground/20 mb-4" />
                 <div className="text-center">
-                  <p className="text-sm text-primary-foreground/70">
-                    Afluar Delivery
-                  </p>
+                  <p className="text-sm text-primary-foreground/70">Afluar Delivery</p>
                   <p className="text-xs text-primary-foreground/50 mt-1">
                     Pedidos online com entrega
                   </p>

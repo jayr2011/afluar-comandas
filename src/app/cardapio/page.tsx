@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useProdutos } from '@/hooks/useProducts'
@@ -6,6 +8,7 @@ import { Loader2, ShoppingCart, Plus } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
 import { useCartStore } from '@/store/cartStore'
 import { EmptyState, ErrorState } from '@/components/feedback'
+import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
 
 export default function Cardapio() {
   const { produtos, loading, error, refetch } = useProdutos()
@@ -13,6 +16,7 @@ export default function Cardapio() {
 
   const handleAddToCart = (produto: Produto) => {
     addProduct(produto)
+    showAddToCartToast(produto.nome)
   }
 
   if (loading) {
