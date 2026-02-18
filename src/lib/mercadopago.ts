@@ -1,9 +1,9 @@
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago'
 
-const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN ?? process.env.MP_ACCESS_TOKEN
+const accessToken = process.env.NEXT_PUBLIC_MERCADOPAGO_ACCESS_TOKEN ?? process.env.MP_ACCESS_TOKEN
 if (!accessToken) {
   console.warn(
-    'MERCADOPAGO_ACCESS_TOKEN ou MP_ACCESS_TOKEN não definida – pagamentos desabilitados'
+    'NEXT_PUBLIC_MERCADOPAGO_ACCESS_TOKEN ou MP_ACCESS_TOKEN não definida – pagamentos desabilitados'
   )
 } else {
   console.log('[mercadopago] Access token configurado (últimos 10 chars):', accessToken.slice(-10))
