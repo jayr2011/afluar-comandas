@@ -1,4 +1,5 @@
 'use client'
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useProdutos } from '@/hooks/useProducts'
 import { ProductCard } from "@/components/product-card"
@@ -50,7 +51,7 @@ export default function Cardapio() {
         fullScreen
         action={
           <Button asChild className="bg-primary hover:bg-primary/90">
-            <a href="/contato">Fale Conosco</a>
+            <Link href="/contato">Fale Conosco</Link>
           </Button>
         }
       />
@@ -60,7 +61,7 @@ export default function Cardapio() {
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
+      <section className="relative py-4 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
         
         <div className="container mx-auto max-w-6xl relative z-10">
@@ -102,7 +103,7 @@ export default function Cardapio() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 px-4 bg-primary/5">
+      <section className="py-8 px-4 bg-primary/5">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Não encontrou o que procura?
@@ -115,7 +116,7 @@ export default function Cardapio() {
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            <a href="/contato">Falar com a gente</a>
+            <Link href="/contato">Falar com a gente</Link>
           </Button>
         </div>
       </section>

@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Calendar, Users, Sparkles, Heart, PartyPopper, Wine, Camera, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -86,7 +87,7 @@ export default function Eventos() {
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6"
               >
-                <a href="/contato">Solicitar Orçamento</a>
+                <Link href="/contato">Solicitar Orçamento</Link>
               </Button>
             </div>
           </div>
@@ -208,7 +209,7 @@ export default function Eventos() {
                   size="lg"
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
-                  <a href="/contato">Agendar Visita</a>
+                  <Link href="/contato">Agendar Visita</Link>
                 </Button>
               </div>
             </div>
@@ -235,7 +236,7 @@ export default function Eventos() {
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6"
           >
-            <a href="/contato">Falar com Nosso Time</a>
+            <Link href="/contato">Falar com Nosso Time</Link>
           </Button>
         </div>
       </section>

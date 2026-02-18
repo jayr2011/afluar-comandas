@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { MapPin, Clock, ExternalLink } from "lucide-react"
 import { FaInstagram, FaWhatsapp } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
@@ -185,7 +186,7 @@ export default function Contato() {
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              <a href="/cardapio">Ver Cardápio</a>
+              <Link href="/cardapio">Ver Cardápio</Link>
             </Button>
             <Button 
               asChild
@@ -193,7 +194,7 @@ export default function Contato() {
               size="lg"
               className="border-primary text-primary hover:bg-primary/10"
             >
-              <a href="/eventos">Eventos Especiais</a>
+              <Link href="/eventos">Eventos Especiais</Link>
             </Button>
           </div>
         </div>
