@@ -4,17 +4,15 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 
 ## 🚀 Tecnologias
 
-- **[Next.js 16.1.6](https://nextjs.org)** - Framework React com App Router
-- **[React 19.2.4](https://react.dev)** - Biblioteca de interface do usuário
-- **[TypeScript 5.9.3](https://www.typescriptlang.org)** - Tipagem estática
-- **[Tailwind CSS 4.1.18](https://tailwindcss.com)** - Framework de estilização
-- **[Supabase 2.95.3](https://supabase.com)** - Banco de dados PostgreSQL e autenticação
-- **[Zustand 5.0.11](https://zustand-demo.pmnd.rs)** - Gerenciamento de estado
+- **[Next.js 16](https://nextjs.org)** - Framework React com App Router
+- **[React 19](https://react.dev)** - Biblioteca de interface do usuário
+- **[TypeScript](https://www.typescriptlang.org)** - Tipagem estática
+- **[Tailwind CSS](https://tailwindcss.com)** - Framework de estilização
+- **[Supabase](https://supabase.com)** - Banco de dados PostgreSQL e autenticação
+- **[Zustand](https://zustand-demo.pmnd.rs)** - Gerenciamento de estado
 - **[shadcn/ui](https://ui.shadcn.com)** - Componentes de interface acessíveis
-- **[Lucide Icons 0.564.0](https://lucide.dev)** - Biblioteca de ícones
-- **[React Icons 5.5.0](https://react-icons.github.io/react-icons/)** - Ícones adicionais
-- **[date-fns 4.1.0](https://date-fns.org)** - Manipulação de datas
-- **[Radix UI 1.4.3](https://www.radix-ui.com)** - Componentes primitivos acessíveis
+- **[Mercado Pago](https://www.mercadopago.com.br/developers)** - Processamento de pagamentos
+- **[Vitest](https://vitest.dev)** - Framework de testes
 
 ## 📋 Funcionalidades
 
@@ -23,23 +21,26 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 - ✅ Cardápio de produtos com imagens, descrições e preços
 - ✅ Carrinho de compras com gerenciamento de estado (Zustand)
 - ✅ Sistema de checkout com coleta de dados do cliente
+- ✅ Integração com Mercado Pago (Checkout Bricks)
 - ✅ Registro de pedidos no banco de dados Supabase
-- ✅ Informações de entrega (endereço completo)
+- ✅ Validação de preços no servidor (prevenção de manipulação)
+- ✅ Informações de entrega (endereço completo com CEP)
 - ✅ Status de pagamento (pendente, pago, cancelado, etc.)
 - ✅ Página de contato para comunicação com clientes
 - ✅ Página de eventos para divulgação
 - ✅ Seção de experiência do usuário
 - ✅ Sistema de navegação com navbar responsiva
-- ✅ API para gerenciamento de produtos
-- ✅ Controllers e services organizados
-- ✅ Hooks customizados para lógica reutilizável
+- ✅ API para gerenciamento de produtos (protegida por API Key)
+- ✅ Sistema de banners rotativos na homepage
+- ✅ Paginação de produtos
+- ✅ Segurança: Headers HTTP (CSP, X-Frame-Options, etc.)
+- ✅ Testes unitários com Vitest
 
 ### Em Desenvolvimento 🔄
 
-- 🔄 Integração com Mercado Pago para pagamentos
 - 🔄 Integração com WhatsApp para notificações
-- 🔄 Painel administrativo completo
 - 🔄 Sistema de autenticação de usuários
+- 🔄 Painel administrativo completo
 
 ## 🗂️ Estrutura do Projeto
 
@@ -48,38 +49,55 @@ afluar/
 ├── src/
 │   ├── app/                        # Rotas e páginas (App Router)
 │   │   ├── api/                   # API Routes
+│   │   │   ├── checkout/          # Endpoints de checkout
+│   │   │   │   ├── actions.ts    # Server Actions do checkout
+│   │   │   │   └── process-payment/ # Webhook do Mercado Pago
 │   │   │   └── produtos/          # Endpoints de produtos
 │   │   ├── cardapio/              # Página do cardápio
 │   │   ├── carrinho/              # Página do carrinho de compras
+│   │   ├── checkout/              # Página de checkout
 │   │   ├── contato/               # Página de contato
-│   │   ├── controller/            # Controllers da aplicação
 │   │   ├── eventos/               # Página de eventos
 │   │   ├── experiencia/           # Página de experiência
 │   │   ├── globals.css            # Estilos globais
 │   │   ├── layout.tsx             # Layout principal
 │   │   └── page.tsx               # Página inicial
 │   ├── components/
-│   │   ├── cardapio/              # Componentes do cardápio
-│   │   │   └── produto-card.tsx   # Card de produto
-│   │   ├── navbar/                # Componentes de navegação
-│   │   └── ui/                    # Componentes de interface (shadcn/ui)
+│   │   ├── banner/                # Componente de banner rotativo
+│   │   ├── cart/                  # Componentes do carrinho
+│   │   ├── checkout/              # Componentes de checkout
+│   │   ├── feedback/              # Estados de feedback (empty, error)
+│   │   ├── footer/                # Rodapé
+│   │   ├── Navbar/                # Barra de navegação
+│   │   ├── product-card/          # Card de produto
+│   │   └── ui/                    # Componentes shadcn/ui
 │   ├── hooks/                     # Custom React Hooks
+│   │   ├── useCart.ts             # Hook do carrinho
+│   │   └── useProducts.ts         # Hook de produtos
 │   ├── lib/
 │   │   ├── supabase.ts            # Cliente Supabase
-│   │   ├── mercadopago.ts         # Integração Mercado Pago (planejada)
-│   │   ├── whatsapp.ts            # Integração WhatsApp (planejada)
+│   │   ├── mercadopago.ts         # Integração Mercado Pago
+│   │   ├── cep.ts                  # Utilitários de CEP
+│   │   ├── whatsapp.ts             # Integração WhatsApp
+│   │   ├── resolveCartItems.ts    # Resolução de itens do carrinho
 │   │   └── utils.ts               # Funções utilitárias
 │   ├── services/                  # Camada de serviços
-│   └── types/
+│   │   └── productsService.ts      # Serviço de produtos
+│   ├── store/                     # Estado global (Zustand)
+│   │   ├── cartStore.ts           # Store do carrinho
+│   │   └── productsStore.ts       # Store de produtos
+│   └── types/                     # Definições de tipos
 │       ├── database.ts            # Tipos do banco de dados
-│       └── carrinho.ts            # Tipos do carrinho
+│       ├── carrinho.ts            # Tipos do carrinho
+│       └── produtos.ts            # Tipos de produtos
 ├── public/                        # Arquivos estáticos e imagens
+├── test/                          # Testes unitários
 ├── components.json                # Configuração shadcn/ui
 ├── eslint.config.mjs              # Configuração ESLint
 ├── next.config.ts                 # Configuração Next.js
 ├── package.json                   # Dependências do projeto
-├── postcss.config.mjs             # Configuração PostCSS
-└── tsconfig.json                  # Configuração TypeScript
+├── tsconfig.json                  # Configuração TypeScript
+└── vitest.config.ts              # Configuração Vitest
 ```
 
 ## 🛠️ Instalação e Configuração
@@ -88,7 +106,7 @@ afluar/
 
 - Node.js 18+ instalado
 - Conta no [Supabase](https://supabase.com)
-- (Opcional) Conta no [Mercado Pago](https://www.mercadopago.com.br/developers)
+- Conta no [Mercado Pago](https://www.mercadopago.com.br/developers) para pagamentos
 
 ### Instalação
 
@@ -99,29 +117,52 @@ git clone https://github.com/jayr2011/afluar-entregas.git
 cd afluar-entregas
 ```
 
-1. Instale as dependências:
+2. Instale as dependências:
 
 ```bash
 npm install
 ```
 
-1. Configure as variáveis de ambiente:
+3. Configure as variáveis de ambiente:
 
-Crie um arquivo `.env.local` na raiz do projeto:
+Copie o arquivo `.env.example` para `.env.local` e preencha com suas credenciais:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-SUPABASE_SERVICE_ROLE_KEY=sua_service_role_do_supabase
-NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=sua_public_key_mercadopago
-MERCADOPAGO_ACCESS_TOKEN=seu_access_token_mercadopago
+# Mercado Pago (OBRIGATÓRIO para pagamentos)
+MERCADOPAGO_ACCESS_TOKEN=seu_access_token_aqui
+MP_PUBLIC_KEY=sua_chave_publica_aqui
+NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=TEST-sua_chave_publica_aqui
+
+# Supabase (OBRIGATÓRIO - sem fallback)
+NEXT_PUBLIC_SUPABASE_URL=https://seu_projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_aqui
+
+# Chave de serviço (OBRIGATÓRIO para operações admin)
+SUPABASE_SERVICE_ROLE_KEY=sua_chave_service_role_aqui
+
+# API Admin - Chave para proteger rotas de escrita (POST, PUT, DELETE)
+ADMIN_API_KEY=sua_chave_admin_aqui
 ```
 
-1. Configure o banco de dados no Supabase:
+4. Configure o banco de dados no Supabase:
 
 Execute o SQL abaixo no SQL Editor do Supabase:
 
 ```sql
+-- Tabela de produtos
+CREATE TABLE produtos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  nome TEXT NOT NULL,
+  descricao TEXT,
+  preco DECIMAL(10, 2) NOT NULL,
+  categoria TEXT NOT NULL,
+  imagem TEXT,
+  destaque BOOLEAN DEFAULT false,
+  ingredientes TEXT,
+  disponivel BOOLEAN DEFAULT true
+);
+
 -- Tabela de pedidos
 CREATE TABLE pedidos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -139,26 +180,27 @@ CREATE TABLE pedidos (
   external_reference TEXT
 );
 
--- Tabela de produtos (opcional)
-CREATE TABLE produtos (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  nome TEXT NOT NULL,
-  descricao TEXT,
-  preco DECIMAL(10, 2) NOT NULL,
-  imagem_url TEXT,
-  categoria TEXT,
-  disponivel BOOLEAN DEFAULT true
-);
-
 -- Índices para melhor performance
+CREATE INDEX idx_produtos_categoria ON produtos(categoria);
+CREATE INDEX idx_produtos_destaque ON produtos(destaque);
+CREATE INDEX idx_produtos_disponivel ON produtos(disponivel);
 CREATE INDEX idx_pedidos_status ON pedidos(status_pagamento);
 CREATE INDEX idx_pedidos_created_at ON pedidos(created_at DESC);
-CREATE INDEX idx_produtos_categoria ON produtos(categoria);
-CREATE INDEX idx_produtos_disponivel ON produtos(disponivel);
+
+-- Configuração de Row Level Security (RLS)
+ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
+
+-- Política para leitura pública de produtos
+CREATE POLICY "produtos_public_read" ON produtos
+  FOR SELECT USING (disponivel = true);
+
+-- Política para leitura pública de pedidos (apenas o próprio)
+CREATE POLICY "pedidos_read own" ON pedidos
+  FOR SELECT USING (true);
 ```
 
-1. Inicie o servidor de desenvolvimento:
+5. Inicie o servidor de desenvolvimento:
 
 ```bash
 npm run dev
@@ -173,9 +215,37 @@ npm run dev      # Inicia o servidor de desenvolvimento
 npm run build    # Cria build de produção
 npm run start    # Inicia servidor de produção
 npm run lint     # Executa o linter ESLint
+npm run test     # Executa testes unitários
+npm run test:watch  # Executa testes em modo watch
 ```
 
+## 🔒 Segurança
+
+Este projeto implementa várias camadas de segurança:
+
+- **Validação de preços no servidor**: Preços são sempre validados contra o banco de dados, impedindo manipulação pelo cliente
+- **Headers HTTP de segurança**: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **API Key para rotas admin**: Rotas de escrita (POST, PUT, DELETE) requerem autenticação via `x-api-key`
+- **Variáveis de ambiente obrigatórias**: O aplicativo não inicia sem as credenciais necessárias
+
 ## 🎯 Tipos de Dados
+
+### Produto
+
+```typescript
+interface Produto {
+  id: string
+  created_at: string
+  nome: string
+  descricao?: string
+  preco: number
+  categoria: string
+  imagem?: string
+  destaque: boolean
+  ingredientes?: string
+  disponivel: boolean
+}
+```
 
 ### Pedido
 
@@ -210,27 +280,16 @@ interface CartItem {
 }
 ```
 
-### Produto
-
-```typescript
-interface Produto {
-  id: string
-  nome: string
-  descricao?: string
-  preco: number
-  imagem_url?: string
-  categoria?: string
-  disponivel: boolean
-}
-```
-
 ### Variáveis de Ambiente Necessárias
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `MERCADOPAGO_ACCESS_TOKEN` e `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` (Checkout Bricks)
-
-Veja a [documentação de deploy do Next.js](https://nextjs.org/docs/app/building-your-application/deploying) para mais detalhes.
+| Variável                             | Descrição                         |
+| ------------------------------------ | --------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`           | URL do projeto Supabase           |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Chave anônima pública do Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY`          | Chave de serviço (server-side)    |
+| `MERCADOPAGO_ACCESS_TOKEN`           | Token de acesso do Mercado Pago   |
+| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | Chave pública do Mercado Pago     |
+| `ADMIN_API_KEY`                      | Chave para API de administração   |
 
 ## 🎨 Personalização
 
@@ -240,7 +299,8 @@ O projeto utiliza Tailwind CSS com configuração customizada. Edite `src/app/gl
 
 ```css
 :root {
-  --background: ... --foreground: ... /* Adicione suas variáveis customizadas */;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 ```
 
@@ -251,11 +311,3 @@ Os componentes shadcn/ui estão em `src/components/ui/` e podem ser personalizad
 ## 📄 Licença
 
 Este projeto é privado e está em desenvolvimento.
-
-## 👨‍💻 Desenvolvedor
-
-**Jair Costa** - [GitHub](https://github.com/jayr2011)
-
----
-
-⭐ Se você gostou deste projeto, considere dar uma estrela no repositório!

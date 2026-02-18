@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { paymentClient } from '@/lib/mercadopago'
+import { resolveCartItemsFromDb } from '@/lib/resolveCartItems'
 import { randomUUID } from 'crypto'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
 type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
@@ -72,13 +73,25 @@ export async function POST(request: NextRequest) {
   }
 
   const cartRaw = orderData.cart.filter(isCartItem)
-  const cart = cartRaw.map(toCartItem).filter((x): x is CartItemPayload => x !== null)
-  if (cart.length === 0) {
+  const cartSent = cartRaw.map(toCartItem).filter((x): x is CartItemPayload => x !== null)
+  if (cartSent.length === 0) {
     return NextResponse.json({ error: 'Carrinho vazio ou itens inválidos' }, { status: 400 })
   }
 
+  const cartInput = cartSent.map(({ id, quantidade }) => ({ id, quantidade }))
+  let cart: CartItemPayload[]
+  let transactionAmount: number
+  try {
+    const resolved = await resolveCartItemsFromDb(cartInput)
+    cart = resolved.items
+    transactionAmount = resolved.total
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'Produtos não encontrados'
+    console.error('[process-payment]', message)
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
+
   const validatedForm = parsedForm.data
-  const transactionAmount = cart.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
   if (!Number.isFinite(transactionAmount) || transactionAmount <= 0) {
     return NextResponse.json({ error: 'Valor do pedido inválido' }, { status: 400 })
   }

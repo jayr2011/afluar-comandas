@@ -94,6 +94,7 @@ export function Banner({ slides, className }: BannerProps) {
                   src={slide.src}
                   alt={slide.alt}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
                   className="object-cover"
                   priority={index === 0}
                   fetchPriority={index === 0 ? 'high' : 'auto'}

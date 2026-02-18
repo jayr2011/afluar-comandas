@@ -3,14 +3,13 @@
 import { z } from 'zod'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { preferenceClient } from '@/lib/mercadopago'
+import { resolveCartItemsFromDb } from '@/lib/resolveCartItems'
 import { Pedido } from '@/types/database'
 import { CartItem } from '@/types/carrinho'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
 
-const cartItemSchema = z.looseObject({
+const cartItemSchema = z.object({
   id: z.string().min(1).max(50),
-  nome: z.string().min(1).max(200),
-  preco: z.number().positive('Preço inválido').max(9999.99, 'Preço acima do limite'),
   quantidade: z
     .number()
     .int('Quantidade deve ser inteira')
@@ -30,19 +29,22 @@ export async function criarPreferenciaPagamento(
   }
 
   const validatedCart = parsedCart.data
-  const totalCalculado = validatedCart.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
+  const { items: resolvedItems, total: totalCalculado } =
+    await resolveCartItemsFromDb(validatedCart)
+
+  const items = resolvedItems.map(item => ({
+    id: item.id,
+    title: item.nome,
+    quantity: item.quantidade,
+    unit_price: item.preco,
+  }))
 
   if (!preferenceClient) {
     throw new Error('Pagamento não configurado. Defina MERCADOPAGO_ACCESS_TOKEN.')
   }
 
   const preferenceBody = {
-    items: validatedCart.map(item => ({
-      id: item.id,
-      title: item.nome,
-      quantity: item.quantidade,
-      unit_price: item.preco,
-    })),
+    items,
   }
 
   const preference = await preferenceClient.create({ body: preferenceBody as never }).catch(err => {
@@ -60,7 +62,6 @@ export async function criarPreferenciaPagamento(
   }
 }
 
-/** Registra o pedido (fluxo sem tela de pagamento – mantido para compatibilidade). */
 export async function registrarPedido(
   formData: z.input<typeof checkoutFormSchema>,
   carrinho: CartItem[]
@@ -79,8 +80,8 @@ export async function registrarPedido(
 
   const validatedForm = parsedForm.data
   const validatedCart = parsedCart.data
+  const { items: itens, total: totalCalculado } = await resolveCartItemsFromDb(validatedCart)
 
-  const totalCalculado = validatedCart.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
   const { data, error } = await getSupabaseAdmin()
     .from('pedidos')
     .insert([
@@ -91,7 +92,7 @@ export async function registrarPedido(
         endereco_numero: validatedForm.numero,
         endereco_bairro: validatedForm.bairro,
         endereco_complemento: validatedForm.complemento,
-        itens_json: validatedCart,
+        itens_json: itens,
         valor_total: totalCalculado,
         status_pagamento: 'pendente',
         external_reference: '',

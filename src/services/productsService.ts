@@ -46,6 +46,48 @@ export class ProdutosService {
     return data
   }
 
+  async findAllPaginated(offset: number, limit: number): Promise<Produto[]> {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .range(offset, offset + limit - 1)
+      .order('nome')
+    if (error) throw error
+    return data
+  }
+
+  async countAll(): Promise<number> {
+    const { count, error } = await supabase
+      .from('produtos')
+      .select('*', { count: 'exact', head: true })
+    if (error) throw error
+    return count || 0
+  }
+
+  async findByCategoriaPaginated(
+    categoria: string,
+    offset: number,
+    limit: number
+  ): Promise<Produto[]> {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .eq('categoria', categoria)
+      .range(offset, offset + limit - 1)
+      .order('nome')
+    if (error) throw error
+    return data
+  }
+
+  async countByCategoria(categoria: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('produtos')
+      .select('*', { count: 'exact', head: true })
+      .eq('categoria', categoria)
+    if (error) throw error
+    return count || 0
+  }
+
   async create(produto: Omit<Produto, 'id'>): Promise<Produto> {
     const { data, error } = await supabase.from('produtos').insert(produto).select().single()
     if (error) throw error

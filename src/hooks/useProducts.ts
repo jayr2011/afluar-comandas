@@ -38,9 +38,10 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
         throw new Error('Erro ao carregar produtos')
       }
 
-      const data = await response.json()
-      setProdutos(data)
-      useProductsStore.getState().setProducts(data)
+      const result = await response.json()
+      const products = Array.isArray(result?.data) ? result?.data : []
+      setProdutos(products)
+      useProductsStore.getState().setProducts(products)
     } catch (err) {
       console.error('Erro ao carregar produtos:', err)
       setError('Não foi possível carregar o cardápio. Tente novamente.')

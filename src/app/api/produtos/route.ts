@@ -1,26 +1,64 @@
 import { NextResponse } from 'next/server'
 import { ProdutosService } from '@/services/productsService'
-import { getCachedProdutos, getCachedDestaques } from '@/services/productsService'
+import { getCachedDestaques } from '@/services/productsService'
+import { z } from 'zod'
 
 const productsService = new ProdutosService()
+
+const produtoSchema = z.object({
+  nome: z.string().min(3).max(200),
+  descricao: z.string().max(500).optional().default(''),
+  preco: z.number().positive().max(9999.99),
+  categoria: z.string().min(1).max(100),
+  imagem: z.string().url().optional().default(''),
+  destaque: z.boolean().optional().default(false),
+  ingredientes: z.string().max(1000).optional().default(''),
+})
+
+function verifyAdminApiKey(request: Request): boolean {
+  const apiKey = request.headers.get('x-api-key')
+  const validKey = process.env.ADMIN_API_KEY
+
+  if (!validKey) {
+    console.warn('[produtos] ADMIN_API_KEY não configurada - autenticação desabilitada')
+    return false
+  }
+
+  return apiKey === validKey
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
   const destaque = searchParams.get('destaque')
+  const page = parseInt(searchParams.get('page') || '1', 10)
+  const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
+  const offset = (page - 1) * limit
 
   try {
     let dados
+    let total = 0
 
     if (categoria) {
-      dados = await getCachedProdutos(categoria)
+      dados = await productsService.findByCategoriaPaginated(categoria, offset, limit)
+      total = await productsService.countByCategoria(categoria)
     } else if (destaque === 'true') {
       dados = await getCachedDestaques()
+      total = dados.length
     } else {
-      dados = await getCachedProdutos()
+      dados = await productsService.findAllPaginated(offset, limit)
+      total = await productsService.countAll()
     }
 
-    return NextResponse.json(dados)
+    return NextResponse.json({
+      data: dados,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    })
   } catch (error) {
     console.error('Erro fatal ao buscar produtos:', error)
 
@@ -32,28 +70,23 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!verifyAdminApiKey(request)) {
+    return NextResponse.json(
+      { error: 'Chave de API não autorizada para esta operação' },
+      { status: 401 }
+    )
+  }
+
   try {
     const body = await request.json()
 
-    if (!body.nome || body.nome.trim().length < 3) {
-      return NextResponse.json(
-        { error: 'Nome inválido: deve ter pelo menos 3 caracteres.' },
-        { status: 400 }
-      )
+    const parsed = produtoSchema.safeParse(body)
+    if (!parsed.success) {
+      const errors = parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`)
+      return NextResponse.json({ error: 'Dados inválidos', details: errors }, { status: 400 })
     }
 
-    if (!body.preco || typeof body.preco !== 'number' || body.preco <= 0) {
-      return NextResponse.json(
-        { error: 'Preço inválido: deve ser um número maior que zero.' },
-        { status: 400 }
-      )
-    }
-
-    if (!body.categoria) {
-      return NextResponse.json({ error: 'Categoria é obrigatória.' }, { status: 400 })
-    }
-
-    const novoProduto = await productsService.create(body)
+    const novoProduto = await productsService.create(parsed.data)
 
     return NextResponse.json(novoProduto, { status: 201 })
   } catch (error) {
