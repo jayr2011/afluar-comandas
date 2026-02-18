@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +19,7 @@ export function EmptyState({
   fullScreen = false,
   className,
 }: EmptyStateProps) {
-  const baseId = crypto.randomUUID()
+  const baseId = useId()
   const titleId = `empty-title-${baseId}`
   const descId = `empty-desc-${baseId}`
 

@@ -1,11 +1,12 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export default function CheckoutSucessoPage() {
+function CheckoutSucessoContent() {
   const searchParams = useSearchParams()
   const pedidoId = searchParams.get('pedido')
 
@@ -28,5 +29,19 @@ export default function CheckoutSucessoPage() {
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSucessoPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
+          <div className="h-20 w-20 rounded-full bg-primary/10 animate-pulse" />
+        </div>
+      }
+    >
+      <CheckoutSucessoContent />
+    </Suspense>
   )
 }

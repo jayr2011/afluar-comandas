@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { AlertCircle, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +19,7 @@ export function ErrorState({
   fullScreen = false,
   className,
 }: ErrorStateProps) {
-  const baseId = crypto.randomUUID()
+  const baseId = useId()
   const titleId = `error-title-${baseId}`
   const messageId = `error-message-${baseId}`
 

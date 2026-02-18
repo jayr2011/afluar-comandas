@@ -42,10 +42,10 @@ const informacoesAdicionais = [
 ]
 
 export default function Contato() {
-  const heroId = `contato-hero-${crypto.randomUUID()}`
-  const canaisId = `contato-canais-${crypto.randomUUID()}`
-  const infoId = `contato-info-${crypto.randomUUID()}`
-  const ctaId = `contato-cta-${crypto.randomUUID()}`
+  const heroId = 'contato-hero'
+  const canaisId = 'contato-canais'
+  const infoId = 'contato-info'
+  const ctaId = 'contato-cta'
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
