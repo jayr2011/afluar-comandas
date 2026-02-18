@@ -5,9 +5,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Card, CardContent, CardDescription, CardFooter } from '@/components/ui/card'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+
+const DESCRICAO_MAX_CARACTERES = 100
 
 export interface Product {
   id: string
@@ -30,7 +34,14 @@ interface ProductCardProps {
 
 export const ProductCard = memo(({ product, children, className, href }: ProductCardProps) => {
   const [imageLoading, setImageLoading] = useState(true)
+  const [descricaoExpandida, setDescricaoExpandida] = useState(false)
   const headingId = useId()
+
+  const descricaoLonga = product.descricao.length > DESCRICAO_MAX_CARACTERES
+  const textoDescricao =
+    descricaoLonga && !descricaoExpandida
+      ? `${product.descricao.slice(0, DESCRICAO_MAX_CARACTERES).trim()}...`
+      : product.descricao
 
   const contentBlock = (
     <>
@@ -56,10 +67,30 @@ export const ProductCard = memo(({ product, children, className, href }: Product
         <h3 id={headingId} className="text-2xl font-bold mb-3 leading-none">
           {product.nome}
         </h3>
-        <CardDescription className="leading-relaxed mb-6 text-base">
-          {product.descricao}
-        </CardDescription>
-        <Separator className="mb-6" aria-hidden="true" />
+        <span className="leading-relaxed mb-2 text-base text-muted-foreground">
+          {textoDescricao}
+          {descricaoLonga && (
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                setDescricaoExpandida(prev => !prev)
+              }}
+              className="ml-1 text-primary font-medium hover:underline focus:outline-none focus-visible:underline inline-flex items-center gap-1 p-0"
+            >
+              {descricaoExpandida ? 'Ver menos' : 'Ver mais'}
+              {descricaoExpandida ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </Button>
+          )}
+        </span>
+        <Separator className="mb-6 mt-4" aria-hidden="true" />
       </CardContent>
     </>
   )

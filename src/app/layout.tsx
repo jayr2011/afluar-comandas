@@ -4,6 +4,21 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/footer'
 import { Suspense } from 'react'
 import './globals.css'
+import { Montserrat, Roboto } from 'next/font/google'
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-montserrat',
+  display: 'swap',
+})
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
+  display: 'swap',
+})
 
 function NavbarFallback() {
   return (
@@ -31,7 +46,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html
+      className={`${montserrat.variable} ${roboto.variable}`}
+      lang="pt-BR"
+      suppressHydrationWarning
+    >
       <body>
         <Toaster
           richColors
