@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,10 +14,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { CartHeader, CartItemList, CartSummary } from '@/components/cart'
+import { CheckoutBreadcrumb } from '@/components/checkout/CheckoutBreadcrumb'
 import { EmptyState } from '@/components/feedback'
 import { useCartStore } from '@/store/cartStore'
 
 export default function CarrinhoPage() {
+  const router = useRouter()
   const [showClearDialog, setShowClearDialog] = useState(false)
   const items = useCartStore(state => state.items)
   const removeItem = useCartStore(state => state.removeItem)
@@ -63,6 +66,7 @@ export default function CarrinhoPage() {
           <ArrowLeft className="h-4 w-4" />
           Voltar ao cardápio
         </Link>
+        <CheckoutBreadcrumb currentStep="carrinho" className="mb-6" />
         <CartHeader />
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -76,7 +80,8 @@ export default function CarrinhoPage() {
           <div className="lg:col-span-1">
             <CartSummary
               subtotal={totalPrice}
-              onCheckout={() => undefined}
+              checkoutLabel="Finalizar compra"
+              onCheckout={() => router.push('/checkout')}
               onClear={() => setShowClearDialog(true)}
               isCheckoutDisabled={false}
             />

@@ -1,0 +1,174 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { paymentClient } from '@/lib/mercadopago'
+import { randomUUID } from 'crypto'
+import { checkoutFormSchema } from '@/lib/validations/checkout'
+/** Formato mínimo do item para a API (carrinho pode vir com campos a mais). */
+type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
+
+function parseNumber(v: unknown): number | null {
+  if (typeof v === 'number' && !Number.isNaN(v)) return v
+  if (typeof v === 'string') {
+    const n = Number(v.replace(',', '.'))
+    return Number.isFinite(n) ? n : null
+  }
+  return null
+}
+function isCartItem(x: unknown): x is CartItemPayload {
+  if (!x || typeof x !== 'object') return false
+  const o = x as unknown as Record<string, unknown>
+  const preco = parseNumber(o.preco)
+  const quantidade = typeof o.quantidade === 'number' ? o.quantidade : Number(o.quantidade)
+  return (
+    typeof o.id === 'string' &&
+    o.id.length >= 1 &&
+    typeof o.nome === 'string' &&
+    o.nome.length >= 1 &&
+    preco !== null &&
+    preco > 0 &&
+    Number.isInteger(quantidade) &&
+    quantidade >= 1
+  )
+}
+function toCartItem(x: unknown): CartItemPayload | null {
+  if (!isCartItem(x)) return null
+  const o = x as unknown as Record<string, unknown>
+  const preco = parseNumber(o.preco)!
+  const quantidade = typeof o.quantidade === 'number' ? o.quantidade : Number(o.quantidade)
+  return { id: o.id as string, nome: o.nome as string, preco, quantidade }
+}
+
+export async function POST(request: NextRequest) {
+  if (!paymentClient) {
+    return NextResponse.json({ error: 'Pagamento não configurado' }, { status: 503 })
+  }
+
+  let body: Record<string, unknown> & { orderData?: { formData?: unknown; cart?: unknown[] } }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Body inválido' }, { status: 400 })
+  }
+
+  const orderData = body.orderData
+  if (
+    !orderData ||
+    typeof orderData !== 'object' ||
+    !orderData.formData ||
+    !Array.isArray(orderData.cart)
+  ) {
+    console.warn('[process-payment] orderData inválido:', !!body.orderData, typeof body.orderData)
+    return NextResponse.json({ error: 'orderData (formData e cart) obrigatório' }, { status: 400 })
+  }
+
+  const parsedForm = checkoutFormSchema.safeParse(orderData.formData)
+  if (!parsedForm.success) {
+    const msg = parsedForm.error.issues.map(i => i.message).join('; ')
+    console.warn('[process-payment] Validação formData:', msg)
+    return NextResponse.json({ error: 'Dados do pedido inválidos', details: msg }, { status: 400 })
+  }
+
+  const cartRaw = orderData.cart.filter(isCartItem)
+  const cart = cartRaw.map(toCartItem).filter((x): x is CartItemPayload => x !== null)
+  if (cart.length === 0) {
+    return NextResponse.json({ error: 'Carrinho vazio ou itens inválidos' }, { status: 400 })
+  }
+
+  const validatedForm = parsedForm.data
+  const transactionAmount = cart.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
+  if (!Number.isFinite(transactionAmount) || transactionAmount <= 0) {
+    return NextResponse.json({ error: 'Valor do pedido inválido' }, { status: 400 })
+  }
+
+  const paymentFormData = Object.fromEntries(
+    Object.entries(body).filter(([key]) => key !== 'orderData')
+  )
+  const paymentBody = {
+    ...paymentFormData,
+    transaction_amount: transactionAmount,
+    description: `Pedido - ${validatedForm.nome}`,
+  }
+
+  const idempotencyKey = randomUUID()
+
+  let result: Record<string, unknown>
+  try {
+    result = (await paymentClient.create({
+      body: paymentBody as never,
+      requestOptions: { idempotencyKey },
+    } as never)) as unknown as Record<string, unknown>
+  } catch (err) {
+    console.error('Erro ao processar pagamento MP:', err)
+    return NextResponse.json(
+      { error: 'Não foi possível processar o pagamento. Tente novamente.' },
+      { status: 502 }
+    )
+  }
+
+  // Documentação MP: resposta 201 traz id e status no body. PaymentResponse tem id e status no topo.
+  const rawId = result?.id ?? (result as { body?: { id?: number } })?.body?.id
+  const paymentId = rawId != null ? String(rawId) : null
+  const status =
+    (result?.status as string | undefined) ??
+    (result as { body?: { status?: string } })?.body?.status ??
+    (result as { data?: { status?: string } })?.data?.status
+  const statusStr = typeof status === 'string' ? status : undefined
+
+  console.log('[process-payment] Resposta MP:', {
+    paymentId,
+    status: statusStr,
+    keys: Object.keys(result || {}),
+  })
+
+  if (!paymentId) {
+    return NextResponse.json(
+      {
+        error: 'Pagamento não foi criado. Tente novamente.',
+        code: 'payment_creation_failed',
+        details: statusStr ? `Status: ${statusStr}` : undefined,
+      },
+      { status: 400 }
+    )
+  }
+
+  // Sempre criamos o pedido quando o MP aceitou a requisição (retornou id). Status do pedido reflete o do pagamento.
+  const approved = statusStr === 'approved' || statusStr === 'authorized'
+
+  const { data: pedido, error: insertError } = await getSupabaseAdmin()
+    .from('pedidos')
+    .insert([
+      {
+        cliente_nome: validatedForm.nome,
+        cliente_whatsapp: validatedForm.whatsapp,
+        endereco_rua: validatedForm.rua,
+        endereco_numero: validatedForm.numero,
+        endereco_bairro: validatedForm.bairro,
+        endereco_complemento: validatedForm.complemento ?? null,
+        itens_json: cart,
+        valor_total: transactionAmount,
+        status_pagamento: approved ? 'pago' : 'pendente',
+        mercado_pago_id: paymentId,
+      },
+    ])
+    .select('id')
+    .single()
+
+  if (insertError || !pedido) {
+    console.error('Erro ao registrar pedido após pagamento:', insertError)
+    return NextResponse.json(
+      {
+        error:
+          'Pagamento processado, mas falha ao registrar pedido. Entre em contato com o suporte.',
+      },
+      { status: 502 }
+    )
+  }
+
+  const pedidoId = typeof pedido.id === 'string' ? pedido.id : String(pedido.id)
+  await getSupabaseAdmin()
+    .from('pedidos')
+    .update({ external_reference: pedidoId })
+    .eq('id', pedido.id)
+
+  return NextResponse.json({ ok: true, orderId: pedido.id, paymentId, status: statusStr })
+}

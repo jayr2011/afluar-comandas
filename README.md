@@ -112,7 +112,9 @@ Crie um arquivo `.env.local` na raiz do projeto:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-MERCADO_PAGO_ACCESS_TOKEN=seu_token_do_mercado_pago
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_do_supabase
+NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=sua_public_key_mercadopago
+MERCADOPAGO_ACCESS_TOKEN=seu_access_token_mercadopago
 ```
 
 1. Configure o banco de dados no Supabase:
@@ -179,19 +181,19 @@ npm run lint     # Executa o linter ESLint
 
 ```typescript
 interface Pedido {
-  id: string;
-  created_at: string;
-  cliente_nome: string;
-  cliente_whatsapp: string;
-  endereco_rua: string;
-  endereco_numero: string;
-  endereco_bairro: string;
-  endereco_complemento?: string;
-  itens_json: ItemPedido[];
-  valor_total: number;
-  status_pagamento: 'pendente' | 'pago' | 'cancelado' | 'reembolsado' | 'estornado' | 'em disputa';
-  mercado_pago_id?: string;
-  external_reference: string;
+  id: string
+  created_at: string
+  cliente_nome: string
+  cliente_whatsapp: string
+  endereco_rua: string
+  endereco_numero: string
+  endereco_bairro: string
+  endereco_complemento?: string
+  itens_json: ItemPedido[]
+  valor_total: number
+  status_pagamento: 'pendente' | 'pago' | 'cancelado' | 'reembolsado' | 'estornado' | 'em disputa'
+  mercado_pago_id?: string
+  external_reference: string
 }
 ```
 
@@ -199,12 +201,12 @@ interface Pedido {
 
 ```typescript
 interface CartItem {
-  id: string;
-  nome: string;
-  descricao?: string;
-  preco: number;
-  imagem_url?: string;
-  quantidade: number;
+  id: string
+  nome: string
+  descricao?: string
+  preco: number
+  imagem_url?: string
+  quantidade: number
 }
 ```
 
@@ -212,13 +214,13 @@ interface CartItem {
 
 ```typescript
 interface Produto {
-  id: string;
-  nome: string;
-  descricao?: string;
-  preco: number;
-  imagem_url?: string;
-  categoria?: string;
-  disponivel: boolean;
+  id: string
+  nome: string
+  descricao?: string
+  preco: number
+  imagem_url?: string
+  categoria?: string
+  disponivel: boolean
 }
 ```
 
@@ -226,7 +228,7 @@ interface Produto {
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `MERCADO_PAGO_ACCESS_TOKEN` (quando implementado)
+- `MERCADOPAGO_ACCESS_TOKEN` e `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` (Checkout Bricks)
 
 Veja a [documentação de deploy do Next.js](https://nextjs.org/docs/app/building-your-application/deploying) para mais detalhes.
 
@@ -238,9 +240,7 @@ O projeto utiliza Tailwind CSS com configuração customizada. Edite `src/app/gl
 
 ```css
 :root {
-  --background: ...
-  --foreground: ...
-  /* Adicione suas variáveis customizadas */
+  --background: ... --foreground: ... /* Adicione suas variáveis customizadas */;
 }
 ```
 
