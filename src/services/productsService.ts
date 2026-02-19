@@ -1,67 +1,136 @@
 import { Produto } from '@/types/produtos'
 import { supabase } from '@/lib/supabase'
 import { cacheTag } from 'next/cache'
+import logger from '@/lib/logger'
+
+const LOG_PREFIX = '[produtos]'
 
 export async function getCachedProdutos(categoria?: string) {
   'use cache'
   cacheTag('produtos')
+  logger.debug(`${LOG_PREFIX} getCachedProdutos chamada`, { categoria })
   const service = new ProdutosService()
-  if (categoria) return service.findByCategoria(categoria)
-  return service.findAll()
+  const result = categoria ? await service.findByCategoria(categoria) : await service.findAll()
+  logger.debug(`${LOG_PREFIX} getCachedProdutos finalizada`, { categoria, count: result.length })
+  return result
 }
 
 export async function getCachedProduto(id: string) {
   'use cache'
   cacheTag('produtos', id)
-  return new ProdutosService().findById(id)
+  logger.debug(`${LOG_PREFIX} getCachedProduto chamada`, { produtoId: id })
+  const produto = await new ProdutosService().findById(id)
+  logger.debug(`${LOG_PREFIX} getCachedProduto finalizada`, { produtoId: id, found: !!produto })
+  return produto
 }
 
 export async function getCachedDestaques() {
   'use cache'
   cacheTag('produtos')
-  return new ProdutosService().findDestaques()
+  logger.debug(`${LOG_PREFIX} getCachedDestaques chamada`)
+  const result = await new ProdutosService().findDestaques()
+  logger.debug(`${LOG_PREFIX} getCachedDestaques finalizada`, { count: result.length })
+  return result
 }
+
 export class ProdutosService {
   async findAll(): Promise<Produto[]> {
+    logger.debug(`${LOG_PREFIX} findAll - iniciando consulta`)
     const { data, error } = await supabase.from('produtos').select('*')
-    if (error) throw error
-    return data
+    if (error) {
+      logger.error(`${LOG_PREFIX} findAll - erro ao buscar produtos`, {
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const items = data ?? []
+    logger.info(`${LOG_PREFIX} findAll - finalizado`, { count: items.length })
+    return items
   }
 
   async findById(id: string): Promise<Produto | null> {
+    logger.debug(`${LOG_PREFIX} findById - buscando produto`, { produtoId: id })
     const { data, error } = await supabase.from('produtos').select('*').eq('id', id)
-    if (error) throw error
-    return data[0] || null
+    if (error) {
+      logger.error(`${LOG_PREFIX} findById - erro`, {
+        produtoId: id,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const produto = (data && data[0]) ?? null
+    if (!produto) logger.info(`${LOG_PREFIX} findById - produto não encontrado`, { produtoId: id })
+    else
+      logger.debug(`${LOG_PREFIX} findById - produto encontrado`, {
+        produtoId: id,
+        nome: produto.nome,
+      })
+    return produto
   }
 
   async findByCategoria(categoria: string): Promise<Produto[]> {
+    logger.debug(`${LOG_PREFIX} findByCategoria - iniciando consulta`, { categoria })
     const { data, error } = await supabase.from('produtos').select('*').eq('categoria', categoria)
-    if (error) throw error
-    return data
+    if (error) {
+      logger.error(`${LOG_PREFIX} findByCategoria - erro`, {
+        categoria,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const items = data ?? []
+    logger.info(`${LOG_PREFIX} findByCategoria - finalizado`, { categoria, count: items.length })
+    return items
   }
 
   async findDestaques(): Promise<Produto[]> {
+    logger.debug(`${LOG_PREFIX} findDestaques - iniciando consulta`)
     const { data, error } = await supabase.from('produtos').select('*').eq('destaque', true)
-    if (error) throw error
-    return data
+    if (error) {
+      logger.error(`${LOG_PREFIX} findDestaques - erro`, { error: error?.message ?? error })
+      throw error
+    }
+    const items = data ?? []
+    logger.info(`${LOG_PREFIX} findDestaques - finalizado`, { count: items.length })
+    return items
   }
 
   async findAllPaginated(offset: number, limit: number): Promise<Produto[]> {
+    logger.debug(`${LOG_PREFIX} findAllPaginated - iniciando consulta`, { offset, limit })
     const { data, error } = await supabase
       .from('produtos')
       .select('*')
       .range(offset, offset + limit - 1)
       .order('nome')
-    if (error) throw error
-    return data
+    if (error) {
+      logger.error(`${LOG_PREFIX} findAllPaginated - erro`, {
+        offset,
+        limit,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const items = data ?? []
+    logger.info(`${LOG_PREFIX} findAllPaginated - finalizado`, {
+      offset,
+      limit,
+      count: items.length,
+    })
+    return items
   }
 
   async countAll(): Promise<number> {
+    logger.debug(`${LOG_PREFIX} countAll - iniciando contagem`)
     const { count, error } = await supabase
       .from('produtos')
       .select('*', { count: 'exact', head: true })
-    if (error) throw error
-    return count || 0
+    if (error) {
+      logger.error(`${LOG_PREFIX} countAll - erro`, { error: error?.message ?? error })
+      throw error
+    }
+    const total = count || 0
+    logger.debug(`${LOG_PREFIX} countAll - finalizado`, { count: total })
+    return total
   }
 
   async findByCategoriaPaginated(
@@ -69,45 +138,106 @@ export class ProdutosService {
     offset: number,
     limit: number
   ): Promise<Produto[]> {
+    logger.debug(`${LOG_PREFIX} findByCategoriaPaginated - iniciando consulta`, {
+      categoria,
+      offset,
+      limit,
+    })
     const { data, error } = await supabase
       .from('produtos')
       .select('*')
       .eq('categoria', categoria)
       .range(offset, offset + limit - 1)
       .order('nome')
-    if (error) throw error
-    return data
+    if (error) {
+      logger.error(`${LOG_PREFIX} findByCategoriaPaginated - erro`, {
+        categoria,
+        offset,
+        limit,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const items = data ?? []
+    logger.info(`${LOG_PREFIX} findByCategoriaPaginated - finalizado`, {
+      categoria,
+      offset,
+      limit,
+      count: items.length,
+    })
+    return items
   }
 
   async countByCategoria(categoria: string): Promise<number> {
+    logger.debug(`${LOG_PREFIX} countByCategoria - iniciando contagem`, { categoria })
     const { count, error } = await supabase
       .from('produtos')
       .select('*', { count: 'exact', head: true })
       .eq('categoria', categoria)
-    if (error) throw error
-    return count || 0
+    if (error) {
+      logger.error(`${LOG_PREFIX} countByCategoria - erro`, {
+        categoria,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    const total = count || 0
+    logger.debug(`${LOG_PREFIX} countByCategoria - finalizado`, { categoria, count: total })
+    return total
   }
 
   async create(produto: Omit<Produto, 'id'>): Promise<Produto> {
+    logger.debug(`${LOG_PREFIX} create - criando produto`, {
+      nome: produto.nome,
+      categoria: produto.categoria,
+    })
     const { data, error } = await supabase.from('produtos').insert(produto).select().single()
-    if (error) throw error
+    if (error) {
+      logger.error(`${LOG_PREFIX} create - erro ao criar produto`, {
+        nome: produto.nome,
+        categoria: produto.categoria,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    logger.info(`${LOG_PREFIX} create - produto criado`, { produtoId: data?.id, nome: data?.nome })
     return data
   }
 
   async update(id: string, produto: Partial<Produto>): Promise<Produto | null> {
+    logger.debug(`${LOG_PREFIX} update - atualizando produto`, {
+      produtoId: id,
+      updateKeys: Object.keys(produto),
+    })
     const { data, error } = await supabase
       .from('produtos')
       .update(produto)
       .eq('id', id)
       .select()
       .single()
-    if (error) throw error
+    if (error) {
+      logger.error(`${LOG_PREFIX} update - erro ao atualizar produto`, {
+        produtoId: id,
+        updateKeys: Object.keys(produto),
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    logger.info(`${LOG_PREFIX} update - produto atualizado`, { produtoId: id })
     return data || null
   }
 
   async delete(id: string): Promise<boolean> {
+    logger.debug(`${LOG_PREFIX} delete - deletando produto`, { produtoId: id })
     const { error } = await supabase.from('produtos').delete().eq('id', id)
-    if (error) throw error
+    if (error) {
+      logger.error(`${LOG_PREFIX} delete - erro ao deletar produto`, {
+        produtoId: id,
+        error: error?.message ?? error,
+      })
+      throw error
+    }
+    logger.info(`${LOG_PREFIX} delete - produto deletado`, { produtoId: id })
     return true
   }
 }

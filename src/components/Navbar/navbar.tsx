@@ -14,6 +14,7 @@ import {
   SheetClose,
 } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
+import { useHydrated } from '@/hooks/useHydrated'
 import { useCartStore } from '@/store/cartStore'
 
 const navItems = [
@@ -25,6 +26,7 @@ const navItems = [
 ]
 
 export function Navbar() {
+  const hydrated = useHydrated()
   const cartCount = useCartStore(state => state.getTotalItems())
   const pathname = usePathname()
 
@@ -100,7 +102,7 @@ export function Navbar() {
               aria-label={cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'}
             >
               <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden="true" />
-              {Boolean(cartCount) ? (
+              {hydrated && Boolean(cartCount) ? (
                 <Badge
                   key={String(cartCount)}
                   className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary animate-cart-badge"

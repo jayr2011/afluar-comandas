@@ -1,6 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { ProdutosService } from '@/services/productsService'
 import { getCachedDestaques } from '@/services/productsService'
+import { getUserFromRequest } from '@/lib/supabase-server'
+import logger from '@/lib/logger'
 import { z } from 'zod'
 
 const productsService = new ProdutosService()
@@ -15,7 +17,7 @@ const produtoSchema = z.object({
   ingredientes: z.string().max(1000).optional().default(''),
 })
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
   const destaque = searchParams.get('destaque')
@@ -48,7 +50,9 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    console.error('Erro fatal ao buscar produtos:', error)
+    logger.error('[produtos:route] erro ao listar produtos', {
+      error: error instanceof Error ? error.message : error,
+    })
 
     return NextResponse.json(
       { error: 'Erro interno ao processar a lista de produtos' },
@@ -57,7 +61,12 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const user = await getUserFromRequest(request)
+  if (!user) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const body = await request.json()
 
@@ -71,7 +80,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(novoProduto, { status: 201 })
   } catch (error) {
-    console.error('Erro ao criar produto:', error)
+    logger.error('[produtos:route] erro ao criar produto', {
+      error: error instanceof Error ? error.message : error,
+    })
 
     return NextResponse.json(
       { error: 'Dados inválidos ou formato de requisição incorreto.' },

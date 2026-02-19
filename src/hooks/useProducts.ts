@@ -22,19 +22,29 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
   const [error, setError] = useState<string | null>(null)
 
   const fetchProdutos = async () => {
+    const params = new URLSearchParams()
+    if (options.categoria) params.append('categoria', options.categoria)
+    if (options.destaque) params.append('destaque', 'true')
+    const url = `/api/produtos${params.toString() ? `?${params.toString()}` : ''}`
+
+    console.debug('[useProdutos] iniciando fetch', {
+      categoria: options.categoria,
+      destaque: options.destaque,
+      url,
+    })
+
     try {
       setLoading(true)
       setError(null)
 
-      const params = new URLSearchParams()
-      if (options.categoria) params.append('categoria', options.categoria)
-      if (options.destaque) params.append('destaque', 'true')
-
-      const url = `/api/produtos${params.toString() ? `?${params.toString()}` : ''}`
-
       const response = await fetch(url)
 
       if (!response.ok) {
+        console.error('[useProdutos] resposta inválida', {
+          status: response.status,
+          statusText: response.statusText,
+          url,
+        })
         throw new Error('Erro ao carregar produtos')
       }
 
@@ -42,8 +52,12 @@ export function useProdutos(options: UseProdutosOptions = {}): UseProdutosReturn
       const products = Array.isArray(result?.data) ? result?.data : []
       setProdutos(products)
       useProductsStore.getState().setProducts(products)
+      console.info('[useProdutos] produtos carregados', { count: products.length, url })
     } catch (err) {
-      console.error('Erro ao carregar produtos:', err)
+      console.error('[useProdutos] erro inesperado', {
+        error: err instanceof Error ? err.message : err,
+        url,
+      })
       setError('Não foi possível carregar o cardápio. Tente novamente.')
     } finally {
       setLoading(false)
@@ -78,26 +92,39 @@ export function useProduct(id: string | null | undefined): {
     if (!id) {
       setProduto(null)
       setLoading(false)
+      console.warn('[useProduct] chamado sem ID')
       return
     }
     const fromCache = useProductsStore.getState().getProductById(id)
     if (fromCache) {
       setProduto(fromCache)
       setLoading(false)
+      console.debug('[useProduct] servido do cache', { produtoId: id, nome: fromCache.nome })
       return
     }
+    console.debug('[useProduct] iniciando fetch', { produtoId: id })
     try {
       setLoading(true)
       setError(null)
       const response = await fetch(`/api/produtos/${id}`)
       if (!response.ok) {
+        console.error('[useProduct] resposta inválida', {
+          produtoId: id,
+          status: response.status,
+          statusText: response.statusText,
+        })
         if (response.status === 404) throw new Error('Produto não encontrado')
         throw new Error('Erro ao carregar produto')
       }
       const data = await response.json()
       setProduto(data)
       setProduct(data)
+      console.info('[useProduct] produto carregado', { produtoId: id, nome: data.nome })
     } catch (err) {
+      console.error('[useProduct] erro inesperado', {
+        produtoId: id,
+        error: err instanceof Error ? err.message : err,
+      })
       setError(err instanceof Error ? err.message : 'Não foi possível carregar o produto.')
       setProduto(null)
     } finally {

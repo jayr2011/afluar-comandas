@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/footer'
+import { CartHydration } from '@/components/cart/CartHydration'
 import { Suspense } from 'react'
 import './globals.css'
 import { Montserrat, Roboto } from 'next/font/google'
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             },
           }}
         />
+        <CartHydration />
         <Suspense fallback={<NavbarFallback />}>
           <Navbar />
         </Suspense>

@@ -1,18 +1,51 @@
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago'
+import logger from '@/lib/logger'
 
-const accessToken = process.env.MP_ACCESS_TOKEN ?? process.env.MP_ACCESS_TOKEN
+const envVarName = process.env.MERCADOPAGO_ACCESS_TOKEN
+  ? 'MERCADOPAGO_ACCESS_TOKEN'
+  : process.env.MP_ACCESS_TOKEN
+    ? 'MP_ACCESS_TOKEN'
+    : null
+
+const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN ?? process.env.MP_ACCESS_TOKEN ?? undefined
+
 if (!accessToken) {
-  console.warn('MP_ACCESS_TOKEN ou MP_ACCESS_TOKEN não definida – pagamentos desabilitados')
+  logger.warn(
+    '[mercadopago] token ausente — pagamentos desabilitados. Defina MERCADOPAGO_ACCESS_TOKEN ou MP_ACCESS_TOKEN.'
+  )
 } else {
-  console.log('[mercadopago] Access token configurado (últimos 10 chars):', accessToken.slice(-10))
+  logger.info('[mercadopago] token presente (variável usada)', { envVar: envVarName })
 }
 
-const client = accessToken
-  ? new MercadoPagoConfig({
+let client: MercadoPagoConfig | null = null
+let _preferenceClient: Preference | null = null
+let _paymentClient: Payment | null = null
+
+if (accessToken) {
+  try {
+    client = new MercadoPagoConfig({
       accessToken,
       options: { timeout: 5000 },
     })
-  : null
 
-export const preferenceClient = client ? new Preference(client) : null
-export const paymentClient = client ? new Payment(client) : null
+    _preferenceClient = new Preference(client)
+    _paymentClient = new Payment(client)
+
+    logger.info('[mercadopago] cliente inicializado com sucesso', {
+      preferenceClient: !!_preferenceClient,
+      paymentClient: !!_paymentClient,
+    })
+  } catch (err) {
+    logger.error('[mercadopago] falha ao inicializar cliente MercadoPago', {
+      error: err instanceof Error ? err.message : err,
+    })
+    client = null
+    _preferenceClient = null
+    _paymentClient = null
+  }
+} else {
+  logger.debug('[mercadopago] clientes não instanciados (token ausente)')
+}
+
+export const preferenceClient = _preferenceClient
+export const paymentClient = _paymentClient

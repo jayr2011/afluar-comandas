@@ -17,17 +17,21 @@ import { CartHeader, CartItemList, CartSummary } from '@/components/cart'
 import { CheckoutBreadcrumb } from '@/components/checkout/CheckoutBreadcrumb'
 import { EmptyState } from '@/components/feedback'
 import { useCartStore } from '@/store/cartStore'
+import { useHydrated } from '@/hooks/useHydrated'
 
 export default function CarrinhoPage() {
   const router = useRouter()
+  const hydrated = useHydrated()
   const [showClearDialog, setShowClearDialog] = useState(false)
   const items = useCartStore(state => state.items)
-  const removeItem = useCartStore(state => state.removeItem)
-  const updateQuantity = useCartStore(state => state.updateQuantity)
-  const clearCart = useCartStore(state => state.clearCart)
   const totalPrice = useCartStore(state =>
     state.items.reduce((sum, item) => sum + item.preco * item.quantidade, 0)
   )
+  const removeItem = useCartStore(state => state.removeItem)
+  const updateQuantity = useCartStore(state => state.updateQuantity)
+  const clearCart = useCartStore(state => state.clearCart)
+
+  if (!hydrated) return null
 
   if (items.length === 0) {
     return (

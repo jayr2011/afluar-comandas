@@ -7,6 +7,7 @@ import { resolveCartItemsFromDb } from '@/lib/resolveCartItems'
 import { Pedido } from '@/types/database'
 import { CartItem } from '@/types/carrinho'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
+import logger from '@/lib/logger'
 
 const cartItemSchema = z.object({
   id: z.string().min(1).max(50),
@@ -19,12 +20,19 @@ const cartItemSchema = z.object({
 
 const cartSchema = z.array(cartItemSchema).min(1, 'Carrinho vazio')
 
+const LOG_PREFIX = '[checkout]'
+
 export async function criarPreferenciaPagamento(
   carrinho: CartItem[]
 ): Promise<{ preferenceId: string; amount: number }> {
   const parsedCart = cartSchema.safeParse(carrinho)
   if (!parsedCart.success) {
-    const msg = parsedCart.error.issues.map(iss => iss.message).join('. ')
+    const issues = parsedCart.error.issues.map(i => i.message)
+    logger.warn(`${LOG_PREFIX} validação do carrinho falhou`, {
+      issues,
+      itemCount: carrinho.length,
+    })
+    const msg = issues.join('. ')
     throw new Error(msg)
   }
 
@@ -32,29 +40,49 @@ export async function criarPreferenciaPagamento(
   const { items: resolvedItems, total: totalCalculado } =
     await resolveCartItemsFromDb(validatedCart)
 
-  const items = resolvedItems.map(item => ({
-    id: item.id,
-    title: item.nome,
-    quantity: item.quantidade,
-    unit_price: item.preco,
-  }))
+  const items = resolvedItems.map(item => ({ id: item.id, quantity: item.quantidade }))
+
+  logger.info(`${LOG_PREFIX} criando preferência de pagamento`, {
+    itemCount: items.length,
+    itemIds: items.map(i => i.id),
+    amount: totalCalculado,
+  })
 
   if (!preferenceClient) {
+    logger.error(`${LOG_PREFIX} MercadoPago não configurado (token ausente)`)
     throw new Error('Pagamento não configurado. Defina MERCADOPAGO_ACCESS_TOKEN.')
   }
 
   const preferenceBody = {
-    items,
+    items: resolvedItems.map(item => ({
+      id: item.id,
+      title: item.nome,
+      quantity: item.quantidade,
+      unit_price: item.preco,
+    })),
   }
 
   const preference = await preferenceClient.create({ body: preferenceBody as never }).catch(err => {
-    console.error('Erro ao criar preferência MP:', err)
+    logger.error(`${LOG_PREFIX} falha ao criar preferência MercadoPago`, {
+      error: err instanceof Error ? err.message : String(err),
+      itemCount: items.length,
+      amount: totalCalculado,
+    })
     return null
   })
 
   if (!preference?.id) {
+    logger.error(`${LOG_PREFIX} preferência de pagamento não criada`, {
+      itemCount: items.length,
+      amount: totalCalculado,
+    })
     throw new Error('Não foi possível iniciar o pagamento. Tente novamente.')
   }
+
+  logger.info(`${LOG_PREFIX} preferência de pagamento criada`, {
+    preferenceId: preference.id,
+    amount: totalCalculado,
+  })
 
   return {
     preferenceId: preference.id,
@@ -68,19 +96,29 @@ export async function registrarPedido(
 ): Promise<Pedido> {
   const parsedForm = checkoutFormSchema.safeParse(formData)
   if (!parsedForm.success) {
-    const msg = parsedForm.error.issues.map(iss => iss.message).join('. ')
+    const issues = parsedForm.error.issues.map(i => i.message)
+    logger.warn(`${LOG_PREFIX} validação do formulário de checkout falhou`, { issues })
+    const msg = issues.join('. ')
     throw new Error(msg)
   }
 
   const parsedCart = cartSchema.safeParse(carrinho)
   if (!parsedCart.success) {
-    const msg = parsedCart.error.issues.map(iss => iss.message).join('. ')
+    const issues = parsedCart.error.issues.map(i => i.message)
+    logger.warn(`${LOG_PREFIX} validação do carrinho ao registrar pedido falhou`, { issues })
+    const msg = issues.join('. ')
     throw new Error(msg)
   }
 
   const validatedForm = parsedForm.data
   const validatedCart = parsedCart.data
   const { items: itens, total: totalCalculado } = await resolveCartItemsFromDb(validatedCart)
+
+  logger.info(`${LOG_PREFIX} registrando pedido`, {
+    cliente: validatedForm.nome?.split(' ')[0] ?? null,
+    itemCount: itens.length,
+    amount: totalCalculado,
+  })
 
   const { data, error } = await getSupabaseAdmin()
     .from('pedidos')
@@ -102,9 +140,16 @@ export async function registrarPedido(
     .single()
 
   if (error) {
-    console.error('Erro ao registrar pedido:', error)
+    logger.error(`${LOG_PREFIX} erro ao registrar pedido no banco`, {
+      error: error?.message ?? error,
+      cliente: validatedForm.nome?.split(' ')[0] ?? null,
+      itemCount: itens.length,
+      amount: totalCalculado,
+    })
     throw new Error('Não foi possível registrar o pedido. Tente novamente.')
   }
+
+  logger.info(`${LOG_PREFIX} pedido registrado no banco`, { pedidoId: data?.id })
 
   return data
 }

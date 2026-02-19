@@ -1,3 +1,5 @@
+import logger from '@/lib/logger'
+
 export interface EnderecoPorCep {
   logradouro: string
   bairro: string
@@ -8,26 +10,52 @@ export interface EnderecoPorCep {
 
 const VIA_CEP_URL = 'https://viacep.com.br/ws'
 
-/**
- * Busca endereço pelo CEP (apenas dígitos, 8 caracteres).
- * Usa a API pública ViaCEP.
- */
 export async function buscarEnderecoPorCep(cep: string): Promise<EnderecoPorCep | null> {
   const apenasDigitos = cep.replace(/\D/g, '')
-  if (apenasDigitos.length !== 8) return null
+  if (apenasDigitos.length !== 8) {
+    logger.warn('[cep] formato de CEP inválido', { cep, apenasDigitos })
+    return null
+  }
 
-  const res = await fetch(`${VIA_CEP_URL}/${apenasDigitos}/json/`)
+  const url = `${VIA_CEP_URL}/${apenasDigitos}/json/`
 
-  if (!res.ok) return null
+  try {
+    const res = await fetch(url)
 
-  const data = await res.json()
-  if (data.erro === true) return null
+    if (!res.ok) {
+      logger.error('[cep] falha na requisição ao serviço externo', {
+        cep: apenasDigitos,
+        status: res.status,
+        statusText: res.statusText,
+        url,
+      })
+      return null
+    }
 
-  return {
-    cep: data.cep ?? '',
-    logradouro: data.logradouro ?? '',
-    bairro: data.bairro ?? '',
-    localidade: data.localidade ?? '',
-    uf: data.uf ?? '',
+    const data = await res.json()
+    if (data.erro === true) {
+      logger.info('[cep] CEP não encontrado', { cep: apenasDigitos })
+      return null
+    }
+
+    logger.debug('[cep] endereço obtido com sucesso', {
+      cep: data.cep ?? apenasDigitos,
+      localidade: data.localidade,
+      uf: data.uf,
+    })
+
+    return {
+      cep: data.cep ?? '',
+      logradouro: data.logradouro ?? '',
+      bairro: data.bairro ?? '',
+      localidade: data.localidade ?? '',
+      uf: data.uf ?? '',
+    }
+  } catch (err) {
+    logger.error('[cep] erro inesperado ao buscar endereço', {
+      cep: apenasDigitos,
+      error: err instanceof Error ? err.message : err,
+    })
+    return null
   }
 }
