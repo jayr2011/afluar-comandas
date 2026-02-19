@@ -15,18 +15,6 @@ const produtoSchema = z.object({
   ingredientes: z.string().max(1000).optional().default(''),
 })
 
-function verifyAdminApiKey(request: Request): boolean {
-  const apiKey = request.headers.get('x-api-key')
-  const validKey = process.env.ADMIN_API_KEY
-
-  if (!validKey) {
-    console.warn('[produtos] ADMIN_API_KEY não configurada - autenticação desabilitada')
-    return false
-  }
-
-  return apiKey === validKey
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
@@ -70,13 +58,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!verifyAdminApiKey(request)) {
-    return NextResponse.json(
-      { error: 'Chave de API não autorizada para esta operação' },
-      { status: 401 }
-    )
-  }
-
   try {
     const body = await request.json()
 
