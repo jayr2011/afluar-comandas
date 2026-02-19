@@ -13,6 +13,7 @@ function getSupabaseHostname(): string {
 }
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['winston'],
   async headers() {
     return [
       {

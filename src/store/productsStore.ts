@@ -42,16 +42,5 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
       return { products: next }
     }),
 
-  getProductById: (id: string) => {
-    const produto = get().products.get(id)
-    if (produto) {
-      logger.debug(`${LOG_PREFIX} getProductById - cache hit`, {
-        produtoId: id,
-        nome: produto.nome,
-      })
-    } else {
-      logger.debug(`${LOG_PREFIX} getProductById - cache miss`, { produtoId: id })
-    }
-    return produto
-  },
+  getProductById: (id: string) => get().products.get(id),
 }))

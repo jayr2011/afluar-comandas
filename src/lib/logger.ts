@@ -1,4 +1,3 @@
-import winston from 'winston'
 const isServer = typeof window === 'undefined'
 
 type LogMethod = (...args: unknown[]) => void
@@ -21,6 +20,8 @@ let logger: LoggerLike = clientLogger
 
 if (isServer) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const winston = require('winston') as typeof import('winston')
     const { combine, timestamp, json, colorize, simple } = winston.format
     const isProduction = process.env.NODE_ENV === 'production'
 
