@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/product-card/ProductCard'
 import { Plus, ChevronDown, Filter } from 'lucide-react'
@@ -10,8 +10,7 @@ import { useProductsStore } from '@/store/productsStore'
 import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
 import { CATEGORIAS_CARDAPIO, produtoNaCategoria, type SlugCategoria } from './categorias'
 import { cn } from '@/lib/utils'
-import { supabaseBrowser } from '@/lib/supabase'
-import logger from '@/lib/logger'
+import { useRealtimeProdutos } from '@/hooks/useRealtimeProdutos'
 
 interface CardapioGridProps {
   produtos: Produto[]
@@ -20,60 +19,16 @@ interface CardapioGridProps {
 export function CardapioGrid({ produtos }: CardapioGridProps) {
   const addProduct = useCartStore(state => state.addProduct)
   const setProducts = useProductsStore(state => state.setProducts)
-  const [produtosRealtime, setProdutosRealtime] = useState<Produto[]>(produtos)
   const [filtroSelecionado, setFiltroSelecionado] = useState<SlugCategoria | 'destaques' | null>(
     null
   )
   const [filtrosAbertos, setFiltrosAbertos] = useState(false)
 
-  useEffect(() => {
-    setProdutosRealtime(produtos)
-  }, [produtos])
+  const produtosRealtime = useRealtimeProdutos(produtos)
 
-  useEffect(() => {
+  useMemo(() => {
     setProducts(produtosRealtime)
   }, [produtosRealtime, setProducts])
-
-  useEffect(() => {
-    const channel = supabaseBrowser
-      .channel('produtos-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, payload => {
-        logger.debug('[cardapio] evento realtime recebido', {
-          eventType: payload.eventType,
-          table: payload.table,
-        })
-
-        setProdutosRealtime(current => {
-          if (payload.eventType === 'DELETE') {
-            const deletedId = String(payload.old?.id ?? '')
-            if (!deletedId) return current
-            return current.filter(item => item.id !== deletedId)
-          }
-
-          const row = payload.new as Produto
-          if (!row?.id) return current
-
-          if (payload.eventType === 'INSERT') {
-            const exists = current.some(item => item.id === row.id)
-            if (exists) return current.map(item => (item.id === row.id ? row : item))
-            return [row, ...current]
-          }
-
-          if (payload.eventType === 'UPDATE') {
-            const exists = current.some(item => item.id === row.id)
-            if (!exists) return [row, ...current]
-            return current.map(item => (item.id === row.id ? row : item))
-          }
-
-          return current
-        })
-      })
-      .subscribe()
-
-    return () => {
-      void supabaseBrowser.removeChannel(channel)
-    }
-  }, [])
 
   const produtosFiltrados = useMemo(() => {
     if (!filtroSelecionado) return produtosRealtime

@@ -1,5 +1,4 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { createBrowserClient } from '@supabase/ssr'
 import logger from '@/lib/logger'
 
 function getRequiredEnvVar(name: string): string {
@@ -98,8 +97,3 @@ export function getSupabaseAdmin(): SupabaseClient {
   }
   return supabaseAdmin
 }
-
-export const supabaseBrowser = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)

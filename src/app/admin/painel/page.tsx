@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PlusIcon, LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { supabaseBrowser } from '@/lib/supabase'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 export default function Painel() {
   const router = useRouter()
@@ -17,7 +17,7 @@ export default function Painel() {
   )
 
   useEffect(() => {
-    supabaseBrowser.auth.getUser().then(({ data: { user } }) => {
+    supabaseBrowser.auth.getUser().then(({ data: { user } }: { data: { user: unknown } }) => {
       if (!user) router.push('/admin')
       setChecking(false)
     })
