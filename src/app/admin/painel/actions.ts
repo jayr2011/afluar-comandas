@@ -1,5 +1,5 @@
 'use server'
-import { revalidateTag } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { requireAuthenticatedUser } from '@/lib/supabase-server'
 import { ProdutosService } from '@/services/productsService'
 import { Produto } from '@/types/produtos'
@@ -17,7 +17,7 @@ export async function criarProduto(produto: Omit<Produto, 'id'>) {
 
   try {
     const result = await service.create(produto)
-    revalidateTag('produtos', 'layout')
+    updateTag('produtos')
     logger.info(`${LOG_PREFIX} produto criado`, {
       produtoId: result.id,
       nome: result.nome,
@@ -44,7 +44,7 @@ export async function atualizarProduto(id: string, produto: Partial<Produto>) {
 
   try {
     const result = await service.update(id, produto)
-    revalidateTag('produtos', 'layout')
+    updateTag('produtos')
     if (!result) {
       logger.warn(`${LOG_PREFIX} atualizarProduto - produto não encontrado`, {
         produtoId: id,
@@ -70,7 +70,7 @@ export async function deletarProduto(id: string) {
 
   try {
     const result = await service.delete(id)
-    revalidateTag('produtos', 'layout')
+    updateTag('produtos')
     logger.info(`${LOG_PREFIX} produto deletado`, { produtoId: id, userId: user?.id })
     return result
   } catch (err) {

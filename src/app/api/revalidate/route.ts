@@ -7,6 +7,6 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
-  revalidateTag('produtos', 'layout')
+  revalidateTag('produtos', {})
   return Response.json({ revalidated: true })
 }
