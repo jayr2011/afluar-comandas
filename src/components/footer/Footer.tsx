@@ -1,4 +1,4 @@
-import { FaInstagram, FaWhatsapp } from 'react-icons/fa'
+import { Instagram, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Copyright } from './Copyright'
@@ -37,7 +37,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   aria-label="Acessar perfil no Instagram (abre em nova janela)"
                 >
-                  <FaInstagram className="h-5 w-5" aria-hidden="true" />
+                  <Instagram className="h-5 w-5" aria-hidden="true" />
                 </a>
               </Button>
 
@@ -53,7 +53,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   aria-label="Falar conosco pelo WhatsApp (abre em nova janela)"
                 >
-                  <FaWhatsapp className="h-5 w-5" aria-hidden="true" />
+                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
                 </a>
               </Button>
             </div>

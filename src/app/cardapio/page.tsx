@@ -1,3 +1,4 @@
+import { connection } from 'next/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
@@ -7,6 +8,7 @@ import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
 
 export default async function Cardapio() {
+  await connection()
   let produtos
   let error: string | null = null
 
@@ -39,7 +41,6 @@ export default async function Cardapio() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
-      {/* Hero Section */}
       <section className="relative py-4 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left" />
 
@@ -61,14 +62,12 @@ export default async function Cardapio() {
         </div>
       </section>
 
-      {/* Menu Grid */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <CardapioGrid produtos={produtos} />
         </div>
       </section>
 
-      {/* Call to Action */}
       <section className="py-8 px-4 bg-primary/5">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">

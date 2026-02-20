@@ -42,11 +42,11 @@ function NavbarFallback() {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://afluar.com.br'),
-  title: 'Afluar - Culinária Amazônica em Belém',
+  title: 'Afluar - Culinária Amazônica',
   description:
     'Sabores da Amazônia em Belém: restaurante em Belém no centro histórico, vista para a Baía do Guajará. Cardápio online, delivery e pagamento pelo Mercado Pago. Peixe frescos.',
   openGraph: {
-    title: 'Afluar - Culinária Amazônica em Belém',
+    title: 'Afluar - Culinária Amazônica',
     description:
       'Restaurante à beira da Baía do Guajará, centro histórico. Cardápio online e delivery.',
     url: 'https://afluar.com.br',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Afluar - Culinária Amazônica em Belém',
+    title: 'Afluar - Culinária Amazônica',
     description: 'Restaurante mais requintado de Belém. Peça online!',
     images: ['/logo/afluar.jpg'],
   },

@@ -12,10 +12,27 @@ import { criarPreferenciaPagamento } from '@/app/api/checkout/actions'
 import { getEnderecoPorCep } from '@/app/checkout/actions-cep'
 import { checkoutFormClientSchema, type CheckoutFormErrors } from '@/lib/validations/checkout'
 import { ShoppingCart } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { CheckoutBreadcrumb } from '@/components/checkout/CheckoutBreadcrumb'
-import { CheckoutPaymentBrick } from '@/components/checkout/CheckoutPaymentBrick'
+import { CheckoutPaymentBrickProps } from '@/components/checkout/CheckoutPaymentBrick'
 import { EmptyState } from '@/components/feedback'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatPrice } from '@/lib/utils'
+
+const CheckoutPaymentBrick = dynamic<CheckoutPaymentBrickProps>(
+  () => import('@/components/checkout/CheckoutPaymentBrick').then(mod => mod.CheckoutPaymentBrick),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-3">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-3/4" />
+        <Skeleton className="h-10 w-full mt-4" />
+      </div>
+    ),
+  }
+)
 type CheckoutStep = 'endereco' | 'pagamento'
 
 export default function CheckoutPage() {

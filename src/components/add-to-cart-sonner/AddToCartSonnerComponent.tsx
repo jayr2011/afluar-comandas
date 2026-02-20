@@ -13,7 +13,7 @@ export function AddToCartSonnerComponent({
   id,
   productName,
 }: {
-  id: string
+  id: string | number
   productName?: string
 }) {
   const router = useRouter()
@@ -115,7 +115,7 @@ export function AddToCartSonnerComponent({
 }
 
 export function showAddToCartToast(productName?: string) {
-  toast.custom(id => <AddToCartSonnerComponent id={String(id)} productName={productName} />, {
+  toast.custom(id => <AddToCartSonnerComponent id={id} productName={productName} />, {
     duration: TOAST_DURATION_MS,
   })
 }

@@ -1,11 +1,10 @@
 import Link from 'next/link'
-import { MapPin, Clock, ExternalLink } from 'lucide-react'
-import { FaInstagram, FaWhatsapp } from 'react-icons/fa'
+import { MapPin, Clock, ExternalLink, Instagram, Phone, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const contatosInfo = [
   {
-    icon: FaWhatsapp,
+    icon: Phone,
     titulo: 'WhatsApp',
     descricao: 'Fale diretamente conosco',
     valor: '+55 91 98590-9595',
@@ -14,7 +13,7 @@ const contatosInfo = [
     destaque: true,
   },
   {
-    icon: FaInstagram,
+    icon: Instagram,
     titulo: 'Instagram',
     descricao: 'Siga nosso dia a dia',
     valor: '@afluar_restaurante',
@@ -58,7 +57,7 @@ export default function Contato() {
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <FaWhatsapp className="h-4 w-4" aria-hidden="true" />
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
               Contato
             </div>
             <h1
