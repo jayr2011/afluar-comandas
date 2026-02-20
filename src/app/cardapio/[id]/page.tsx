@@ -1,61 +1,54 @@
-'use client'
-
-import { useParams } from 'next/navigation'
+import { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useProduct } from '@/hooks/useProducts'
-import { useCartStore } from '@/store/cartStore'
+import { getCachedProduto } from '@/services/productsService'
 import { ErrorState } from '@/components/feedback'
-import { IngredientesSection } from '@/components/ingredientes-section'
-import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ProdutoDetalheClient } from './ProdutoDetalheClient'
 
-export default function ProdutoDetalhePage() {
-  const params = useParams()
-  const id = params.id as string
-  const { produto, loading, error, refetch } = useProduct(id)
-  const addProduct = useCartStore(state => state.addProduct)
-  const [imageLoading, setImageLoading] = useState(true)
+interface PageProps {
+  params: Promise<{ id: string }>
+}
 
-  const handleAddToCart = () => {
-    if (produto) {
-      addProduct(produto)
-      showAddToCartToast(produto.nome)
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params
+  const produto = await getCachedProduto(id)
+
+  if (!produto) {
+    return {
+      title: 'Produto não encontrado | Afluar',
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-background to-primary/5">
-        <div className="container max-w-4xl mx-auto px-4 py-16">
-          <Skeleton className="h-64 rounded-2xl mb-8" />
-          <Skeleton className="h-10 w-3/4 mb-4" />
-          <Skeleton className="h-6 w-1/2 mb-8" />
-          <Skeleton className="h-24 w-full" />
-          <div className="flex gap-4 mt-8">
-            <Skeleton className="h-12 w-32" />
-            <Skeleton className="h-12 w-40" />
-          </div>
-        </div>
-      </div>
-    )
+  return {
+    title: `${produto.nome} | Afluar`,
+    description: produto.descricao || `Confira o ${produto.nome} no cardápio do Afluar Entregas.`,
+    openGraph: {
+      title: `${produto.nome} | Afluar`,
+      description: produto.descricao || `Confira o ${produto.nome} no cardápio do Afluar Entregas.`,
+      images: [
+        {
+          url: produto.imagem,
+          width: 800,
+          height: 600,
+          alt: produto.nome,
+        },
+      ],
+    },
   }
+}
 
-  if (error || !produto) {
+export default async function ProdutoDetalhePage({ params }: PageProps) {
+  const { id } = await params
+  const produto = await getCachedProduto(id)
+
+  if (!produto) {
     return (
       <ErrorState
         title="Produto não encontrado"
-        message={error ?? 'Este prato não existe ou foi removido do cardápio.'}
+        message="Este prato não existe ou foi removido do cardápio."
         fullScreen
         action={
           <div className="flex gap-4">
-            <Button onClick={() => refetch()} className="bg-primary hover:bg-primary/90">
-              Tentar Novamente
-            </Button>
             <Button asChild variant="outline">
               <Link href="/cardapio">Voltar ao Cardápio</Link>
             </Button>
@@ -65,75 +58,5 @@ export default function ProdutoDetalhePage() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
-      <section className="relative py-4 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left" />
-        <div className="container mx-auto max-w-4xl relative z-10">
-          <Button
-            asChild
-            variant="ghost"
-            className="mb-6 -ml-2 text-muted-foreground hover:text-foreground"
-          >
-            <Link href="/cardapio" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Voltar ao cardápio
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      <section className="pb-16 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <article className="overflow-hidden rounded-2xl shadow-xl border border-primary/10 bg-card">
-            <div className="grid md:grid-cols-2 gap-0">
-              {/* Imagem */}
-              <div className="relative w-full aspect-square md:aspect-auto md:min-h-[400px] bg-primary/10">
-                {imageLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
-                <Image
-                  src={produto.imagem}
-                  alt={produto.nome}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
-                  onLoad={() => setImageLoading(false)}
-                />
-                {produto.destaque && (
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground z-10">
-                    Destaque
-                  </Badge>
-                )}
-              </div>
-
-              {/* Conteúdo */}
-              <div className="p-8 md:p-10 flex flex-col gap-6">
-                <div>
-                  <p className="text-sm font-medium text-primary mb-2">{produto.categoria}</p>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-4">{produto.nome}</h1>
-                  <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                    {produto.descricao}
-                  </p>
-                  {produto.ingredientes && (
-                    <IngredientesSection ingredientes={produto.ingredientes} />
-                  )}
-                </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
-                  <p className="text-3xl font-bold text-primary">R$ {produto.preco.toFixed(2)}</p>
-                  <Button
-                    onClick={handleAddToCart}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Adicionar ao carrinho
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-    </div>
-  )
+  return <ProdutoDetalheClient produto={produto} />
 }

@@ -41,8 +41,33 @@ function NavbarFallback() {
 }
 
 export const metadata: Metadata = {
-  title: 'Afluar - Sistema de Pedidos Online',
-  description: 'Faça seu pedido com entrega',
+  metadataBase: new URL('https://afluar.com.br'),
+  title: 'Afluar - Culinária Amazônica em Belém',
+  description:
+    'Sabores da Amazônia em Belém: restaurante em Belém no centro histórico, vista para a Baía do Guajará. Cardápio online, delivery e pagamento pelo Mercado Pago. Peixe frescos.',
+  openGraph: {
+    title: 'Afluar - Culinária Amazônica em Belém',
+    description:
+      'Restaurante à beira da Baía do Guajará, centro histórico. Cardápio online e delivery.',
+    url: 'https://afluar.com.br',
+    siteName: 'Afluar',
+    images: [
+      {
+        url: '/public/logo/afluar.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Afluar',
+      },
+    ],
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Afluar - Culinária Amazônica em Belém',
+    description: 'Restaurante mais requintado de Belém. Peça online!',
+    images: ['/og-image.jpg'],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

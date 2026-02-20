@@ -11,6 +11,7 @@ import {
 import { CartItem } from '@/types/carrinho'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
+import { formatPrice } from '@/lib/utils'
 
 interface CartItemRowProps {
   item: CartItem
@@ -62,7 +63,7 @@ export function CartItemRow({ item, onRemove, onDecreaseQty, onIncreaseQty }: Ca
             </AccordionItem>
           </Accordion>
         )}
-        <p className="font-bold mt-2 text-sm sm:text-base">R$ {item.preco.toFixed(2)}</p>
+        <p className="font-bold mt-2 text-sm sm:text-base">{formatPrice(item.preco)}</p>
       </div>
 
       <div className="flex items-center justify-between sm:justify-end gap-2 border-t pt-3 sm:border-0 sm:pt-0 sm:flex-col sm:items-end">

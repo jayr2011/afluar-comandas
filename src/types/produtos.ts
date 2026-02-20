@@ -7,6 +7,8 @@ export interface Produto {
   destaque: boolean
   imagem: string
   ingredientes?: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface CategoriaEnum {

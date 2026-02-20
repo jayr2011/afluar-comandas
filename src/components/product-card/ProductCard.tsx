@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 
 const DESCRICAO_MAX_CARACTERES = 100
 
@@ -45,7 +45,6 @@ export const ProductCard = memo(({ product, children, className, href }: Product
 
   const contentBlock = (
     <>
-      {/* Imagem do Produto */}
       <div className="relative w-full h-64 bg-primary/10 overflow-hidden">
         {imageLoading && <Skeleton className="absolute inset-0 w-full h-full" aria-hidden="true" />}
         <Image
@@ -79,14 +78,10 @@ export const ProductCard = memo(({ product, children, className, href }: Product
                 e.stopPropagation()
                 setDescricaoExpandida(prev => !prev)
               }}
-              className="ml-1 text-primary font-medium hover:underline focus:outline-none focus-visible:underline inline-flex items-center gap-1 p-0"
+              className="p-0!"
             >
               {descricaoExpandida ? 'Ver menos' : 'Ver mais'}
-              {descricaoExpandida ? (
-                <ChevronUp className="h-3 w-3" />
-              ) : (
-                <ChevronDown className="h-3 w-3" />
-              )}
+              {descricaoExpandida ? <ChevronUp /> : <ChevronDown />}
             </Button>
           )}
         </span>
@@ -116,7 +111,7 @@ export const ProductCard = memo(({ product, children, className, href }: Product
         contentBlock
       )}
       <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0">
-        <p className="text-3xl font-bold text-primary">R$ {product.preco.toFixed(2)}</p>
+        <p className="text-3xl font-bold text-primary">{formatPrice(product.preco)}</p>
         {children}
       </CardFooter>
     </Card>

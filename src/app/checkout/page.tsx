@@ -15,7 +15,7 @@ import { ShoppingCart } from 'lucide-react'
 import { CheckoutBreadcrumb } from '@/components/checkout/CheckoutBreadcrumb'
 import { CheckoutPaymentBrick } from '@/components/checkout/CheckoutPaymentBrick'
 import { EmptyState } from '@/components/feedback'
-
+import { formatPrice } from '@/lib/utils'
 type CheckoutStep = 'endereco' | 'pagamento'
 
 export default function CheckoutPage() {
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
             <CardHeader>
               <CardTitle>Finalize seu pedido</CardTitle>
               <CardDescription>
-                Escolha a forma de pagamento. Valor total: R$ {paymentData.amount.toFixed(2)}
+                Escolha a forma de pagamento. Valor total: {formatPrice(paymentData.amount)}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
               Resumo do pedido
             </CardTitle>
             <CardDescription>
-              {items.length} {items.length === 1 ? 'item' : 'itens'} · R$ {totalPrice.toFixed(2)}
+              {items.length} {items.length === 1 ? 'item' : 'itens'} · {formatPrice(totalPrice)}
             </CardDescription>
           </CardHeader>
         </Card>

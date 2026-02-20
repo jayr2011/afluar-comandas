@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
 import { CreditCard } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
+import { formatPrice } from '@/lib/utils'
 
 const publicKey =
   process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ?? process.env.NEXT_PUBLIC_MP_PUBLIC_KEY ?? ''
@@ -80,7 +81,7 @@ export function CheckoutPaymentBrick({
 
   if (!mounted) {
     return (
-      <div className="flex min-h-[320px] items-center justify-center rounded-lg border bg-muted/30">
+      <div className="flex min-h-80 items-center justify-center rounded-lg border bg-muted/30">
         <p className="text-muted-foreground">Carregando formulário de pagamento...</p>
       </div>
     )
@@ -90,10 +91,10 @@ export function CheckoutPaymentBrick({
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-muted-foreground">
         <CreditCard className="h-4 w-4" />
-        <span className="text-sm">Valor a pagar: R$ {amount.toFixed(2)}</span>
+        <span className="text-sm">Valor a pagar: {formatPrice(amount)}</span>
       </div>
       {!paymentReady && (
-        <div className="flex min-h-[280px] items-center justify-center rounded-lg border bg-muted/20">
+        <div className="flex min-h-70 items-center justify-center rounded-lg border bg-muted/20">
           <p className="text-muted-foreground">Preparando pagamento...</p>
         </div>
       )}

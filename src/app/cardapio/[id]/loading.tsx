@@ -14,7 +14,7 @@ export default function ProdutoDetalheLoading() {
         <div className="container mx-auto max-w-4xl">
           <div className="overflow-hidden rounded-2xl shadow-xl border border-primary/10 bg-card">
             <div className="grid md:grid-cols-2 gap-0">
-              <Skeleton className="w-full aspect-square md:aspect-auto md:min-h-[400px]" />
+              <Skeleton className="w-full aspect-square md:aspect-auto md:min-h-100" />
               <div className="p-8 md:p-10 flex flex-col gap-6">
                 <Skeleton className="h-4 w-24 mb-2" />
                 <Skeleton className="h-10 w-3/4 mb-4" />
