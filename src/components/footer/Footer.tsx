@@ -1,6 +1,7 @@
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Copyright } from './Copyright'
 
 export function Footer() {
   const whatsappLink = 'https://wa.me/5591999999999'
@@ -66,7 +67,7 @@ export function Footer() {
         <Separator className="bg-border/40 my-6" aria-hidden="true" />
 
         <div className="text-center text-xs text-muted-foreground">
-          <p>© 2026 Afluar Entregas. Todos os direitos reservados.</p>
+          <Copyright />
         </div>
       </div>
     </footer>

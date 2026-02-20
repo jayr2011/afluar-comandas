@@ -13,7 +13,7 @@ export function AddToCartSonnerComponent({
   id,
   productName,
 }: {
-  id: string | number
+  id: string
   productName?: string
 }) {
   const router = useRouter()
@@ -56,7 +56,7 @@ export function AddToCartSonnerComponent({
       role="status"
       aria-live="polite"
       aria-label="Notificação: item adicionado ao carrinho"
-      className="flex flex-col gap-4 p-4 min-w-[280px] rounded-lg border border-border bg-background shadow-lg"
+      className="flex flex-col gap-4 p-4 min-w-70 rounded-lg border border-border bg-background shadow-lg"
     >
       <div className="flex items-start gap-3">
         <div
@@ -115,7 +115,7 @@ export function AddToCartSonnerComponent({
 }
 
 export function showAddToCartToast(productName?: string) {
-  toast.custom(id => <AddToCartSonnerComponent id={id} productName={productName} />, {
+  toast.custom(id => <AddToCartSonnerComponent id={String(id)} productName={productName} />, {
     duration: TOAST_DURATION_MS,
   })
 }

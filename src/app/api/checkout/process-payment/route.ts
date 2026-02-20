@@ -4,6 +4,7 @@ import { paymentClient } from '@/lib/mercadopago'
 import { resolveCartItemsFromDb } from '@/lib/resolveCartItems'
 import { randomUUID } from 'crypto'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
+import logger from '@/lib/logger'
 type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
 
 function parseNumber(v: unknown): number | null {
@@ -40,7 +41,7 @@ function toCartItem(x: unknown): CartItemPayload | null {
 
 export async function POST(request: NextRequest) {
   const hasPaymentClient = !!paymentClient
-  console.log('[process-payment] Início - paymentClient disponível:', hasPaymentClient)
+  logger.debug('[process-payment] Início - paymentClient disponível:', hasPaymentClient)
 
   if (!paymentClient) {
     return NextResponse.json({ error: 'Pagamento não configurado' }, { status: 503 })
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
   let body: Record<string, unknown> & { orderData?: { formData?: unknown; cart?: unknown[] } }
   try {
     body = await request.json()
-    console.log('[process-payment] Body recebido:', JSON.stringify(body).slice(0, 500))
+    logger.debug('[process-payment] Body recebido:', JSON.stringify(body).slice(0, 500))
   } catch {
     return NextResponse.json({ error: 'Body inválido' }, { status: 400 })
   }
@@ -61,14 +62,14 @@ export async function POST(request: NextRequest) {
     !orderData.formData ||
     !Array.isArray(orderData.cart)
   ) {
-    console.warn('[process-payment] orderData inválido:', !!body.orderData, typeof body.orderData)
+    logger.warn('[process-payment] orderData inválido:', !!body.orderData, typeof body.orderData)
     return NextResponse.json({ error: 'orderData (formData e cart) obrigatório' }, { status: 400 })
   }
 
   const parsedForm = checkoutFormSchema.safeParse(orderData.formData)
   if (!parsedForm.success) {
     const msg = parsedForm.error.issues.map(i => i.message).join('; ')
-    console.warn('[process-payment] Validação formData:', msg)
+    logger.warn('[process-payment] Validação formData:', msg)
     return NextResponse.json({ error: 'Dados do pedido inválidos', details: msg }, { status: 400 })
   }
 
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     transactionAmount = resolved.total
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Produtos não encontrados'
-    console.error('[process-payment]', message)
+    logger.error('[process-payment]', message)
     return NextResponse.json({ error: message }, { status: 400 })
   }
 
@@ -110,20 +111,24 @@ export async function POST(request: NextRequest) {
       description: `Pedido - ${validatedForm.nome}`,
     }
 
-    console.log('[process-payment] Dados do pagamento:', JSON.stringify(paymentData).slice(0, 500))
-    console.log(
+    logger.debug('[process-payment] Dados do pagamento:', JSON.stringify(paymentData).slice(0, 500))
+    logger.debug(
       '[process-payment] transaction_amount:',
       paymentData.transaction_amount,
       typeof paymentData.transaction_amount
     )
-    console.log('[process-payment] issuer_id:', paymentData.issuer_id, typeof paymentData.issuer_id)
+    logger.debug(
+      '[process-payment] issuer_id:',
+      paymentData.issuer_id,
+      typeof paymentData.issuer_id
+    )
 
     result = (await paymentClient.create({
       body: paymentData,
       requestOptions: { idempotencyKey },
     })) as unknown as Record<string, unknown>
   } catch (err) {
-    console.error('Erro ao processar pagamento MP:', err)
+    logger.error('Erro ao processar pagamento MP:', err)
     return NextResponse.json(
       { error: 'Não foi possível processar o pagamento. Tente novamente.' },
       { status: 502 }
@@ -138,7 +143,7 @@ export async function POST(request: NextRequest) {
     (result as { data?: { status?: string } })?.data?.status
   const statusStr = typeof status === 'string' ? status : undefined
 
-  console.log('[process-payment] Resposta MP:', {
+  logger.debug('[process-payment] Resposta MP:', {
     paymentId,
     status: statusStr,
     keys: Object.keys(result || {}),
@@ -177,7 +182,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (insertError || !pedido) {
-    console.error('Erro ao registrar pedido após pagamento:', insertError)
+    logger.error('Erro ao registrar pedido após pagamento:', insertError)
     return NextResponse.json(
       {
         error:

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getCachedProduto } from '@/services/productsService'
+import logger from '@/lib/logger'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -17,7 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json(produto)
   } catch (error) {
-    console.error('Erro ao buscar produto:', error)
+    logger.error('Erro ao buscar produto:', error)
     return NextResponse.json({ error: 'Erro interno ao processar a requisição' }, { status: 500 })
   }
 }
