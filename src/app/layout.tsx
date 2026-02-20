@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     siteName: 'Afluar',
     images: [
       {
-        url: '/public/logo/afluar.jpg',
+        url: '/logo/afluar.jpg',
         width: 1200,
         height: 630,
         alt: 'Afluar',
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Afluar - Culinária Amazônica em Belém',
     description: 'Restaurante mais requintado de Belém. Peça online!',
-    images: ['/og-image.jpg'],
+    images: ['/logo/afluar.jpg'],
   },
 }
 
@@ -77,6 +77,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="pt-BR"
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preconnect" href="https://picsum.photos" />
+        <link rel="dns-prefetch" href="https://picsum.photos" />
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link rel="preconnect" href={new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin} />
+            <link rel="dns-prefetch" href={new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin} />
+          </>
+        )}
+      </head>
       <body>
         <Toaster
           richColors

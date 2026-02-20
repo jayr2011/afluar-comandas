@@ -2,6 +2,11 @@
   "name": "afluar",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not op_mini all"
+  ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": [
       "eslint --fix",
