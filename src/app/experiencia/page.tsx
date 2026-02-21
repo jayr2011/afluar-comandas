@@ -1,4 +1,37 @@
+import type { Metadata } from 'next'
 import { Waves, Leaf, UtensilsCrossed, Sparkles } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Experiência - Afluar | Nossa História e Culinária Amazônica',
+  description:
+    'Descubra a experiência única do Afluar. Alta gastronomia com ingredientes frescos da Amazônia. Tucupi, jambu, açaí e muito mais.',
+  keywords: [
+    'história Afluar',
+    'culinária amazônica',
+    'alta gastronomia Belém',
+    'tucupi Belém',
+    'jambu Belém',
+    'açaí Belém',
+    'restaurante temática Belém',
+  ],
+  alternates: {
+    canonical: 'https://afluar.com.br/experiencia',
+  },
+  openGraph: {
+    title: 'Experiência - Afluar | Alta Gastronomia Amazônica',
+    description:
+      'Descubra a experiência única do Afluar. Pratos exclusivos da culinária amazônica com vista para a Baía do Guajará.',
+    url: 'https://afluar.com.br/experiencia',
+    images: [
+      {
+        url: new URL('/logo/afluar.jpg', 'https://afluar.com.br').href,
+        width: 1200,
+        height: 630,
+        alt: 'Afluar - Experiência Gastronômica',
+      },
+    ],
+  },
+}
 
 export default function Experiencia() {
   return (

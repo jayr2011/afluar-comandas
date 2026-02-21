@@ -1,6 +1,36 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { MapPin, Clock, ExternalLink, Instagram, Phone, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: 'Contato - Afluar | Fale Conosco',
+  description:
+    'Entre em contato com o Afluar. WhatsApp, Instagram ou visite-nos em Belém-PA.Horário de funcionamento: 12h às 23h.',
+  keywords: [
+    'contato Belém',
+    'whatsapp Afluar',
+    'endereço Afluar',
+    'restaurante Belém contato',
+    'reserva Belém',
+  ],
+  alternates: {
+    canonical: 'https://afluar.com.br/contato',
+  },
+  openGraph: {
+    title: 'Contato - Afluar | Fale Conosco',
+    description: 'Entre em contato conosco. WhatsApp: (91) 98590-9595',
+    url: 'https://afluar.com.br/contato',
+    images: [
+      {
+        url: new URL('/logo/afluar.jpg', 'https://afluar.com.br').href,
+        width: 1200,
+        height: 630,
+        alt: 'Afluar - Contato',
+      },
+    ],
+  },
+}
 
 const contatosInfo = [
   {

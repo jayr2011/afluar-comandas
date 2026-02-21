@@ -19,20 +19,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
+  const imageUrl = produto.imagem?.startsWith('http')
+    ? produto.imagem
+    : new URL(produto.imagem || '/logo/afluar.jpg', 'https://afluar.com.br').href
+
   return {
     title: `${produto.nome} | Afluar`,
-    description: produto.descricao || `Confira o ${produto.nome} no cardápio do Afluar Entregas.`,
+    description:
+      produto.descricao ||
+      `Conheça o ${produto.nome} no cardápio do Afluar. Prato típico da culinária amazônica em Belém.`,
+    keywords: [produto.nome, 'cardápio Afluar', 'culinária amazônica', 'Belém', 'delivery'],
+    alternates: {
+      canonical: `https://afluar.com.br/cardapio/${id}`,
+    },
     openGraph: {
-      title: `${produto.nome} | Afluar`,
-      description: produto.descricao || `Confira o ${produto.nome} no cardápio do Afluar Entregas.`,
+      title: `${produto.nome} | Afluar - Culinária Amazônica`,
+      description:
+        produto.descricao ||
+        `Conheça o ${produto.nome}, prato típico da culinária amazônica em Belém. Peça online!`,
+      url: `https://afluar.com.br/cardapio/${id}`,
       images: [
         {
-          url: produto.imagem,
+          url: imageUrl,
           width: 800,
           height: 600,
           alt: produto.nome,
         },
       ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${produto.nome} | Afluar`,
+      description: produto.descricao || `Conheça o ${produto.nome} no cardápio do Afluar.`,
+      images: [imageUrl],
     },
   }
 }

@@ -1,11 +1,42 @@
 import { connection } from 'next/server'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { getCachedProdutos } from '@/services/productsService'
 import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
+
+export const metadata: Metadata = {
+  title: 'Cardápio - Afluar | Culinária Amazônica em Belém',
+  description:
+    "Découvrez notre menu de fruits de mer et poissons frais. Commandez en ligne et dégustez les saveurs de l'Amazone à Belém.",
+  keywords: [
+    'cardápio Belém',
+    'menu Amazônia',
+    'peixe fresco Belém',
+    'frutos do mar Pará',
+    'delivery Belém',
+    'cardápio online',
+  ],
+  alternates: {
+    canonical: 'https://afluar.com.br/cardapio',
+  },
+  openGraph: {
+    title: 'Cardápio - Afluar | Culinária Amazônica',
+    description: 'Cardápio com peixes frescos e frutos do mar da Amazônia. Peça online!',
+    url: 'https://afluar.com.br/cardapio',
+    images: [
+      {
+        url: new URL('/logo/afluar.jpg', 'https://afluar.com.br').href,
+        width: 1200,
+        height: 630,
+        alt: 'Cardápio Afluar - Culinária Amazônica',
+      },
+    ],
+  },
+}
 
 export default async function Cardapio() {
   await connection()
