@@ -2,7 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, ShoppingCart, Home, Award, UtensilsCrossed, Calendar, Phone } from 'lucide-react'
+import {
+  Menu,
+  ShoppingCart,
+  Home,
+  Award,
+  UtensilsCrossed,
+  Calendar,
+  Phone,
+  Newspaper,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -19,6 +28,7 @@ import { useCartStore } from '@/store/cartStore'
 
 const navItems = [
   { href: '/', label: 'Início', icon: Home },
+  { href: '/blog', label: 'Blog', icon: Newspaper },
   { href: '/experiencia', label: 'Experiência', icon: Award },
   { href: '/cardapio', label: 'Cardápio', icon: UtensilsCrossed },
   { href: '/eventos', label: 'Eventos', icon: Calendar },

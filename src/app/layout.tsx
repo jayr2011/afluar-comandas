@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/bavbar'
 import { Footer } from '@/components/footer/Footer'
 import { CartHydration } from '@/components/cart/CartHydration'
 import { Suspense } from 'react'

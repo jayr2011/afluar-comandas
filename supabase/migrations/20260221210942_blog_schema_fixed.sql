@@ -251,7 +251,15 @@ INSERT INTO public.tags (name, slug) VALUES
     ('Tacacá', 'tacaca'),
     ('Pirarucu', 'pirarucu'),
     ('Açaí', 'acai'),
-    ('Manaus', 'manaus'),
+    ('Bélem', 'belem'),
     ('Festival', 'festival'),
-    ('Tradição', 'tradicao')
+    ('Tradição', 'tradicao'),
+    ('Culinária', 'culinaria'),
+    ('Dica', 'dica'),
+    ('História', 'historia'),
+    ('Entrevista', 'entrevista'),
+    ('Curiosidade', 'curiosidade'),
+    ('Receita Rápida', 'receita-rapida'),
+    ('Gastronomia', 'gastronomia'),
+    ('Sustentabilidade', 'sustentabilidade')
 ON CONFLICT (slug) DO NOTHING;
