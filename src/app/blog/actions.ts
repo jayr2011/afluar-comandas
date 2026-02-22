@@ -38,11 +38,19 @@ const incrementPostViewSchema = z.object({
 export type CreateCommentInput = z.input<typeof createCommentSchema>
 
 export async function createComment(input: CreateCommentInput): Promise<Comment> {
+  logger.debug(`${LOG_PREFIX} createComment - início`, {
+    postId: input.post_id,
+    hasParent: !!input.parent_id,
+  })
+
   const parsed = createCommentSchema.safeParse(input)
 
   if (!parsed.success) {
     const issues = parsed.error.issues.map(issue => issue.message)
-    logger.warn(`${LOG_PREFIX} createComment - validação falhou`, { issues })
+    logger.warn(`${LOG_PREFIX} createComment - validação falhou`, {
+      postId: input.post_id,
+      issues,
+    })
     throw new Error(issues.join('. '))
   }
 
@@ -54,6 +62,7 @@ export async function createComment(input: CreateCommentInput): Promise<Comment>
     logger.info(`${LOG_PREFIX} createComment - comentário criado`, {
       commentId: comment.id,
       postId: parsed.data.post_id,
+      parentId: parsed.data.parent_id ?? null,
     })
 
     return comment
@@ -67,6 +76,8 @@ export async function createComment(input: CreateCommentInput): Promise<Comment>
 }
 
 export async function incrementPostView(input: { post_id: string }): Promise<void> {
+  logger.debug(`${LOG_PREFIX} incrementPostView - início`, { postId: input.post_id })
+
   const parsed = incrementPostViewSchema.safeParse(input)
 
   if (!parsed.success) {
@@ -78,8 +89,10 @@ export async function incrementPostView(input: { post_id: string }): Promise<voi
 
   try {
     await blogService.incrementViewCount(parsed.data.post_id)
+    logger.debug(`${LOG_PREFIX} incrementPostView - view registrada`, {
+      postId: parsed.data.post_id,
+    })
   } catch (error) {
-    // Não bloqueia a UX por falha no contador de visualizações.
     logger.warn(`${LOG_PREFIX} incrementPostView - falha não crítica`, {
       postId: parsed.data.post_id,
       error: error instanceof Error ? error.message : String(error),

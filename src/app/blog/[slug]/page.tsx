@@ -46,7 +46,7 @@ function BlogPostPageFallback() {
     <article className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8 h-6 w-36 rounded bg-muted" />
       <div className="mb-6 h-12 w-11/12 rounded bg-muted" />
-      <div className="mb-8 h-[22rem] w-full rounded-xl bg-muted" />
+      <div className="mb-8 h-88 w-full rounded-xl bg-muted" />
       <div className="space-y-3">
         <div className="h-4 w-full rounded bg-muted" />
         <div className="h-4 w-10/12 rounded bg-muted" />

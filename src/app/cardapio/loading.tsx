@@ -1,10 +1,10 @@
 import { ShoppingCart } from 'lucide-react'
 import { ProductCardSkeleton } from '@/components/product-card/ProductCradSkeleton'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function CardapioLoading() {
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
-      {/* Hero Section - igual à página */}
       <section className="relative py-4 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left" />
         <div className="container mx-auto max-w-6xl relative z-10">
@@ -23,7 +23,6 @@ export default function CardapioLoading() {
         </div>
       </section>
 
-      {/* Grid de skeletons */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
@@ -34,12 +33,11 @@ export default function CardapioLoading() {
         </div>
       </section>
 
-      {/* CTA skeleton */}
       <section className="py-8 px-4 bg-primary/5">
         <div className="container mx-auto max-w-4xl text-center">
-          <div className="h-10 bg-primary/10 rounded w-80 mx-auto mb-4 animate-pulse" />
-          <div className="h-6 bg-primary/5 rounded w-96 mx-auto mb-8 animate-pulse" />
-          <div className="h-12 w-48 bg-primary/10 rounded mx-auto animate-pulse" />
+          <Skeleton className="h-10 w-80 mx-auto mb-4" />
+          <Skeleton className="h-6 w-96 mx-auto mb-8" />
+          <Skeleton className="h-12 w-48 mx-auto" />
         </div>
       </section>
     </div>
