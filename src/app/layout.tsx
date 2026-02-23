@@ -7,7 +7,7 @@ import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { Suspense } from 'react'
 import './globals.css'
 import { Montserrat, Roboto } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const montserrat = Montserrat({
