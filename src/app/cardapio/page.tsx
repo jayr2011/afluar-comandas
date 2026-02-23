@@ -1,4 +1,3 @@
-import { connection } from 'next/server'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
@@ -39,7 +38,6 @@ export const metadata: Metadata = {
 }
 
 export default async function Cardapio() {
-  await connection()
   let produtos
   let error: string | null = null
 

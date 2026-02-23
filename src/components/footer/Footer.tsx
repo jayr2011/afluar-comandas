@@ -1,4 +1,5 @@
-import { Instagram, MessageCircle } from 'lucide-react'
+import { InstagramIcon } from '../ui/icons/instagram'
+import { WhatsappIcon } from '../ui/icons/whatsapp'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Copyright } from './Copyright'
@@ -37,7 +38,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   aria-label="Acessar perfil no Instagram (abre em nova janela)"
                 >
-                  <Instagram className="h-5 w-5" aria-hidden="true" />
+                  <InstagramIcon />
                 </a>
               </Button>
 
@@ -53,7 +54,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   aria-label="Falar conosco pelo WhatsApp (abre em nova janela)"
                 >
-                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                  <WhatsappIcon />
                 </a>
               </Button>
             </div>

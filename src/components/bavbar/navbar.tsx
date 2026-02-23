@@ -70,11 +70,9 @@ export function Navbar() {
             <span className="font-bold text-2xl text-primary-foreground tracking-tight">
               Afluar
             </span>
-            <span className="text-xs text-primary-foreground/70 -mt-1">Delivery</span>
           </div>
         </Link>
 
-        {/* Navigation Menu - Desktop */}
         <nav aria-label="Menu principal" className="hidden md:flex items-center gap-8">
           {navItems.map(item => (
             <Link
@@ -98,9 +96,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Botão Carrinho e Menu Mobile */}
         <div className="flex items-center gap-3">
-          {/* Carrinho */}
           <Button
             asChild
             variant="secondary"
@@ -123,7 +119,6 @@ export function Navbar() {
             </Link>
           </Button>
 
-          {/* Menu Mobile */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button
@@ -177,7 +172,6 @@ export function Navbar() {
                 })}
               </nav>
 
-              {/* Footer do Menu */}
               <div className="absolute bottom-8 left-0 right-0 px-6">
                 <Separator className="bg-primary-foreground/20 mb-4" aria-hidden="true" />
                 <div className="text-center">

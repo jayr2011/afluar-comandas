@@ -1,7 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Facebook, Twitter, Linkedin, Link2, Mail } from 'lucide-react'
+import { Link2, Mail } from 'lucide-react'
+import { FacebookIcon } from '../ui/icons/facebook'
+import { InstagramIcon } from '../ui/icons/instagram'
+import { WhatsappIcon } from '../ui/icons/whatsapp'
 import { useState } from 'react'
 
 interface ShareButtonsProps {
@@ -15,9 +18,9 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
 
   const shareLinks = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(fullUrl)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl)}`,
+    instagram: `https://www.instagram.com/?url=${encodeURIComponent(fullUrl)}`,
     email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(fullUrl)}`,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(fullUrl)}`,
   }
 
   const copyToClipboard = async () => {
@@ -35,29 +38,29 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
           rel="noopener noreferrer"
           aria-label="Compartilhar no Facebook"
         >
-          <Facebook className="w-4 h-4" />
+          <FacebookIcon />
         </a>
       </Button>
 
       <Button variant="outline" size="icon" asChild>
         <a
-          href={shareLinks.twitter}
+          href={shareLinks.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Compartilhar no WhatsApp"
+        >
+          <WhatsappIcon />
+        </a>
+      </Button>
+
+      <Button variant="outline" size="icon" asChild>
+        <a
+          href={shareLinks.instagram}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Compartilhar no Twitter"
         >
-          <Twitter className="w-4 h-4" />
-        </a>
-      </Button>
-
-      <Button variant="outline" size="icon" asChild>
-        <a
-          href={shareLinks.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Compartilhar no LinkedIn"
-        >
-          <Linkedin className="w-4 h-4" />
+          <InstagramIcon />
         </a>
       </Button>
 

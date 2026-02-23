@@ -83,7 +83,7 @@ export function Banner({ slides, className }: BannerProps) {
             aria-label={`Slide ${index + 1} de ${totalSlides}: ${slide.alt}`}
             aria-current={index === currentIndex ? 'true' : undefined}
           >
-            <Card className="overflow-hidden border-0 rounded-none shadow-none">
+            <Card className="md:border md:rounded-md md:shadow-md md:p-0 overflow-hidden rounded-md border-0 shadow-none p-0">
               <CardContent
                 className={cn(
                   'relative flex items-center justify-center p-0 w-full min-h-[40vh] md:min-h-[50vh] bg-muted',
