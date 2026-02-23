@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { getCachedProdutos } from '@/services/productsService'
 import { isFeatureEnabled } from '@/lib/feature-toggles'
+import logger from '@/lib/logger'
 import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
@@ -46,7 +47,7 @@ export default async function Cardapio() {
   try {
     produtos = await getCachedProdutos()
   } catch (err) {
-    console.error('Erro ao carregar cardápio:', err)
+    logger.error('Erro ao carregar cardápio:', err)
     error = 'Não foi possível carregar o cardápio. Tente novamente.'
   }
 

@@ -61,7 +61,6 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
         Pular para o conteúdo principal
       </a>
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        {/* Logo */}
         <Link
           href="/"
           className="flex items-center space-x-3 group"

@@ -26,7 +26,6 @@ export function SkeletonSection({ children, className = '' }: SkeletonSectionPro
   return <div className={`space-y-4 ${className}`}>{children}</div>
 }
 
-// Skeletons específicos reutilizáveis
 export function ImageSkeleton({ className = '' }: { className?: string }) {
   return (
     <div className={`relative w-full h-64 bg-primary/10 ${className}`}>

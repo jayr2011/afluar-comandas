@@ -67,7 +67,6 @@ export function ProdutoDetalheClient({ produto, checkoutEnabled }: ProdutoDetalh
                 )}
               </div>
 
-              {/* Conteúdo */}
               <div className="p-8 md:p-10 flex flex-col gap-6">
                 <div>
                   <p className="text-sm font-medium text-primary mb-2">{produto.categoria}</p>

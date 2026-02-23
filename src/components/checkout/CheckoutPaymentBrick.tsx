@@ -6,6 +6,7 @@ import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
 import { CreditCard } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { formatPrice } from '@/lib/utils'
+import logger from '@/lib/logger'
 
 const publicKey =
   process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ?? process.env.NEXT_PUBLIC_MP_PUBLIC_KEY ?? ''
@@ -65,7 +66,7 @@ export function CheckoutPaymentBrick({
       const orderId = data.orderId as string | undefined
       router.push(orderId ? `/checkout/sucesso?pedido=${orderId}` : '/checkout/sucesso')
     },
-    [amount, orderData, clearCart, router] // ← adicionar 'amount' nas dependências
+    [amount, orderData, clearCart, router]
   )
 
   if (!publicKey) {
@@ -117,7 +118,7 @@ export function CheckoutPaymentBrick({
           onSubmit={handleSubmit as never}
           onReady={() => setPaymentReady(true)}
           onError={error => {
-            console.error('Payment Brick error:', error)
+            logger.error('Payment Brick error:', error)
           }}
         />
       </div>

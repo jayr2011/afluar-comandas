@@ -51,7 +51,6 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
 
   return (
     <div className="space-y-8">
-      {/* Filtros colapsáveis */}
       <div className="flex flex-col items-start gap-3">
         <Button
           variant="outline"

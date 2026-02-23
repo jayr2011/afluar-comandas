@@ -38,12 +38,6 @@ export async function buscarEnderecoPorCep(cep: string): Promise<EnderecoPorCep 
       return null
     }
 
-    logger.debug('[cep] endereço obtido com sucesso', {
-      cep: data.cep ?? apenasDigitos,
-      localidade: data.localidade,
-      uf: data.uf,
-    })
-
     return {
       cep: data.cep ?? '',
       logradouro: data.logradouro ?? '',

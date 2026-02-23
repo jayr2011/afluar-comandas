@@ -9,8 +9,16 @@ interface LoggerLike {
   error: LogMethod
 }
 
+const shouldSample = (sampleRate: number = 0.1): boolean => {
+  if (typeof window !== 'undefined') return false
+  if (process.env.NODE_ENV !== 'production') return true
+  return Math.random() < sampleRate
+}
+
 const clientLogger: LoggerLike = {
-  debug: (...args) => console.debug('[afluar][debug]', ...args),
+  debug: (...args) => {
+    if (shouldSample(0.05)) console.debug('[afluar][debug]', ...args)
+  },
   info: (...args) => console.info('[afluar][info]', ...args),
   warn: (...args) => console.warn('[afluar][warn]', ...args),
   error: (...args) => console.error('[afluar][error]', ...args),
@@ -25,8 +33,10 @@ if (isServer) {
     const { combine, timestamp, json, colorize, simple } = winston.format
     const isProduction = process.env.NODE_ENV === 'production'
 
+    const level = isProduction ? 'warn' : 'debug'
+
     logger = winston.createLogger({
-      level: isProduction ? 'info' : 'debug',
+      level,
       format: isProduction
         ? combine(timestamp(), json())
         : combine(colorize(), timestamp(), simple()),

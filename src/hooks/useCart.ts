@@ -12,12 +12,10 @@ export function useCart() {
   )
 
   const handleDecreaseQty = (itemId: string, currentQty: number) => {
-    console.log('[cart] decrease', { itemId, from: currentQty, to: currentQty - 1 })
     updateQuantity(itemId, currentQty - 1)
   }
 
   const handleIncreaseQty = (itemId: string, currentQty: number) => {
-    console.log('[cart] increase', { itemId, from: currentQty, to: currentQty + 1 })
     updateQuantity(itemId, currentQty + 1)
   }
 

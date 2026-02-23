@@ -100,9 +100,7 @@ export default async function Eventos() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
-      {/* Hero Section */}
       <section className="relative py-24 px-4 overflow-hidden">
-        {/* Background decorativo */}
         <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
         <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
@@ -141,7 +139,6 @@ export default async function Eventos() {
         </div>
       </section>
 
-      {/* Tipos de Eventos */}
       <section className="py-16 px-4 bg-primary/5">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
@@ -191,7 +188,6 @@ export default async function Eventos() {
         </div>
       </section>
 
-      {/* Diferenciais */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
@@ -223,7 +219,6 @@ export default async function Eventos() {
         </div>
       </section>
 
-      {/* Destaque da Vista */}
       <section className="py-20 px-4 bg-linear-to-br from-primary/10 via-primary/5 to-background">
         <div className="container mx-auto max-w-4xl">
           <div className="bg-card rounded-3xl shadow-2xl overflow-hidden border border-primary/20">
@@ -261,7 +256,6 @@ export default async function Eventos() {
         </div>
       </section>
 
-      {/* Call to Action Final */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <Sparkles className="h-12 w-12 text-primary mx-auto mb-6" />
