@@ -1,38 +1,74 @@
 import { MetadataRoute } from 'next'
-import { ProdutosService } from '@/services/productsService'
-import { BlogService } from '@/services/blogService'
 import logger from '@/lib/logger'
+import { getSupabaseAdmin } from '@/lib/supabase'
+
+interface SitemapProduto {
+  id: string
+  created_at: string | null
+}
+
+interface SitemapPost {
+  slug: string
+  updated_at: string | null
+}
+
+function normalizeError(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'string') return err
+  if (typeof err === 'object' && err !== null) {
+    const errorWithMessage = err as { message?: unknown }
+    if (typeof errorWithMessage.message === 'string') return errorWithMessage.message
+    try {
+      return JSON.stringify(err)
+    } catch {
+      return String(err)
+    }
+  }
+  return 'erro desconhecido'
+}
+
+function isKnownPrerenderFetchError(message: string): boolean {
+  return message.includes('During prerendering, fetch() rejects when the prerender is complete')
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://afluar.com.br'
-  const productsService = new ProdutosService()
-  const blogService = new BlogService()
+  const db = getSupabaseAdmin()
 
-  const [produtosResult, postsResult] = await Promise.allSettled([
-    productsService.findAll(),
-    blogService.getAllPublishedPosts(),
-  ])
-
-  const produtos = produtosResult.status === 'fulfilled' ? produtosResult.value : []
-  const posts = postsResult.status === 'fulfilled' ? postsResult.value : []
-
-  if (produtosResult.status === 'rejected') {
-    logger.warn('[sitemap] falha ao buscar produtos para o sitemap', {
-      error:
-        produtosResult.reason instanceof Error
-          ? produtosResult.reason.message
-          : String(produtosResult.reason),
-    })
+  const fetchProdutos = async (): Promise<SitemapProduto[]> => {
+    try {
+      const { data, error } = await db.from('produtos').select('id, created_at')
+      if (error) throw error
+      return (data ?? []) as SitemapProduto[]
+    } catch (error) {
+      const message = normalizeError(error)
+      if (isKnownPrerenderFetchError(message)) return []
+      logger.warn('[sitemap] falha ao buscar produtos para o sitemap', {
+        error: message,
+      })
+      return []
+    }
   }
 
-  if (postsResult.status === 'rejected') {
-    logger.warn('[sitemap] falha ao buscar posts para o sitemap', {
-      error:
-        postsResult.reason instanceof Error
-          ? postsResult.reason.message
-          : String(postsResult.reason),
-    })
+  const fetchPosts = async (): Promise<SitemapPost[]> => {
+    try {
+      const { data, error } = await db
+        .from('posts')
+        .select('slug, updated_at')
+        .eq('status', 'published')
+      if (error) throw error
+      return (data ?? []) as SitemapPost[]
+    } catch (error) {
+      const message = normalizeError(error)
+      if (isKnownPrerenderFetchError(message)) return []
+      logger.warn('[sitemap] falha ao buscar posts para o sitemap', {
+        error: message,
+      })
+      return []
+    }
   }
+
+  const [produtos, posts] = await Promise.all([fetchProdutos(), fetchPosts()])
 
   const productUrls = produtos.map(produto => ({
     url: `${baseUrl}/cardapio/${produto.id}`,

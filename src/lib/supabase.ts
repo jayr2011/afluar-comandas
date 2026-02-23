@@ -32,9 +32,11 @@ function createSupabaseClient(): SupabaseClient {
   if (!supabaseClient) {
     const url = getSupabaseUrl()
     const anonKey = getSupabaseAnonKey()
+    const isServerRuntime = typeof window === 'undefined'
     logger.info('[supabase] inicializando cliente público', {
       urlPresent: !!url,
       anonKeyPresent: !!anonKey,
+      runtime: isServerRuntime ? 'server' : 'client',
     })
 
     if (!url || !anonKey) {
@@ -46,7 +48,15 @@ function createSupabaseClient(): SupabaseClient {
     }
 
     try {
-      supabaseClient = createClient(url, anonKey)
+      supabaseClient = createClient(url, anonKey, {
+        auth: isServerRuntime
+          ? {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+            }
+          : undefined,
+      })
       logger.info('[supabase] cliente público criado com sucesso')
     } catch (err) {
       logger.error('[supabase] falha ao criar cliente público', {

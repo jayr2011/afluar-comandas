@@ -7,6 +7,8 @@ import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { Suspense } from 'react'
 import './globals.css'
 import { Montserrat, Roboto } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -198,6 +200,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Suspense fallback={<div>Loading...</div>}>
           <Footer />
         </Suspense>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
