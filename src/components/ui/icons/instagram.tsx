@@ -18,3 +18,5 @@ export function InstagramIcon() {
     </svg>
   )
 }
+
+export default InstagramIcon

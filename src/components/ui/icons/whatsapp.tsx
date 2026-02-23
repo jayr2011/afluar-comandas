@@ -14,3 +14,5 @@ export function WhatsappIcon() {
     </svg>
   )
 }
+
+export default WhatsappIcon

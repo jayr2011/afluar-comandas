@@ -5,7 +5,7 @@ import { Link2, Mail } from 'lucide-react'
 import { FacebookIcon } from '../ui/icons/facebook'
 import { InstagramIcon } from '../ui/icons/instagram'
 import { WhatsappIcon } from '../ui/icons/whatsapp'
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 
 interface ShareButtonsProps {
   title: string
@@ -15,11 +15,23 @@ interface ShareButtonsProps {
 export function ShareButtons({ title, url }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false)
   const fullUrl = `https://afluar.com.br${url}`
+  const encodedTitle = encodeURIComponent(title)
+  const encodedBody = encodeURIComponent(fullUrl)
+  const mailtoLink = `mailto:?subject=${encodedTitle}&body=${encodedBody}`
+
+  const emailProviderLinks = {
+    gmailWeb: `https://mail.google.com/mail/?view=cm&fs=1&su=${encodedTitle}&body=${encodedBody}`,
+    outlookWeb: `https://outlook.office.com/mail/deeplink/compose?subject=${encodedTitle}&body=${encodedBody}`,
+    yahooWeb: `https://compose.mail.yahoo.com/?subject=${encodedTitle}&body=${encodedBody}`,
+    gmailApp: `googlegmail://co?subject=${encodedTitle}&body=${encodedBody}`,
+    outlookApp: `ms-outlook://compose?subject=${encodedTitle}&body=${encodedBody}`,
+    yahooApp: `ymail://mail/compose?subject=${encodedTitle}&body=${encodedBody}`,
+    sparkApp: `readdle-spark://compose?subject=${encodedTitle}&body=${encodedBody}`,
+  }
 
   const shareLinks = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`,
     instagram: `https://www.instagram.com/?url=${encodeURIComponent(fullUrl)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(fullUrl)}`,
     whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(fullUrl)}`,
   }
 
@@ -27,6 +39,34 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
     await navigator.clipboard.writeText(fullUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const openEmailWithFallback = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    window.location.href = mailtoLink
+
+    const fallbacks = isIOS
+      ? [
+          emailProviderLinks.gmailApp,
+          emailProviderLinks.outlookApp,
+          emailProviderLinks.yahooApp,
+          emailProviderLinks.sparkApp,
+          emailProviderLinks.gmailWeb,
+        ]
+      : [emailProviderLinks.gmailWeb, emailProviderLinks.outlookWeb, emailProviderLinks.yahooWeb]
+
+    fallbacks.forEach((providerLink, index) => {
+      window.setTimeout(
+        () => {
+          if (document.visibilityState === 'visible') {
+            window.location.href = providerLink
+          }
+        },
+        900 + index * 600
+      )
+    })
   }
 
   return (
@@ -65,7 +105,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
       </Button>
 
       <Button variant="outline" size="icon" asChild>
-        <a href={shareLinks.email} aria-label="Compartilhar por Email">
+        <a href={mailtoLink} onClick={openEmailWithFallback} aria-label="Compartilhar por Email">
           <Mail className="w-4 h-4" />
         </a>
       </Button>

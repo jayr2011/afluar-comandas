@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
       font-src 'self' data:;
       object-src 'none';
       base-uri 'self';
+      form-action 'self' mailto:;
+      navigate-to 'self' mailto: https:;
       connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://*.mercadopago.com https://*.mercadolivre.com https://*.mercadolibre.com https://http2.mlstatic.com https://viacep.com.br;
       frame-src 'self' https://*.mercadopago.com https://*.mercadopago.com.br https://*.mercadolivre.com https://*.mercadolibre.com;
     `
