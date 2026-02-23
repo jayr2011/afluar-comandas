@@ -1,31 +1,37 @@
 'use client'
 
-import { useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Field, FieldContent, FieldLabel } from '@/components/ui/field'
 import { ErrorState } from '@/components/feedback/error-state/ErrorState'
 import { Loader } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 export default function AdminPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    supabaseBrowser.auth.getUser().then(({ data: { user } }: { data: { user: unknown } }) => {
+      if (user) {
+        router.replace('/admin/painel')
+        return
+      }
+      setCheckingSession(false)
+    })
+  }, [router])
 
   async function handleLogin() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabaseBrowser.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(error.message)
@@ -33,8 +39,10 @@ export default function AdminPage() {
       return
     }
     setLoading(false)
-    router.push('/admin/painel')
+    router.replace('/admin/painel')
   }
+
+  if (checkingSession) return null
 
   return (
     <Field className="max-w-md mx-auto p-5">

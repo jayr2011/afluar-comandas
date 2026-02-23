@@ -14,9 +14,10 @@ import { useRealtimeProdutos } from '@/hooks/useRealtimeProdutos'
 
 interface CardapioGridProps {
   produtos: Produto[]
+  checkoutEnabled: boolean
 }
 
-export function CardapioGrid({ produtos }: CardapioGridProps) {
+export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
   const addProduct = useCartStore(state => state.addProduct)
   const setProducts = useProductsStore(state => state.setProducts)
   const [filtroSelecionado, setFiltroSelecionado] = useState<SlugCategoria | 'destaques' | null>(
@@ -123,14 +124,16 @@ export function CardapioGrid({ produtos }: CardapioGridProps) {
             priority={produto.destaque}
             href={`/cardapio/${produto.id}`}
           >
-            <Button
-              onClick={() => handleAddToCart(produto)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-              size="lg"
-            >
-              <Plus className="h-5 w-5" />
-              Adicionar
-            </Button>
+            {checkoutEnabled ? (
+              <Button
+                onClick={() => handleAddToCart(produto)}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                size="lg"
+              >
+                <Plus className="h-5 w-5" />
+                Adicionar
+              </Button>
+            ) : null}
           </ProductCard>
         ))}
       </div>

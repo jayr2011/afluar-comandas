@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { getCachedProdutos } from '@/services/productsService'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
@@ -40,6 +41,7 @@ export const metadata: Metadata = {
 export default async function Cardapio() {
   let produtos
   let error: string | null = null
+  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
 
   try {
     produtos = await getCachedProdutos()
@@ -93,7 +95,7 @@ export default async function Cardapio() {
 
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
-          <CardapioGrid produtos={produtos} />
+          <CardapioGrid produtos={produtos} checkoutEnabled={checkoutEnabled} />
         </div>
       </section>
 

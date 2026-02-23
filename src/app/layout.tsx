@@ -3,6 +3,7 @@ import { Toaster } from 'sonner'
 import { Navbar } from '@/components/bavbar'
 import { Footer } from '@/components/footer/Footer'
 import { CartHydration } from '@/components/cart/CartHydration'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { Suspense } from 'react'
 import './globals.css'
 import { Montserrat, Roboto } from 'next/font/google'
@@ -98,7 +99,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
+
   return (
     <html
       className={`${montserrat.variable} ${roboto.variable}`}
@@ -187,7 +190,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <CartHydration />
         <Suspense fallback={<NavbarFallback />}>
-          <Navbar />
+          <Navbar checkoutEnabled={checkoutEnabled} />
         </Suspense>
         <main id="main-content" className="min-h-screen">
           {children}

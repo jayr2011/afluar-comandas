@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { Calendar, Users, Sparkles, Heart, PartyPopper, Wine, Camera, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 
 export const metadata: Metadata = {
   title: 'Eventos - Afluar | Casamentos e Eventos em Belém',
@@ -89,7 +91,13 @@ const diferenciais = [
   },
 ]
 
-export default function Eventos() {
+export default async function Eventos() {
+  const enabled = await isFeatureEnabled('eventos_enabled')
+
+  if (!enabled) {
+    notFound()
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       {/* Hero Section */}

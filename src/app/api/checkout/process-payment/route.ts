@@ -5,6 +5,7 @@ import { resolveCartItemsFromDb } from '@/lib/resolveCartItems'
 import { randomUUID } from 'crypto'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
 import logger from '@/lib/logger'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
 
 function parseNumber(v: unknown): number | null {
@@ -40,6 +41,12 @@ function toCartItem(x: unknown): CartItemPayload | null {
 }
 
 export async function POST(request: NextRequest) {
+  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
+  if (!checkoutEnabled) {
+    logger.warn('[process-payment] tentativa com checkout desabilitado')
+    return NextResponse.json({ error: 'Checkout temporariamente indisponível.' }, { status: 503 })
+  }
+
   const hasPaymentClient = !!paymentClient
   logger.debug('[process-payment] Início - paymentClient disponível:', hasPaymentClient)
 

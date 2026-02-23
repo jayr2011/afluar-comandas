@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getCachedProduto } from '@/services/productsService'
 import { ErrorState } from '@/components/feedback'
 import { Button } from '@/components/ui/button'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { ProdutoDetalheClient } from './ProdutoDetalheClient'
 
 interface PageProps {
@@ -60,6 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProdutoDetalhePage({ params }: PageProps) {
   const { id } = await params
   const produto = await getCachedProduto(id)
+  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
 
   if (!produto) {
     return (
@@ -78,5 +80,5 @@ export default async function ProdutoDetalhePage({ params }: PageProps) {
     )
   }
 
-  return <ProdutoDetalheClient produto={produto} />
+  return <ProdutoDetalheClient produto={produto} checkoutEnabled={checkoutEnabled} />
 }

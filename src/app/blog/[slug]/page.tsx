@@ -96,7 +96,14 @@ async function BlogPostPageContent({ params }: PageProps) {
 
         {post.cover_image && (
           <div className="relative w-full h-100 mb-8 rounded-xl overflow-hidden">
-            <Image src={post.cover_image} alt={post.title} fill className="object-cover" priority />
+            <Image
+              src={post.cover_image}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
           </div>
         )}
       </header>

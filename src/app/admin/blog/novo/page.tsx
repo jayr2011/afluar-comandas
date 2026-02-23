@@ -1,8 +1,16 @@
-export default function EditBlogPostPage() {
+import { BlogPostForm } from '../BlogPostForm'
+import { createPostAction, getAdminBlogFormData } from '../actions'
+
+export default async function NovoBlogPostPage() {
+  const { categories, tags } = await getAdminBlogFormData()
+
   return (
-    <div>
-      <h1>Edit Blog Post</h1>
-      {/* Form to edit blog post goes here */}
-    </div>
+    <BlogPostForm
+      title="Novo post"
+      submitLabel="Criar post"
+      submitAction={createPostAction}
+      categories={categories}
+      tags={tags}
+    />
   )
 }

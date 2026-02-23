@@ -35,7 +35,11 @@ const navItems = [
   { href: '/contato', label: 'Contato', icon: Phone },
 ]
 
-export function Navbar() {
+interface NavbarProps {
+  checkoutEnabled: boolean
+}
+
+export function Navbar({ checkoutEnabled }: NavbarProps) {
   const hydrated = useHydrated()
   const cartCount = useCartStore(state => state.getTotalItems())
   const pathname = usePathname()
@@ -97,27 +101,29 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button
-            asChild
-            variant="secondary"
-            size="icon"
-            className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
-          >
-            <Link
-              href="/carrinho"
-              aria-label={cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'}
+          {checkoutEnabled ? (
+            <Button
+              asChild
+              variant="secondary"
+              size="icon"
+              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
             >
-              <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden="true" />
-              {hydrated && Boolean(cartCount) ? (
-                <Badge
-                  key={String(cartCount)}
-                  className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary animate-cart-badge"
-                >
-                  {cartCount}
-                </Badge>
-              ) : null}
-            </Link>
-          </Button>
+              <Link
+                href="/carrinho"
+                aria-label={cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'}
+              >
+                <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden="true" />
+                {hydrated && Boolean(cartCount) ? (
+                  <Badge
+                    key={String(cartCount)}
+                    className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600 border-2 border-primary animate-cart-badge"
+                  >
+                    {cartCount}
+                  </Badge>
+                ) : null}
+              </Link>
+            </Button>
+          ) : null}
 
           <Sheet>
             <SheetTrigger asChild className="md:hidden">

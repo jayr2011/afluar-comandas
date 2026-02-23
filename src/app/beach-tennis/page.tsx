@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { Dumbbell, Trophy, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { isFeatureEnabled } from '@/lib/feature-toggles'
 
 export const metadata: Metadata = {
   title: 'Beach Tennis - Afluar | Aulas e Clínicas',
@@ -52,7 +54,13 @@ const horarios = [
   { dia: 'Sábado', periodo: '08h às 10h (clínicas especiais)' },
 ]
 
-export default function BeachTennisPage() {
+export default async function BeachTennisPage() {
+  const enabled = await isFeatureEnabled('beach_tennis_enabled')
+
+  if (!enabled) {
+    notFound()
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
       <section className="relative py-20 px-4 overflow-hidden">

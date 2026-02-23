@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ProdutosService } from '@/services/productsService'
 import { getCachedDestaques } from '@/services/productsService'
 import { getUserFromRequest } from '@/lib/supabase-server'
+import { getSupabaseAdmin } from '@/lib/supabase'
 import logger from '@/lib/logger'
 import { z } from 'zod'
 
@@ -76,7 +77,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Dados inválidos', details: errors }, { status: 400 })
     }
 
-    const novoProduto = await productsService.create(parsed.data)
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data: novoProduto, error: insertError } = await supabaseAdmin
+      .from('produtos')
+      .insert(parsed.data)
+      .select()
+      .single()
+
+    if (insertError) {
+      const pgError = insertError as { code?: string; message?: string }
+
+      logger.error('[produtos:route] erro ao criar produto', {
+        userId: user.id,
+        code: pgError.code,
+        error: pgError.message ?? insertError,
+      })
+
+      if (pgError.code === '42501') {
+        return NextResponse.json(
+          { error: 'Sem permissão para criar produto (RLS).' },
+          { status: 403 }
+        )
+      }
+
+      return NextResponse.json(
+        { error: 'Não foi possível criar o produto no momento.' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(novoProduto, { status: 201 })
   } catch (error) {
@@ -84,9 +112,6 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : error,
     })
 
-    return NextResponse.json(
-      { error: 'Dados inválidos ou formato de requisição incorreto.' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Erro interno ao criar produto.' }, { status: 500 })
   }
 }

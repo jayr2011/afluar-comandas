@@ -15,9 +15,10 @@ import { formatPrice } from '@/lib/utils'
 
 interface ProdutoDetalheClientProps {
   produto: Produto
+  checkoutEnabled: boolean
 }
 
-export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
+export function ProdutoDetalheClient({ produto, checkoutEnabled }: ProdutoDetalheClientProps) {
   const addProduct = useCartStore(state => state.addProduct)
   const [imageLoading, setImageLoading] = useState(true)
 
@@ -80,14 +81,16 @@ export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
                   <p className="text-3xl font-bold text-primary">{formatPrice(produto.preco)}</p>
-                  <Button
-                    onClick={handleAddToCart}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Adicionar ao carrinho
-                  </Button>
+                  {checkoutEnabled ? (
+                    <Button
+                      onClick={handleAddToCart}
+                      size="lg"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                    >
+                      <Plus className="h-5 w-5" />
+                      Adicionar ao carrinho
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             </div>
