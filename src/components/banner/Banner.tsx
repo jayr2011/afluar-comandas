@@ -16,8 +16,10 @@ import { cn } from '@/lib/utils'
 
 export interface BannerSlide {
   src: string
+  mobileSrc?: string
   alt: string
   key?: string
+  onClick?: () => void
 }
 
 interface BannerProps {
@@ -26,10 +28,20 @@ interface BannerProps {
 }
 
 export function Banner({ slides, className }: BannerProps) {
-  const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }))
+  const plugin = useRef(Autoplay({ delay: 6000, stopOnInteraction: true }))
   const [api, setApi] = useState<CarouselApi | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [reduceMotion, setReduceMotion] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const handler = () => setIsMobile(mq.matches)
+
+    handler()
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     const mq = window.matchMedia('(prefer-reduced-motion: reduce)')
@@ -91,13 +103,16 @@ export function Banner({ slides, className }: BannerProps) {
                 )}
               >
                 <Image
-                  src={slide.src}
+                  src={slide.mobileSrc && isMobile ? slide.mobileSrc : slide.src}
                   alt={slide.alt}
+                  quality={95}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                   priority={index === 0}
+                  loading={index === 0 ? 'eager' : 'lazy'}
                   fetchPriority={index === 0 ? 'high' : 'auto'}
+                  onClick={slide.onClick}
                 />
               </CardContent>
             </Card>

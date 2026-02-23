@@ -1,20 +1,25 @@
+'use client'
+
 import { Banner } from '../banner/Banner'
+import { useRouter } from 'next/navigation'
 
 export function HomeBanner() {
+  const router = useRouter()
+
   return (
     <Banner
       slides={[
         {
-          src: 'https://picsum.photos/seed/1/800/400',
+          src: '/banner/cardapio-desk.png',
+          mobileSrc: '/banner/cardapio-mobile.png',
           alt: 'Banner 1',
+          onClick: () => router.push('/cardapio'),
         },
         {
-          src: 'https://picsum.photos/seed/2/800/400',
+          src: '/banner/beach-tennis.png',
+          mobileSrc: '/banner/beach-tennis-mobile.png',
           alt: 'Banner 2',
-        },
-        {
-          src: 'https://picsum.photos/seed/3/800/400',
-          alt: 'Banner 3',
+          onClick: () => router.push('/beach-tennis'),
         },
       ]}
     />
