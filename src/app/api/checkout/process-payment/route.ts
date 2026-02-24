@@ -6,6 +6,9 @@ import { randomUUID } from 'crypto'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
 import logger from '@/lib/logger'
 import { isFeatureEnabled } from '@/lib/feature-toggles'
+import { rateLimiters, withRateLimit } from '@/lib/rate-limit'
+import { headers } from 'next/headers'
+
 type CartItemPayload = { id: string; nome: string; preco: number; quantidade: number }
 
 function parseNumber(v: unknown): number | null {
@@ -41,6 +44,18 @@ function toCartItem(x: unknown): CartItemPayload | null {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting para checkout (10 requisições por minuto por IP)
+  const headersList = await headers()
+  const forwarded = headersList.get('x-forwarded-for')
+  const ip = forwarded
+    ? forwarded.split(',')[0].trim()
+    : (headersList.get('x-real-ip') ?? 'unknown')
+
+  const rateLimitResponse = await withRateLimit(rateLimiters.checkout, `ip:${ip}`)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
   if (!checkoutEnabled) {
     logger.warn('[process-payment] tentativa com checkout desabilitado')

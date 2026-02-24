@@ -9,6 +9,7 @@ import { CartItem } from '@/types/carrinho'
 import { checkoutFormSchema } from '@/lib/validations/checkout'
 import logger from '@/lib/logger'
 import { isFeatureEnabled } from '@/lib/feature-toggles'
+import { rateLimiters, throwIfRateLimited } from '@/lib/rate-limit'
 
 const cartItemSchema = z.object({
   id: z.string().min(1).max(50),
@@ -26,6 +27,8 @@ const LOG_PREFIX = '[checkout]'
 export async function criarPreferenciaPagamento(
   carrinho: CartItem[]
 ): Promise<{ preferenceId: string; amount: number }> {
+  await throwIfRateLimited(rateLimiters.checkout)
+
   const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
   if (!checkoutEnabled) {
     logger.warn(`${LOG_PREFIX} tentativa de criar preferência com checkout desabilitado`)
@@ -101,6 +104,9 @@ export async function registrarPedido(
   formData: z.input<typeof checkoutFormSchema>,
   carrinho: CartItem[]
 ): Promise<Pedido> {
+  // Rate limiting para registro de pedidos
+  await throwIfRateLimited(rateLimiters.checkout)
+
   const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
   if (!checkoutEnabled) {
     logger.warn(`${LOG_PREFIX} tentativa de registrar pedido com checkout desabilitado`)

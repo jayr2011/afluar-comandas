@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { getUserFromRequest } from '@/lib/supabase-server'
+import { rateLimiters, withRateLimit } from '@/lib/rate-limit'
 import logger from '@/lib/logger'
 
 const LOG_PREFIX = '[admin:produtos:upload-image]'
@@ -37,6 +38,11 @@ export async function POST(request: NextRequest) {
   if (!user) {
     logger.warn(`${LOG_PREFIX} tentativa sem autenticação`)
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  const rateLimitResponse = await withRateLimit(rateLimiters.upload, `user:${user.id}`)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   const formData = await request.formData()

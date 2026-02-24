@@ -5,6 +5,7 @@ import { getUserFromRequest } from '@/lib/supabase-server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import logger from '@/lib/logger'
 import { z } from 'zod'
+import { rateLimiters, withRateLimit } from '@/lib/rate-limit'
 
 const productsService = new ProdutosService()
 
@@ -66,6 +67,12 @@ export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request)
   if (!user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  // Rate limiting para criação de produtos (admin)
+  const rateLimitResponse = await withRateLimit(rateLimiters.api, `user:${user.id}`)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   try {
