@@ -56,17 +56,26 @@ export async function proxy(request: NextRequest) {
       })
     }
 
-    if (!user && path.startsWith('/admin/painel')) {
-      const loginUrl = request.nextUrl.clone()
-      loginUrl.pathname = '/admin'
-      logger.warn('[auth:proxy] acesso negado a rota protegida (não autenticado)', {
-        path,
-        method,
-        redirectTo: loginUrl.pathname,
-        ip,
-        traceId,
-      })
-      return NextResponse.redirect(loginUrl)
+    const isAdmin = user?.app_metadata?.role === 'admin'
+
+    if (path.startsWith('/admin') && path !== '/admin') {
+      if (!user || !isAdmin) {
+        const loginUrl = request.nextUrl.clone()
+        loginUrl.pathname = '/admin'
+        logger.warn(
+          '[auth:proxy] acesso negado a rota de admin (não autenticado ou sem permissão)',
+          {
+            path,
+            method,
+            redirectTo: loginUrl.pathname,
+            userId: user?.id,
+            isAdmin,
+            ip,
+            traceId,
+          }
+        )
+        return NextResponse.redirect(loginUrl)
+      }
     }
 
     logger.info('[auth:proxy] requisição autenticada ou pública processada', {
@@ -91,5 +100,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/painel/:path*'],
+  matcher: ['/admin/:path*'],
 }

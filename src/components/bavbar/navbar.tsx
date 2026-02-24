@@ -66,10 +66,13 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
           className="flex items-center space-x-3 group"
           aria-label="Afluar Delivery - Página inicial"
         >
-          <div className="h-12 w-12 bg-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl text-primary transition-transform group-hover:scale-110">
+          <div
+            aria-hidden="true"
+            className="h-12 w-12 bg-primary-foreground rounded-full flex items-center justify-center font-bold text-2xl text-primary transition-transform group-hover:scale-110"
+          >
             A
           </div>
-          <div className="flex flex-col">
+          <div aria-hidden="true" className="flex flex-col">
             <span className="font-bold text-2xl text-primary-foreground tracking-tight">
               Afluar
             </span>
@@ -180,9 +183,8 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
               <div className="absolute bottom-8 left-0 right-0 px-6">
                 <Separator className="bg-primary-foreground/20 mb-4" aria-hidden="true" />
                 <div className="text-center">
-                  <p className="text-sm text-primary-foreground/70">Afluar Delivery</p>
-                  <p className="text-xs text-primary-foreground/50 mt-1">
-                    Pedidos online com entrega
+                  <p className="text-sm text-primary-foreground/70">
+                    Afluar - Restaurante e beach tennis
                   </p>
                 </div>
               </div>

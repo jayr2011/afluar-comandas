@@ -81,7 +81,13 @@ export async function requireAuthenticatedUser() {
       logger.warn('[supabase:server] usuário não autenticado (requireAuthenticatedUser)')
       throw new Error('Não autorizado')
     }
-    logger.debug('[supabase:server] usuário autenticado', { userId: user.id })
+
+    if (user.app_metadata?.role !== 'admin') {
+      logger.warn('[supabase:server] usuário logado mas não é admin', { userId: user.id })
+      throw new Error('Não autorizado: Acesso administrativo restrito')
+    }
+
+    logger.debug('[supabase:server] usuário admin autenticado', { userId: user.id })
     return user
   } catch (err) {
     logger.error('[supabase:server] erro inesperado em requireAuthenticatedUser', {

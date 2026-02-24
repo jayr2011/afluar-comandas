@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/product-card/ProductCard'
 import { Plus, ChevronDown, Filter } from 'lucide-react'
@@ -27,7 +27,7 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
 
   const produtosRealtime = useRealtimeProdutos(produtos)
 
-  useMemo(() => {
+  useEffect(() => {
     setProducts(produtosRealtime)
   }, [produtosRealtime, setProducts])
 

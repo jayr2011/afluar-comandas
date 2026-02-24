@@ -12,10 +12,6 @@ export function useRealtimeProdutos(initialProdutos: Produto[]): Produto[] {
   const [produtosRealtime, setProdutosRealtime] = useState<Produto[]>(initialProdutos)
 
   useEffect(() => {
-    setProdutosRealtime(initialProdutos)
-  }, [initialProdutos])
-
-  useEffect(() => {
     const channel = supabaseBrowser
       .channel('produtos-realtime')
       .on(

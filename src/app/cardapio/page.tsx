@@ -12,7 +12,7 @@ import { EmptyState, ErrorState } from '@/components/feedback'
 export const metadata: Metadata = {
   title: 'Cardápio - Afluar | Culinária Amazônica em Belém',
   description:
-    "Découvrez notre menu de fruits de mer et poissons frais. Commandez en ligne et dégustez les saveurs de l'Amazone à Belém.",
+    'Conheça nosso cardápio de peixes frescos e frutos do mar. Peça online e sabore as sabores da Amazônia em Belém.',
   keywords: [
     'cardápio Belém',
     'menu Amazônia',
