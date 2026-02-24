@@ -72,7 +72,11 @@ export async function POST(request: NextRequest) {
   let body: Record<string, unknown> & { orderData?: { formData?: unknown; cart?: unknown[] } }
   try {
     body = await request.json()
-    logger.debug('[process-payment] Body recebido:', JSON.stringify(body).slice(0, 500))
+    logger.debug('[process-payment] Body recebido:', {
+      temFormData: !!body.orderData?.formData,
+      temCart: Array.isArray(body.orderData?.cart),
+      cartLength: body.orderData?.cart?.length,
+    })
   } catch {
     return NextResponse.json({ error: 'Body inválido' }, { status: 400 })
   }
