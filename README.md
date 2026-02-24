@@ -12,6 +12,12 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 - **[Zustand](https://zustand-demo.pmnd.rs)** - Gerenciamento de estado
 - **[shadcn/ui](https://ui.shadcn.com)** - Componentes de interface acessíveis
 - **[Mercado Pago](https://www.mercadopago.com.br/developers)** - Processamento de pagamentos
+- **[React Hook Form](https://react-hook-form.com)** + **[Zod](https://zod.dev)** - Formulários e validação
+- **[TipTap](https://tiptap.dev)** - Editor de conteúdo rico (blog/admin)
+- **[Embla Carousel](https://www.embla-carousel.com)** - Carrossel de banners
+- **[Sonner](https://sonner.emilkowal.ski)** - Notificações toast
+- **[Winston](https://github.com/winstonjs/winston)** - Logger server-side
+- **[Vercel Analytics](https://vercel.com/analytics)** + **[Speed Insights](https://vercel.com/docs/speed-insights)** - Analytics e performance
 - **[Vitest](https://vitest.dev)** - Framework de testes
 
 ## 📋 Funcionalidades
@@ -19,6 +25,7 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 ### Implementadas ✅
 
 - ✅ Cardápio de produtos com imagens, descrições e preços
+- ✅ Página de detalhe de produto
 - ✅ Carrinho de compras com gerenciamento de estado (Zustand)
 - ✅ Sistema de checkout com coleta de dados do cliente
 - ✅ Integração com Mercado Pago (Checkout Bricks)
@@ -29,75 +36,112 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 - ✅ Página de contato para comunicação com clientes
 - ✅ Página de eventos para divulgação
 - ✅ Seção de experiência do usuário
+- ✅ Página de Beach Tennis
 - ✅ Sistema de navegação com navbar responsiva
 - ✅ API para gerenciamento de produtos (protegida por API Key)
 - ✅ Sistema de banners rotativos na homepage
-- ✅ Paginação de produtos
 - ✅ Segurança: Headers HTTP (CSP, X-Frame-Options, etc.)
 - ✅ Testes unitários com Vitest
+- ✅ Blog completo (posts, categorias, comentários, busca, posts relacionados)
+- ✅ Painel administrativo (produtos, blog, feature toggles)
+- ✅ Sistema de feature toggles para renderização condicional
+- ✅ Real-time de produtos via Supabase
+- ✅ Upload de imagens (produtos e blog)
+- ✅ Sitemap e robots.txt gerados automaticamente
+- ✅ Logger server-side com Winston
 
 ### Em Desenvolvimento 🔄
 
 - 🔄 Integração com WhatsApp para notificações
 - 🔄 Sistema de autenticação de usuários
-- 🔄 Painel administrativo completo
 
 ## 🗂️ Estrutura do Projeto
 
 ```text
 afluar/
 ├── src/
-│   ├── app/                        # Rotas e páginas (App Router)
-│   │   ├── api/                   # API Routes
-│   │   │   ├── checkout/          # Endpoints de checkout
-│   │   │   │   ├── actions.ts    # Server Actions do checkout
-│   │   │   │   └── process-payment/ # Webhook do Mercado Pago
-│   │   │   └── produtos/          # Endpoints de produtos
-│   │   ├── cardapio/              # Página do cardápio
-│   │   ├── carrinho/              # Página do carrinho de compras
-│   │   ├── checkout/              # Página de checkout
-│   │   ├── contato/               # Página de contato
-│   │   ├── eventos/               # Página de eventos
-│   │   ├── experiencia/           # Página de experiência
-│   │   ├── globals.css            # Estilos globais
-│   │   ├── layout.tsx             # Layout principal
-│   │   └── page.tsx               # Página inicial
+│   ├── app/                              # Rotas e páginas (App Router)
+│   │   ├── api/                         # API Routes
+│   │   │   ├── admin/
+│   │   │   │   ├── blog/upload-image/   # Upload de imagens do blog
+│   │   │   │   └── produtos/upload-image/ # Upload de imagens de produtos
+│   │   │   ├── checkout/
+│   │   │   │   ├── actions.ts           # Server Actions do checkout
+│   │   │   │   └── process-payment/     # Webhook do Mercado Pago
+│   │   │   ├── produtos/                # Endpoints de produtos
+│   │   │   └── revalidate/              # Revalidação de cache
+│   │   ├── admin/                       # Painel administrativo
+│   │   │   ├── blog/                    # CRUD de posts do blog
+│   │   │   ├── painel/                  # Dashboard admin
+│   │   │   └── toggles/                 # Gerenciamento de feature toggles
+│   │   ├── beach-tennis/                # Página de Beach Tennis
+│   │   ├── blog/                        # Blog público
+│   │   │   └── [slug]/                  # Post individual
+│   │   ├── cardapio/                    # Página do cardápio
+│   │   │   └── [id]/                    # Detalhe do produto
+│   │   ├── carrinho/                    # Página do carrinho de compras
+│   │   ├── checkout/                    # Página de checkout
+│   │   │   └── sucesso/                 # Confirmação de pedido
+│   │   ├── contato/                     # Página de contato
+│   │   ├── eventos/                     # Página de eventos
+│   │   ├── experiencia/                 # Página de experiência
+│   │   ├── pedido/                      # Acompanhamento de pedido
+│   │   ├── globals.css                  # Estilos globais
+│   │   ├── layout.tsx                   # Layout principal
+│   │   ├── template.tsx                 # Template de página
+│   │   ├── robots.ts                    # Geração de robots.txt
+│   │   └── sitemap.ts                   # Geração de sitemap
 │   ├── components/
-│   │   ├── banner/                # Componente de banner rotativo
-│   │   ├── cart/                  # Componentes do carrinho
-│   │   ├── checkout/              # Componentes de checkout
-│   │   ├── feedback/              # Estados de feedback (empty, error)
-│   │   ├── footer/                # Rodapé
-│   │   ├── Navbar/                # Barra de navegação
-│   │   ├── product-card/          # Card de produto
-│   │   └── ui/                    # Componentes shadcn/ui
-│   ├── hooks/                     # Custom React Hooks
-│   │   ├── useCart.ts             # Hook do carrinho
-│   │   └── useProducts.ts         # Hook de produtos
+│   │   ├── add-to-cart-sonner/          # Notificação de adição ao carrinho
+│   │   ├── banner/                      # Componente de banner rotativo
+│   │   ├── blog/                        # Componentes do blog
+│   │   ├── cart/                        # Componentes do carrinho
+│   │   ├── checkout/                    # Componentes de checkout
+│   │   ├── feedback/                    # Estados de feedback (empty, error)
+│   │   ├── footer/                      # Rodapé
+│   │   ├── home-banner/                 # Banner da homepage
+│   │   ├── ingredientes-section/        # Seção de ingredientes
+│   │   ├── navbar/                      # Barra de navegação
+│   │   ├── product-card/                # Card de produto
+│   │   ├── quick-access/                # Acesso rápido
+│   │   └── ui/                          # Componentes shadcn/ui
+│   ├── hooks/                           # Custom React Hooks
+│   │   ├── useCart.ts                   # Hook do carrinho
+│   │   ├── useHydrated.ts               # Hook de hidratação SSR
+│   │   ├── useProducts.ts               # Hook de produtos
+│   │   └── useRealtimeProdutos.ts       # Hook de real-time de produtos
 │   ├── lib/
-│   │   ├── supabase.ts            # Cliente Supabase
-│   │   ├── mercadopago.ts         # Integração Mercado Pago
-│   │   ├── cep.ts                  # Utilitários de CEP
-│   │   ├── whatsapp.ts             # Integração WhatsApp
-│   │   ├── resolveCartItems.ts    # Resolução de itens do carrinho
-│   │   └── utils.ts               # Funções utilitárias
-│   ├── services/                  # Camada de serviços
-│   │   └── productsService.ts      # Serviço de produtos
-│   ├── store/                     # Estado global (Zustand)
-│   │   ├── cartStore.ts           # Store do carrinho
-│   │   └── productsStore.ts       # Store de produtos
-│   └── types/                     # Definições de tipos
-│       ├── database.ts            # Tipos do banco de dados
-│       ├── carrinho.ts            # Tipos do carrinho
-│       └── produtos.ts            # Tipos de produtos
-├── public/                        # Arquivos estáticos e imagens
-├── test/                          # Testes unitários
-├── components.json                # Configuração shadcn/ui
-├── eslint.config.mjs              # Configuração ESLint
-├── next.config.ts                 # Configuração Next.js
-├── package.json                   # Dependências do projeto
-├── tsconfig.json                  # Configuração TypeScript
-└── vitest.config.ts              # Configuração Vitest
+│   │   ├── supabase.ts                  # Cliente Supabase (genérico)
+│   │   ├── supabase-browser.ts          # Cliente Supabase (client-side)
+│   │   ├── supabase-server.ts           # Cliente Supabase (server-side)
+│   │   ├── mercadopago.ts               # Integração Mercado Pago
+│   │   ├── feature-toggles.ts           # Sistema de feature toggles
+│   │   ├── logger.ts                    # Logger com Winston
+│   │   ├── applyRealTimeEvent.ts        # Aplicação de eventos real-time
+│   │   ├── cep.ts                       # Utilitários de CEP
+│   │   ├── whatsapp.ts                  # Integração WhatsApp
+│   │   ├── resolveCartItems.ts          # Resolução de itens do carrinho
+│   │   ├── validations/checkout.ts      # Schemas Zod de checkout
+│   │   └── utils.ts                     # Funções utilitárias
+│   ├── services/                        # Camada de serviços
+│   │   ├── blogService.ts               # Serviço do blog
+│   │   └── productsService.ts           # Serviço de produtos
+│   ├── store/                           # Estado global (Zustand)
+│   │   ├── cartStore.ts                 # Store do carrinho
+│   │   └── productsStore.ts             # Store de produtos
+│   └── types/                           # Definições de tipos
+│       ├── blog.ts                      # Tipos do blog
+│       ├── database.ts                  # Tipos do banco de dados
+│       ├── carrinho.ts                  # Tipos do carrinho
+│       └── produtos.ts                  # Tipos de produtos
+├── public/                              # Arquivos estáticos e imagens
+├── test/                                # Testes unitários
+├── components.json                      # Configuração shadcn/ui
+├── eslint.config.mjs                    # Configuração ESLint
+├── next.config.ts                       # Configuração Next.js
+├── package.json                         # Dependências do projeto
+├── tsconfig.json                        # Configuração TypeScript
+└── vitest.config.ts                     # Configuração Vitest
 ```
 
 ## 🛠️ Instalação e Configuração
@@ -125,7 +169,7 @@ npm install
 
 3. Configure as variáveis de ambiente:
 
-Copie o arquivo `.env.example` para `.env.local` e preencha com suas credenciais:
+Copie o arquivo `.env.example` para `.env` e preencha com suas credenciais:
 
 ```env
 # Mercado Pago (OBRIGATÓRIO para pagamentos)
@@ -211,12 +255,16 @@ Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 ## 📦 Scripts Disponíveis
 
 ```bash
-npm run dev      # Inicia o servidor de desenvolvimento
-npm run build    # Cria build de produção
-npm run start    # Inicia servidor de produção
-npm run lint     # Executa o linter ESLint
-npm run test     # Executa testes unitários
-npm run test:watch  # Executa testes em modo watch
+npm run dev              # Inicia o servidor de desenvolvimento
+npm run build            # Cria build de produção
+npm run start            # Inicia servidor de produção
+npm run lint             # Executa o linter ESLint
+npm run test             # Executa testes unitários
+npm run test:watch       # Executa testes em modo watch
+npm run supabase:start   # Inicia o Supabase local
+npm run supabase:stop    # Para o Supabase local
+npm run supabase:diff    # Gera diff de migrations
+npm run supabase:push    # Aplica migrations no Supabase
 ```
 
 ## 🔒 Segurança
