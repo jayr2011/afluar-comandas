@@ -12,13 +12,13 @@ export function HomeBanner() {
         {
           src: '/banner/cardapio-desk.png',
           mobileSrc: '/banner/cardapio-mobile.png',
-          alt: 'Banner 1',
+          alt: 'Acessar cardápio',
           onClick: () => router.push('/cardapio'),
         },
         {
           src: '/banner/beach-tennis.png',
           mobileSrc: '/banner/beach-tennis-mobile.png',
-          alt: 'Banner 2',
+          alt: 'Acessar beach tennis',
           onClick: () => router.push('/beach-tennis'),
         },
       ]}

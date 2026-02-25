@@ -56,16 +56,22 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
           variant="outline"
           size="sm"
           onClick={() => setFiltrosAbertos(prev => !prev)}
+          aria-expanded={filtrosAbertos}
+          aria-controls="cardapio-filtros"
           className="gap-2 p-5 border-primary/10 border-2 rounded-2xl"
         >
-          <Filter className="h-4 w-4" />
+          <Filter className="h-4 w-4" aria-hidden="true" />
           {labelFiltroAtivo}
           <ChevronDown
+            aria-hidden="true"
             className={cn('h-4 w-4 transition-transform', filtrosAbertos && 'rotate-180')}
           />
         </Button>
         {filtrosAbertos && (
-          <div className="flex flex-wrap gap-2 justify-center animate-in fade-in slide-in-from-top-2 duration-300">
+          <div
+            id="cardapio-filtros"
+            className="flex flex-wrap gap-2 justify-center animate-in fade-in slide-in-from-top-2 duration-300"
+          >
             <Button
               variant={filtroSelecionado === null ? 'default' : 'outline'}
               size="sm"
@@ -126,10 +132,11 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
             {checkoutEnabled ? (
               <Button
                 onClick={() => handleAddToCart(produto)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 relative z-10"
                 size="lg"
+                aria-label={`Adicionar ${produto.nome} ao carrinho`}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" aria-hidden="true" />
                 Adicionar
               </Button>
             ) : null}

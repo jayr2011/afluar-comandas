@@ -6,6 +6,7 @@ import { SearchIcon, XIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 const MAX_SEARCH_LENGTH = 100
 
@@ -51,12 +52,15 @@ export function BlogSearch() {
 
   return (
     <form onSubmit={handleSubmit} className="mb-6 flex items-center gap-2" role="search">
+      <Label htmlFor="search-input" className="sr-only">
+        Buscar posts
+      </Label>
       <Input
+        id="search-input"
         type="search"
         value={search}
         onChange={event => setSearch(event.target.value)}
         placeholder="Buscar no blog..."
-        aria-label="Buscar posts"
         maxLength={MAX_SEARCH_LENGTH}
         className="h-10"
       />

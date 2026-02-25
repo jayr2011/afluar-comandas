@@ -94,7 +94,7 @@ export default async function Cardapio() {
         </div>
       </section>
 
-      <section className="py-16 px-4">
+      <section className="py-4 px-4">
         <div className="container mx-auto max-w-6xl">
           <CardapioGrid produtos={produtos} checkoutEnabled={checkoutEnabled} />
         </div>

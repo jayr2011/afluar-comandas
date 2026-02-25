@@ -26,7 +26,7 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Card className="gap-0 overflow-hidden py-0 transition-shadow hover:shadow-lg">
       {post.cover_image && (
-        <Link href={`/blog/${post.slug}`}>
+        <Link href={`/blog/${post.slug}`} tabIndex={-1} aria-hidden="true">
           <div className="relative w-full h-48 bg-muted">
             <Image
               src={post.cover_image}

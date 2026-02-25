@@ -98,7 +98,7 @@ export function ShareButtons({ title, url }: ShareButtonsProps) {
           href={shareLinks.instagram}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Compartilhar no Twitter"
+          aria-label="Compartilhar no Instagram"
         >
           <InstagramIcon />
         </a>

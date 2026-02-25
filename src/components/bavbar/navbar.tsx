@@ -63,7 +63,7 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <Link
           href="/"
-          className="flex items-center space-x-3 group"
+          className="flex items-center space-x-3 group rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
           aria-label="Afluar Delivery - Página inicial"
         >
           <div
@@ -85,7 +85,7 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? 'page' : undefined}
-              className={`text-sm font-medium transition-colors relative group ${
+              className={`text-sm font-medium transition-colors relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground rounded-sm focus-visible:ring-offset-4 focus-visible:ring-offset-primary ${
                 isActive(item.href)
                   ? 'text-primary-foreground'
                   : 'text-primary-foreground/80 hover:text-primary-foreground'
@@ -108,7 +108,7 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
               asChild
               variant="secondary"
               size="icon"
-              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md"
+              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 shadow-md focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-primary focus-visible:outline-none"
             >
               <Link
                 href="/carrinho"
@@ -132,7 +132,7 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
               <Button
                 variant="secondary"
                 size="icon"
-                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11"
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 h-11 w-11 focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-primary focus-visible:outline-none"
               >
                 <Menu className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only">Abrir menu de navegação</span>
@@ -140,6 +140,7 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
             </SheetTrigger>
             <SheetContent
               side="right"
+              aria-describedby={undefined}
               className="w-80 bg-linear-to-b from-primary to-primary/95 border-l border-primary-foreground/10 [&_button]:text-primary-foreground [&_button]:hover:bg-primary-foreground/10"
             >
               <SheetHeader className="space-y-4">

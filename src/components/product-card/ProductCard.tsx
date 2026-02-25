@@ -61,30 +61,46 @@ export const ProductCard = memo(({ product, children, className, href }: Product
         )}
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6 relative">
         <p className="text-sm text-primary font-medium mb-2">{product.categoria}</p>
         <h3 id={headingId} className="text-2xl font-bold mb-3 leading-none">
-          {product.nome}
+          {href ? (
+            <Link
+              href={href}
+              className="before:absolute before:inset-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+              aria-label={`Ver detalhes de ${product.nome}`}
+            >
+              {product.nome}
+            </Link>
+          ) : (
+            product.nome
+          )}
         </h3>
-        <span className="leading-relaxed mb-2 text-base text-muted-foreground">
+        <p className="leading-relaxed mb-2 text-base text-muted-foreground">
           {textoDescricao}
           {descricaoLonga && (
             <Button
               type="button"
               variant="link"
               size="sm"
+              aria-expanded={descricaoExpandida}
+              aria-controls={`${headingId}-desc`}
               onClick={e => {
                 e.preventDefault()
                 e.stopPropagation()
                 setDescricaoExpandida(prev => !prev)
               }}
-              className="p-0!"
+              className="p-0! relative z-10 ml-2"
             >
               {descricaoExpandida ? 'Ver menos' : 'Ver mais'}
-              {descricaoExpandida ? <ChevronUp /> : <ChevronDown />}
+              {descricaoExpandida ? (
+                <ChevronUp aria-hidden="true" />
+              ) : (
+                <ChevronDown aria-hidden="true" />
+              )}
             </Button>
           )}
-        </span>
+        </p>
         <Separator className="mb-6 mt-4" aria-hidden="true" />
       </CardContent>
     </>
@@ -95,22 +111,12 @@ export const ProductCard = memo(({ product, children, className, href }: Product
       role="article"
       aria-labelledby={headingId}
       className={cn(
-        'overflow-hidden rounded-2xl shadow-xl border-primary/10 hover:shadow-2xl transition-all duration-300 group p-0 gap-0',
+        'relative overflow-hidden rounded-2xl shadow-xl border-primary/10 hover:shadow-2xl transition-all duration-300 group p-0 gap-0',
         className
       )}
     >
-      {href ? (
-        <Link
-          href={href}
-          aria-label={`Ver detalhes de ${product.nome}`}
-          className="block [&:hover]:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl"
-        >
-          {contentBlock}
-        </Link>
-      ) : (
-        contentBlock
-      )}
-      <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0">
+      {contentBlock}
+      <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0 relative z-10">
         <p className="text-3xl font-bold text-primary">{formatPrice(product.preco)}</p>
         {children}
       </CardFooter>

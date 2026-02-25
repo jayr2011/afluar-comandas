@@ -50,6 +50,7 @@ export default async function Home() {
 
   return (
     <div className="w-full -mt-px">
+      <h1 className="sr-only">Afluar - Restaurante de Culinária Amazônica</h1>
       <HomeBanner />
       <h2 className="text-center text-xl font-semibold mt-6 mb-2">Use nosso acesso rápido</h2>
       <QuickAccess items={quickAccessItems} />

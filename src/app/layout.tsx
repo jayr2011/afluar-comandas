@@ -191,6 +191,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <CartHydration />
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-0 focus:left-0 focus:p-4 focus:bg-background focus:text-foreground focus:font-bold"
+        >
+          Pular para o conteúdo principal
+        </a>
         <Suspense fallback={<NavbarFallback />}>
           <Navbar checkoutEnabled={checkoutEnabled} />
         </Suspense>

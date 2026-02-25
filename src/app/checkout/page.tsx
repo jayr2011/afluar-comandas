@@ -242,8 +242,13 @@ export default function CheckoutPage() {
                   required
                   placeholder="Seu nome"
                   aria-invalid={!!fieldErrors.nome}
+                  aria-describedby={fieldErrors.nome ? 'nome-error' : undefined}
                 />
-                {fieldErrors.nome && <p className="text-destructive text-sm">{fieldErrors.nome}</p>}
+                {fieldErrors.nome && (
+                  <p id="nome-error" className="text-destructive text-sm" role="alert">
+                    {fieldErrors.nome}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="whatsapp">WhatsApp *</Label>
@@ -254,9 +259,12 @@ export default function CheckoutPage() {
                   required
                   placeholder="(00) 00000-0000"
                   aria-invalid={!!fieldErrors.whatsapp}
+                  aria-describedby={fieldErrors.whatsapp ? 'whatsapp-error' : undefined}
                 />
                 {fieldErrors.whatsapp && (
-                  <p className="text-destructive text-sm">{fieldErrors.whatsapp}</p>
+                  <p id="whatsapp-error" className="text-destructive text-sm" role="alert">
+                    {fieldErrors.whatsapp}
+                  </p>
                 )}
               </div>
 
@@ -270,6 +278,7 @@ export default function CheckoutPage() {
                     placeholder="00000-000"
                     maxLength={9}
                     aria-invalid={!!cepError}
+                    aria-describedby={cepError ? 'cep-error' : undefined}
                     className="flex-1"
                     onChange={e => {
                       const v = e.target.value.replace(/\D/g, '')
@@ -297,7 +306,11 @@ export default function CheckoutPage() {
                     )}
                   </Button>
                 </div>
-                {cepError && <p className="text-destructive text-sm">{cepError}</p>}
+                {cepError && (
+                  <p id="cep-error" className="text-destructive text-sm" role="alert">
+                    {cepError}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -309,8 +322,13 @@ export default function CheckoutPage() {
                   required
                   placeholder="Nome da rua"
                   aria-invalid={!!fieldErrors.rua}
+                  aria-describedby={fieldErrors.rua ? 'rua-error' : undefined}
                 />
-                {fieldErrors.rua && <p className="text-destructive text-sm">{fieldErrors.rua}</p>}
+                {fieldErrors.rua && (
+                  <p id="rua-error" className="text-destructive text-sm" role="alert">
+                    {fieldErrors.rua}
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -322,9 +340,12 @@ export default function CheckoutPage() {
                     required
                     placeholder="Nº"
                     aria-invalid={!!fieldErrors.numero}
+                    aria-describedby={fieldErrors.numero ? 'numero-error' : undefined}
                   />
                   {fieldErrors.numero && (
-                    <p className="text-destructive text-sm">{fieldErrors.numero}</p>
+                    <p id="numero-error" className="text-destructive text-sm" role="alert">
+                      {fieldErrors.numero}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -336,9 +357,12 @@ export default function CheckoutPage() {
                     required
                     placeholder="Bairro"
                     aria-invalid={!!fieldErrors.bairro}
+                    aria-describedby={fieldErrors.bairro ? 'bairro-error' : undefined}
                   />
                   {fieldErrors.bairro && (
-                    <p className="text-destructive text-sm">{fieldErrors.bairro}</p>
+                    <p id="bairro-error" className="text-destructive text-sm" role="alert">
+                      {fieldErrors.bairro}
+                    </p>
                   )}
                 </div>
               </div>
@@ -350,13 +374,20 @@ export default function CheckoutPage() {
                   type="text"
                   placeholder="Apto, bloco, ref."
                   aria-invalid={!!fieldErrors.complemento}
+                  aria-describedby={fieldErrors.complemento ? 'complemento-error' : undefined}
                 />
                 {fieldErrors.complemento && (
-                  <p className="text-destructive text-sm">{fieldErrors.complemento}</p>
+                  <p id="complemento-error" className="text-destructive text-sm" role="alert">
+                    {fieldErrors.complemento}
+                  </p>
                 )}
               </div>
 
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && (
+                <p className="text-destructive text-sm" role="alert" aria-live="assertive">
+                  {error}
+                </p>
+              )}
 
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
                 {loading ? 'Enviando...' : 'Ir para pagamento'}

@@ -102,9 +102,17 @@ export function Banner({ slides, className }: BannerProps) {
                   className
                 )}
               >
+                {slide.onClick && (
+                  <button
+                    type="button"
+                    onClick={slide.onClick}
+                    className="absolute inset-0 z-10 w-full h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    aria-label={slide.alt}
+                  />
+                )}
                 <Image
                   src={slide.mobileSrc && isMobile ? slide.mobileSrc : slide.src}
-                  alt={slide.alt}
+                  alt={slide.onClick ? '' : slide.alt}
                   quality={95}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -112,7 +120,6 @@ export function Banner({ slides, className }: BannerProps) {
                   priority={index === 0}
                   loading={index === 0 ? 'eager' : 'lazy'}
                   fetchPriority={index === 0 ? 'high' : 'auto'}
-                  onClick={slide.onClick}
                 />
               </CardContent>
             </Card>
