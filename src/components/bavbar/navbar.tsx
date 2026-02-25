@@ -112,7 +112,9 @@ export function Navbar({ checkoutEnabled }: NavbarProps) {
             >
               <Link
                 href="/carrinho"
-                aria-label={cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'}
+                aria-label={
+                  hydrated && cartCount > 0 ? `Carrinho com ${cartCount} itens` : 'Carrinho (vazio)'
+                }
               >
                 <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden="true" />
                 {hydrated && Boolean(cartCount) ? (
