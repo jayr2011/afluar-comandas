@@ -113,7 +113,6 @@ export function Banner({ slides, className }: BannerProps) {
                 <Image
                   src={slide.mobileSrc && isMobile ? slide.mobileSrc : slide.src}
                   alt={slide.onClick ? '' : slide.alt}
-                  quality={95}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
