@@ -1,19 +1,15 @@
 import { HomeBanner } from '@/components/home-banner/HomeBanner'
 import { QuickAccess } from '@/components/quick-access'
-import { UtensilsCrossed, Calendar, Waves } from 'lucide-react'
+import { UtensilsCrossed, Calendar } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { getMultipleFeatureToggles } from '@/lib/feature-toggles'
 
 export type HomePageToggles = {
   eventos_enabled: boolean
-  beach_tennis_enabled: boolean
 }
 
 export default async function Home() {
-  const { eventos_enabled, beach_tennis_enabled } = await getMultipleFeatureToggles([
-    'eventos_enabled',
-    'beach_tennis_enabled',
-  ])
+  const { eventos_enabled } = await getMultipleFeatureToggles(['eventos_enabled'])
 
   const quickAccessItems = [
     {
@@ -27,15 +23,6 @@ export default async function Home() {
             href: '/eventos',
             title: 'Eventos',
             icon: Calendar,
-          },
-        ]
-      : []),
-    ...(beach_tennis_enabled
-      ? [
-          {
-            href: '/beach-tennis',
-            title: 'Beach Tennis',
-            icon: Waves,
           },
         ]
       : []),

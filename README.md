@@ -27,7 +27,6 @@ Vitrine digital e cardápio online desenvolvido com Next.js, permitindo que clie
 - ✅ Página de contato para comunicação com clientes
 - ✅ Página de eventos para divulgação
 - ✅ Seção de experiência do usuário
-- ✅ Página de Beach Tennis
 - ✅ Sistema de navegação com navbar responsiva
 - ✅ API para gerenciamento de produtos (protegida por API Key)
 - ✅ Sistema de banners rotativos na homepage
@@ -61,7 +60,6 @@ afluar/
 │   │   ├── admin/                       # Painel administrativo
 │   │   │   ├── painel/                  # Dashboard admin
 │   │   │   └── toggles/                 # Gerenciamento de feature toggles
-│   │   ├── beach-tennis/                # Página de Beach Tennis
 │   │   ├── cardapio/                    # Página do cardápio
 │   │   │   └── [id]/                    # Detalhe do produto
 │   │   ├── carrinho/                    # Página do carrinho de compras

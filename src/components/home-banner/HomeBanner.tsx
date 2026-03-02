@@ -15,12 +15,6 @@ export function HomeBanner() {
           alt: 'Acessar cardápio',
           onClick: () => router.push('/cardapio'),
         },
-        {
-          src: '/banner/beach-tennis.png',
-          mobileSrc: '/banner/beach-tennis-mobile.png',
-          alt: 'Acessar beach tennis',
-          onClick: () => router.push('/beach-tennis'),
-        },
       ]}
     />
   )

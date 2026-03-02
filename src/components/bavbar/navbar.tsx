@@ -142,7 +142,7 @@ export function Navbar() {
                 <Separator className="bg-primary-foreground/20 mb-4" aria-hidden="true" />
                 <div className="text-center">
                   <p className="text-sm text-primary-foreground/70">
-                    Afluar - Restaurante e beach tennis
+                    Afluar - Restaurante
                   </p>
                 </div>
               </div>

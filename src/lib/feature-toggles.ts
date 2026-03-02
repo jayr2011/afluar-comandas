@@ -10,11 +10,6 @@ export const FEATURE_TOGGLE_DEFINITIONS = [
     title: 'Eventos habilitados',
     description: 'Mostra seção e páginas de eventos no site.',
   },
-  {
-    key: 'beach_tennis_enabled',
-    title: 'Beach Tennis habilitado',
-    description: 'Ativa páginas e chamadas para a modalidade Beach Tennis.',
-  },
 ] as const
 
 export type FeatureToggleKey = (typeof FEATURE_TOGGLE_DEFINITIONS)[number]['key']
