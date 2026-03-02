@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Produto } from '@/types/produtos'
-import { useProductsStore } from '@/store/productsStore'
+import { useProductsStore } from '@/store/comandaStore'
 
 interface UseProdutosOptions {
   categoria?: string
