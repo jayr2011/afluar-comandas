@@ -12,7 +12,6 @@ Vitrine digital e cardápio online desenvolvido com Next.js, permitindo que clie
 - **[Zustand](https://zustand-demo.pmnd.rs)** - Gerenciamento de estado
 - **[shadcn/ui](https://ui.shadcn.com)** - Componentes de interface acessíveis
 - **[React Hook Form](https://react-hook-form.com)** + **[Zod](https://zod.dev)** - Formulários e validação
-- **[TipTap](https://tiptap.dev)** - Editor de conteúdo rico (blog/admin)
 - **[Embla Carousel](https://www.embla-carousel.com)** - Carrossel de banners
 - **[Sonner](https://sonner.emilkowal.ski)** - Notificações toast
 - **[Winston](https://github.com/winstonjs/winston)** - Logger server-side
@@ -34,11 +33,10 @@ Vitrine digital e cardápio online desenvolvido com Next.js, permitindo que clie
 - ✅ Sistema de banners rotativos na homepage
 - ✅ Segurança: Headers HTTP (CSP, X-Frame-Options, etc.)
 - ✅ Testes unitários com Vitest
-- ✅ Blog completo (posts, categorias, comentários, busca, posts relacionados)
-- ✅ Painel administrativo (produtos, blog, feature toggles)
+- ✅ Painel administrativo (produtos e feature toggles)
 - ✅ Sistema de feature toggles para renderização condicional
 - ✅ Real-time de produtos via Supabase
-- ✅ Upload de imagens (produtos e blog)
+- ✅ Upload de imagens de produtos
 - ✅ Sitemap e robots.txt gerados automaticamente
 - ✅ Logger server-side com Winston
 
@@ -54,7 +52,6 @@ afluar/
 │   ├── app/                              # Rotas e páginas (App Router)
 │   │   ├── api/                         # API Routes
 │   │   │   ├── admin/
-│   │   │   │   ├── blog/upload-image/   # Upload de imagens do blog
 │   │   │   │   └── produtos/upload-image/ # Upload de imagens de produtos
 │   │   │   ├── checkout/
 │   │   │   │   ├── actions.ts           # Server Actions do checkout
@@ -62,12 +59,9 @@ afluar/
 │   │   │   ├── produtos/                # Endpoints de produtos
 │   │   │   └── revalidate/              # Revalidação de cache
 │   │   ├── admin/                       # Painel administrativo
-│   │   │   ├── blog/                    # CRUD de posts do blog
 │   │   │   ├── painel/                  # Dashboard admin
 │   │   │   └── toggles/                 # Gerenciamento de feature toggles
 │   │   ├── beach-tennis/                # Página de Beach Tennis
-│   │   ├── blog/                        # Blog público
-│   │   │   └── [slug]/                  # Post individual
 │   │   ├── cardapio/                    # Página do cardápio
 │   │   │   └── [id]/                    # Detalhe do produto
 │   │   ├── carrinho/                    # Página do carrinho de compras
@@ -85,7 +79,6 @@ afluar/
 │   ├── components/
 │   │   ├── add-to-cart-sonner/          # Notificação de adição ao carrinho
 │   │   ├── banner/                      # Componente de banner rotativo
-│   │   ├── blog/                        # Componentes do blog
 │   │   ├── cart/                        # Componentes do carrinho
 │   │   ├── checkout/                    # Componentes de checkout
 │   │   ├── feedback/                    # Estados de feedback (empty, error)
@@ -115,13 +108,11 @@ afluar/
 │   │   ├── validations/checkout.ts      # Schemas Zod de checkout
 │   │   └── utils.ts                     # Funções utilitárias
 │   ├── services/                        # Camada de serviços
-│   │   ├── blogService.ts               # Serviço do blog
 │   │   └── productsService.ts           # Serviço de produtos
 │   ├── store/                           # Estado global (Zustand)
 │   │   ├── cartStore.ts                 # Store do carrinho
 │   │   └── productsStore.ts             # Store de produtos
 │   └── types/                           # Definições de tipos
-│       ├── blog.ts                      # Tipos do blog
 │       ├── database.ts                  # Tipos do banco de dados
 │       ├── carrinho.ts                  # Tipos do carrinho
 │       └── produtos.ts                  # Tipos de produtos

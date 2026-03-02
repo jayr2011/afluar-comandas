@@ -6,11 +6,6 @@ const LOG_PREFIX = '[feature-toggles]'
 
 export const FEATURE_TOGGLE_DEFINITIONS = [
   {
-    key: 'blog_enabled',
-    title: 'Blog habilitado',
-    description: 'Exibe páginas e listagens do blog para visitantes.',
-  },
-  {
     key: 'eventos_enabled',
     title: 'Eventos habilitados',
     description: 'Mostra seção e páginas de eventos no site.',

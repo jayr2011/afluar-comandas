@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { PlusIcon, LogOut, Settings2, Newspaper, Loader2 } from 'lucide-react'
+import { PlusIcon, LogOut, Settings2, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/input'
@@ -328,12 +328,6 @@ export default function Painel() {
           <Link href="/admin/toggles">
             <Settings2 className="w-4 h-4 mr-2" />
             Gerenciar toggles
-          </Link>
-        </Button>
-        <Button asChild variant="outline" aria-label="Gerenciar blog">
-          <Link href="/admin/blog">
-            <Newspaper className="w-4 h-4 mr-2" />
-            Gerenciar blog
           </Link>
         </Button>
       </div>

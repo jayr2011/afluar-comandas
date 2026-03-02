@@ -7,11 +7,6 @@ interface SitemapProduto {
   created_at: string | null
 }
 
-interface SitemapPost {
-  slug: string
-  updated_at: string | null
-}
-
 function normalizeError(err: unknown): string {
   if (err instanceof Error) return err.message
   if (typeof err === 'string') return err
@@ -50,38 +45,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const fetchPosts = async (): Promise<SitemapPost[]> => {
-    try {
-      const { data, error } = await db
-        .from('posts')
-        .select('slug, updated_at')
-        .eq('status', 'published')
-      if (error) throw error
-      return (data ?? []) as SitemapPost[]
-    } catch (error) {
-      const message = normalizeError(error)
-      if (isKnownPrerenderFetchError(message)) return []
-      logger.warn('[sitemap] falha ao buscar posts para o sitemap', {
-        error: message,
-      })
-      return []
-    }
-  }
-
-  const [produtos, posts] = await Promise.all([fetchProdutos(), fetchPosts()])
+  const produtos = await fetchProdutos()
 
   const productUrls = produtos.map(produto => ({
     url: `${baseUrl}/cardapio/${produto.id}`,
     lastModified: produto.created_at ? new Date(produto.created_at) : new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
-  }))
-
-  const postUrls = posts.map(post => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.5,
   }))
 
   const routes = ['', '/cardapio', '/contato', '/eventos', '/experiencia'].map(route => ({
@@ -91,5 +61,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }))
 
-  return [...routes, ...productUrls, ...postUrls]
+  return [...routes, ...productUrls]
 }
