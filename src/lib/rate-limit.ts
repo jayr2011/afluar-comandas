@@ -98,7 +98,6 @@ export function createRateLimiter(config: RateLimitConfig) {
 }
 
 let _login: ReturnType<typeof createRateLimiter> | null = null
-let _checkout: ReturnType<typeof createRateLimiter> | null = null
 let _upload: ReturnType<typeof createRateLimiter> | null = null
 let _api: ReturnType<typeof createRateLimiter> | null = null
 let _comments: ReturnType<typeof createRateLimiter> | null = null
@@ -106,11 +105,6 @@ let _comments: ReturnType<typeof createRateLimiter> | null = null
 function getLoginLimiter() {
   if (!_login) _login = createRateLimiter({ limit: 5, windowMs: 60000 })
   return _login
-}
-
-function getCheckoutLimiter() {
-  if (!_checkout) _checkout = createRateLimiter({ limit: 10, windowMs: 60000 })
-  return _checkout
 }
 
 function getUploadLimiter() {
@@ -131,9 +125,6 @@ function getCommentsLimiter() {
 export const rateLimiters = {
   get login() {
     return getLoginLimiter()
-  },
-  get checkout() {
-    return getCheckoutLimiter()
   },
   get upload() {
     return getUploadLimiter()

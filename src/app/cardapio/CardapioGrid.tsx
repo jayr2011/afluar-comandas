@@ -3,22 +3,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/product-card/ProductCard'
-import { Plus, ChevronDown, Filter } from 'lucide-react'
+import { ChevronDown, Filter } from 'lucide-react'
 import type { Produto } from '@/types/produtos'
-import { useCartStore } from '@/store/cartStore'
 import { useProductsStore } from '@/store/productsStore'
-import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
 import { CATEGORIAS_CARDAPIO, produtoNaCategoria, type SlugCategoria } from './categorias'
 import { cn } from '@/lib/utils'
 import { useRealtimeProdutos } from '@/hooks/useRealtimeProdutos'
 
 interface CardapioGridProps {
   produtos: Produto[]
-  checkoutEnabled: boolean
 }
 
-export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
-  const addProduct = useCartStore(state => state.addProduct)
+export function CardapioGrid({ produtos }: CardapioGridProps) {
   const setProducts = useProductsStore(state => state.setProducts)
   const [filtroSelecionado, setFiltroSelecionado] = useState<SlugCategoria | 'destaques' | null>(
     null
@@ -36,11 +32,6 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
     if (filtroSelecionado === 'destaques') return produtosRealtime.filter(p => p.destaque)
     return produtosRealtime.filter(p => produtoNaCategoria(p.categoria, filtroSelecionado))
   }, [produtosRealtime, filtroSelecionado])
-
-  const handleAddToCart = (produto: Produto) => {
-    addProduct(produto)
-    showAddToCartToast(produto.nome)
-  }
 
   const labelFiltroAtivo =
     filtroSelecionado === null
@@ -128,19 +119,7 @@ export function CardapioGrid({ produtos, checkoutEnabled }: CardapioGridProps) {
             product={produto}
             priority={produto.destaque}
             href={`/cardapio/${produto.id}`}
-          >
-            {checkoutEnabled ? (
-              <Button
-                onClick={() => handleAddToCart(produto)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 relative z-10"
-                size="lg"
-                aria-label={`Adicionar ${produto.nome} ao carrinho`}
-              >
-                <Plus className="h-5 w-5" aria-hidden="true" />
-                Adicionar
-              </Button>
-            ) : null}
-          </ProductCard>
+          />
         ))}
       </div>
     </div>

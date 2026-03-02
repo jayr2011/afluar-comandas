@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/checkout', '/carrinho', '/pedido'],
+        disallow: ['/admin', '/api'],
       },
     ],
     sitemap: 'https://afluar.com.br/sitemap.xml',

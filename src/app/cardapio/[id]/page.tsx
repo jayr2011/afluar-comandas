@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { getCachedProduto } from '@/services/productsService'
 import { ErrorState } from '@/components/feedback'
 import { Button } from '@/components/ui/button'
-import { isFeatureEnabled } from '@/lib/feature-toggles'
 import { ProdutoDetalheClient } from './ProdutoDetalheClient'
 
 interface PageProps {
@@ -29,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       produto.descricao ||
       `Conheça o ${produto.nome} no cardápio do Afluar. Prato típico da culinária amazônica em Belém.`,
-    keywords: [produto.nome, 'cardápio Afluar', 'culinária amazônica', 'Belém', 'delivery'],
+    keywords: [produto.nome, 'cardápio Afluar', 'culinária amazônica', 'Belém'],
     alternates: {
       canonical: `https://afluar.com.br/cardapio/${id}`,
     },
@@ -37,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `${produto.nome} | Afluar - Culinária Amazônica`,
       description:
         produto.descricao ||
-        `Conheça o ${produto.nome}, prato típico da culinária amazônica em Belém. Peça online!`,
+        `Conheça o ${produto.nome}, prato típico da culinária amazônica em Belém.`,
       url: `https://afluar.com.br/cardapio/${id}`,
       images: [
         {
@@ -61,7 +60,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProdutoDetalhePage({ params }: PageProps) {
   const { id } = await params
   const produto = await getCachedProduto(id)
-  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
 
   if (!produto) {
     return (
@@ -80,5 +78,5 @@ export default async function ProdutoDetalhePage({ params }: PageProps) {
     )
   }
 
-  return <ProdutoDetalheClient produto={produto} checkoutEnabled={checkoutEnabled} />
+  return <ProdutoDetalheClient produto={produto} />
 }

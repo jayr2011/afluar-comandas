@@ -1,6 +1,6 @@
-# Afluar - Sistema de Pedidos Online
+# Afluar - Cardápio Digital
 
-Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que clientes façam pedidos com entrega, visualizem produtos e finalizem compras de forma prática.
+Vitrine digital e cardápio online desenvolvido com Next.js, permitindo que clientes visualizem produtos, preços e informações detalhadas de forma prática e moderna.
 
 ## 🚀 Tecnologias
 
@@ -11,7 +11,6 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 - **[Supabase](https://supabase.com)** - Banco de dados PostgreSQL e autenticação
 - **[Zustand](https://zustand-demo.pmnd.rs)** - Gerenciamento de estado
 - **[shadcn/ui](https://ui.shadcn.com)** - Componentes de interface acessíveis
-- **[Mercado Pago](https://www.mercadopago.com.br/developers)** - Processamento de pagamentos
 - **[React Hook Form](https://react-hook-form.com)** + **[Zod](https://zod.dev)** - Formulários e validação
 - **[TipTap](https://tiptap.dev)** - Editor de conteúdo rico (blog/admin)
 - **[Embla Carousel](https://www.embla-carousel.com)** - Carrossel de banners
@@ -26,13 +25,6 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 
 - ✅ Cardápio de produtos com imagens, descrições e preços
 - ✅ Página de detalhe de produto
-- ✅ Carrinho de compras com gerenciamento de estado (Zustand)
-- ✅ Sistema de checkout com coleta de dados do cliente
-- ✅ Integração com Mercado Pago (Checkout Bricks)
-- ✅ Registro de pedidos no banco de dados Supabase
-- ✅ Validação de preços no servidor (prevenção de manipulação)
-- ✅ Informações de entrega (endereço completo com CEP)
-- ✅ Status de pagamento (pendente, pago, cancelado, etc.)
 - ✅ Página de contato para comunicação com clientes
 - ✅ Página de eventos para divulgação
 - ✅ Seção de experiência do usuário
@@ -52,7 +44,6 @@ Sistema de pedidos e cardápio online desenvolvido com Next.js, permitindo que c
 
 ### Em Desenvolvimento 🔄
 
-- 🔄 Integração com WhatsApp para notificações
 - 🔄 Sistema de autenticação de usuários
 
 ## 🗂️ Estrutura do Projeto

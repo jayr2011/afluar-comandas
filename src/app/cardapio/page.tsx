@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { getCachedProdutos } from '@/services/productsService'
-import { isFeatureEnabled } from '@/lib/feature-toggles'
 import logger from '@/lib/logger'
 import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
@@ -11,14 +10,12 @@ import { EmptyState, ErrorState } from '@/components/feedback'
 
 export const metadata: Metadata = {
   title: 'Cardápio - Afluar | Culinária Amazônica em Belém',
-  description:
-    'Conheça nosso cardápio de peixes frescos e frutos do mar. Peça online e sabore as sabores da Amazônia em Belém.',
+  description: 'Conheça nosso cardápio de peixes frescos e frutos do mar da Amazônia em Belém.',
   keywords: [
     'cardápio Belém',
     'menu Amazônia',
     'peixe fresco Belém',
     'frutos do mar Pará',
-    'delivery Belém',
     'cardápio online',
   ],
   alternates: {
@@ -26,7 +23,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Cardápio - Afluar | Culinária Amazônica',
-    description: 'Cardápio com peixes frescos e frutos do mar da Amazônia. Peça online!',
+    description: 'Cardápio com peixes frescos e frutos do mar da Amazônia.',
     url: 'https://afluar.com.br/cardapio',
     images: [
       {
@@ -42,7 +39,6 @@ export const metadata: Metadata = {
 export default async function Cardapio() {
   let produtos
   let error: string | null = null
-  const checkoutEnabled = await isFeatureEnabled('checkout_enabled')
 
   try {
     produtos = await getCachedProdutos()
@@ -96,7 +92,7 @@ export default async function Cardapio() {
 
       <section className="py-4 px-4">
         <div className="container mx-auto max-w-6xl">
-          <CardapioGrid produtos={produtos} checkoutEnabled={checkoutEnabled} />
+          <CardapioGrid produtos={produtos} />
         </div>
       </section>
 

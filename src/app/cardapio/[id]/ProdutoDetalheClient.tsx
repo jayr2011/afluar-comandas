@@ -6,30 +6,21 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useCartStore } from '@/store/cartStore'
 import { IngredientesSection } from '@/components/ingredientes-section'
-import { showAddToCartToast } from '@/components/add-to-cart-sonner/AddToCartSonnerComponent'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Produto } from '@/types/produtos'
 import { formatPrice } from '@/lib/utils'
 
 interface ProdutoDetalheClientProps {
   produto: Produto
-  checkoutEnabled: boolean
 }
 
-export function ProdutoDetalheClient({ produto, checkoutEnabled }: ProdutoDetalheClientProps) {
-  const addProduct = useCartStore(state => state.addProduct)
+export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
   const [imageLoading, setImageLoading] = useState(true)
 
   const categoriaFormatada = produto.categoria
     ? produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1)
     : ''
-
-  const handleAddToCart = () => {
-    addProduct(produto)
-    showAddToCartToast(produto.nome)
-  }
 
   return (
     <div className="min-h-screen bg-linear-to-b from-background to-primary/5">
@@ -84,16 +75,6 @@ export function ProdutoDetalheClient({ produto, checkoutEnabled }: ProdutoDetalh
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
                   <p className="text-3xl font-bold text-primary">{formatPrice(produto.preco)}</p>
-                  {checkoutEnabled ? (
-                    <Button
-                      onClick={handleAddToCart}
-                      size="lg"
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                    >
-                      <Plus className="h-5 w-5" />
-                      Adicionar ao carrinho
-                    </Button>
-                  ) : null}
                 </div>
               </div>
             </div>

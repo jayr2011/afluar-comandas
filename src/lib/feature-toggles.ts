@@ -6,11 +6,6 @@ const LOG_PREFIX = '[feature-toggles]'
 
 export const FEATURE_TOGGLE_DEFINITIONS = [
   {
-    key: 'checkout_enabled',
-    title: 'Checkout habilitado',
-    description: 'Permite finalizar pedidos e iniciar pagamentos.',
-  },
-  {
     key: 'blog_enabled',
     title: 'Blog habilitado',
     description: 'Exibe páginas e listagens do blog para visitantes.',
