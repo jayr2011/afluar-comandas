@@ -30,9 +30,11 @@ interface ProductCardProps {
   priority?: boolean
   className?: string
   href?: string
+  onAddToCart?: (product: Product) => void
 }
 
-export const ProductCard = memo(({ product, children, className, href }: ProductCardProps) => {
+export const ProductCard = memo(
+  ({ product, children, className, href, onAddToCart }: ProductCardProps) => {
   const [imageLoading, setImageLoading] = useState(true)
   const [descricaoExpandida, setDescricaoExpandida] = useState(false)
   const headingId = useId()
@@ -119,10 +121,26 @@ export const ProductCard = memo(({ product, children, className, href }: Product
       {contentBlock}
       <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0 relative z-10">
         <p className="text-3xl font-bold text-primary">{formatPrice(product.preco)}</p>
-        {children}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            onClick={e => {
+              e.preventDefault()
+              e.stopPropagation()
+              onAddToCart?.(product)
+            }}
+            disabled={product.disponivel === false}
+            aria-label={`Adicionar ${product.nome} ao carrinho`}
+          >
+            Adicionar ao pedido
+          </Button>
+          {children}
+        </div>
       </CardFooter>
     </Card>
   )
-})
+  }
+)
 
 ProductCard.displayName = 'ProductCard'

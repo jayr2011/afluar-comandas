@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, Home, UtensilsCrossed } from 'lucide-react'
+import { Menu, Home, UtensilsCrossed, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator'
 const navItems = [
   { href: '/', label: 'Início', icon: Home },
   { href: '/cardapio', label: 'Cardápio', icon: UtensilsCrossed },
+  { href: '/comanda', label: 'Minha comanda', icon: FileText },
 ]
 
 export function Navbar() {
