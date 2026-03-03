@@ -24,10 +24,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { fecharComanda, cancelarComanda } from '@/app/comanda/action'
+import {
+  fecharComanda,
+  confirmarPedidoComanda,
+  cancelarComanda,
+  removerItemComanda,
+  alterarQuantidadeItemComanda,
+} from '@/app/comanda/action'
 import { type CriarComandaState } from '@/app/comanda/schemas'
 import type { ComandaComItens } from '@/types/comanda'
 import { formatPrice } from '@/lib/utils'
+import { Trash2, Minus, Plus } from 'lucide-react'
 
 interface ComandaDetalheProps {
   comanda: ComandaComItens
@@ -51,6 +58,51 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
     INITIAL_FECHAR_STATE
   )
 
+  const [alterarQtdState, alterarQtdAction, isAlterandoQtd] = useActionState(
+    async (_prev: CriarComandaState, formData: FormData) => {
+      try {
+        await alterarQuantidadeItemComanda(formData)
+        return { ok: true, message: '' }
+      } catch (e) {
+        return {
+          ok: false,
+          message: e instanceof Error ? e.message : 'Erro ao alterar.',
+        }
+      }
+    },
+    INITIAL_FECHAR_STATE
+  )
+
+  const [removerState, removerAction, isRemovendo] = useActionState(
+    async (_prev: CriarComandaState, formData: FormData) => {
+      try {
+        await removerItemComanda(formData)
+        return { ok: true, message: 'Item removido.' }
+      } catch (e) {
+        return {
+          ok: false,
+          message: e instanceof Error ? e.message : 'Erro ao remover.',
+        }
+      }
+    },
+    INITIAL_FECHAR_STATE
+  )
+
+  const [confirmarState, confirmarAction, isConfirmando] = useActionState(
+    async (_prev: CriarComandaState, formData: FormData) => {
+      try {
+        await confirmarPedidoComanda(formData)
+        return { ok: true, message: 'Pedido confirmado e enviado para a cozinha.' }
+      } catch (e) {
+        return {
+          ok: false,
+          message: e instanceof Error ? e.message : 'Erro ao confirmar.',
+        }
+      }
+    },
+    INITIAL_FECHAR_STATE
+  )
+
   const [cancelarState, cancelarAction, isCancelando] = useActionState(
     async (_prev: CriarComandaState, formData: FormData) => {
       try {
@@ -67,6 +119,8 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
   )
 
   const isAberta = comanda.status === 'aberta'
+  const isConfirmada = comanda.status === 'confirmada'
+  const isEditavel = isAberta || isConfirmada
   const temItens = comanda.itens && comanda.itens.length > 0
 
   return (
@@ -86,9 +140,11 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
               variant={
                 comanda.status === 'aberta'
                   ? 'default'
-                  : comanda.status === 'fechada'
+                  : comanda.status === 'confirmada'
                     ? 'secondary'
-                    : 'destructive'
+                    : comanda.status === 'fechada'
+                      ? 'secondary'
+                      : 'destructive'
               }
             >
               {comanda.status}
@@ -104,19 +160,99 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                 {comanda.itens.map((item) => (
                   <li
                     key={item.id}
-                    className="flex justify-between items-center py-2 border-b border-border/50 last:border-0"
+                    className="flex justify-between items-center gap-2 py-2 border-b border-border/50 last:border-0"
                   >
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <span className="font-medium">
                         {item.produto?.nome ?? 'Produto'}
                       </span>
-                      <span className="text-muted-foreground text-sm ml-2">
-                        x{item.quantidade}
-                      </span>
+                      {isAberta ? (
+                        <div className="flex items-center gap-1 mt-1">
+                          <form action={alterarQtdAction} className="contents">
+                            <input type="hidden" name="itemId" value={item.id} />
+                            <input type="hidden" name="delta" value="-1" />
+                            <Button
+                              type="submit"
+                              variant="outline"
+                              size="icon"
+                              className="h-7 w-7 shrink-0"
+                              disabled={isAlterandoQtd}
+                              aria-label="Diminuir quantidade"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                          </form>
+                          <span className="min-w-6 text-center text-sm font-medium tabular-nums">
+                            {item.quantidade}
+                          </span>
+                          <form action={alterarQtdAction} className="contents">
+                            <input type="hidden" name="itemId" value={item.id} />
+                            <input type="hidden" name="delta" value="1" />
+                            <Button
+                              type="submit"
+                              variant="outline"
+                              size="icon"
+                              className="h-7 w-7 shrink-0"
+                              disabled={isAlterandoQtd}
+                              aria-label="Aumentar quantidade"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </form>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-sm ml-2 block mt-1">
+                          x{item.quantidade}
+                        </span>
+                      )}
                     </div>
-                    <span className="font-medium">
+                    <span className="font-medium shrink-0">
                       {formatPrice(Number(item.subtotal))}
                     </span>
+                    {isEditavel && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            aria-label={`Remover ${item.produto?.nome ?? 'item'} da comanda`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remover item?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {item.produto?.nome ?? 'Este item'} (x
+                              {item.quantidade}) será removido da comanda.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+                            <form action={removerAction} className="w-full">
+                              <input
+                                type="hidden"
+                                name="itemId"
+                                value={item.id}
+                              />
+                              <AlertDialogAction asChild>
+                                <Button
+                                  type="submit"
+                                  variant="destructive"
+                                  disabled={isRemovendo}
+                                  className="w-full"
+                                >
+                                  {isRemovendo ? 'Removendo...' : 'Remover'}
+                                </Button>
+                              </AlertDialogAction>
+                            </form>
+                            <AlertDialogCancel className="w-full">Cancelar</AlertDialogCancel>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -135,12 +271,29 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
           )}
         </CardContent>
 
-        {isAberta && (
+        {(isAberta || isConfirmada) && (
           <CardFooter className="flex flex-col gap-2 border-t pt-4">
             <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/cardapio">Adicionar itens</Link>
             </Button>
-            {temItens && (
+            {isAberta && temItens && (
+              <form action={confirmarAction} className="w-full">
+                <input
+                  type="hidden"
+                  name="comandaId"
+                  value={comanda.id}
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={isConfirmando}
+                  className="w-full"
+                >
+                  {isConfirmando ? 'Confirmando...' : 'Confirmar pedido'}
+                </Button>
+              </form>
+            )}
+            {isConfirmada && (
               <form action={fecharAction} className="w-full">
                 <input
                   type="hidden"
@@ -176,20 +329,24 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                     descartados.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Voltar</AlertDialogCancel>
-                  <form action={cancelarAction}>
+                <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+                  <form action={cancelarAction} className="w-full">
                     <input
                       type="hidden"
                       name="comandaId"
                       value={comanda.id}
                     />
                     <AlertDialogAction asChild>
-                      <Button type="submit" variant="destructive">
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        className="w-full"
+                      >
                         Sim, cancelar
                       </Button>
                     </AlertDialogAction>
                   </form>
+                  <AlertDialogCancel className="w-full">Voltar</AlertDialogCancel>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -197,15 +354,27 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
         )}
       </Card>
 
-      {(fecharState.message || cancelarState.message) && (
+      {(fecharState.message ||
+        confirmarState.message ||
+        cancelarState.message ||
+        removerState.message ||
+        alterarQtdState.message) && (
         <p
           className={
-            fecharState.ok || cancelarState.ok
+            fecharState.ok ||
+            confirmarState.ok ||
+            cancelarState.ok ||
+            removerState.ok ||
+            alterarQtdState.ok
               ? 'text-sm text-emerald-600'
               : 'text-sm text-destructive'
           }
         >
-          {fecharState.message || cancelarState.message}
+          {fecharState.message ||
+            confirmarState.message ||
+            cancelarState.message ||
+            removerState.message ||
+            alterarQtdState.message}
         </p>
       )}
     </div>

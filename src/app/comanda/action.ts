@@ -9,7 +9,10 @@ import type { ComandaComItens } from '@/types/comanda'
 import {
   criarComandaSchema,
   fecharComandaSchema,
+  confirmarPedidoComandaSchema,
   cancelarComandaSchema,
+  removerItemComandaSchema,
+  alterarQuantidadeItemSchema,
   type CriarComandaState,
 } from './schemas'
 
@@ -32,6 +35,34 @@ export async function fecharComanda(formData: FormData) {
   revalidatePath('/comanda')
 }
 
+export async function confirmarPedidoComanda(formData: FormData) {
+  const validated = confirmarPedidoComandaSchema.parse(Object.fromEntries(formData))
+  const { getComandaCookie } = await import('@/lib/comanda-cookie')
+  const comandaId = await getComandaCookie()
+
+  if (!comandaId || comandaId !== validated.comandaId) {
+    throw new Error('Comanda inválida.')
+  }
+
+  const supabase = getSupabaseAdmin()
+
+  const { error } = await supabase
+    .from('comandas')
+    .update({ status: 'confirmada' })
+    .eq('id', validated.comandaId)
+    .eq('status', 'aberta')
+
+  if (error) {
+    logger.error(`${LOG_PREFIX} erro ao confirmar pedido`, {
+      comandaId: validated.comandaId,
+      error: error.message,
+    })
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/comanda')
+}
+
 export async function cancelarComanda(formData: FormData) {
   const validated = cancelarComandaSchema.parse(Object.fromEntries(formData))
   const supabase = getSupabaseAdmin()
@@ -40,7 +71,7 @@ export async function cancelarComanda(formData: FormData) {
     .from('comandas')
     .update({ status: 'cancelada', cancelada_em: new Date().toISOString() })
     .eq('id', validated.comandaId)
-    .eq('status', 'aberta')
+    .in('status', ['aberta', 'confirmada'])
 
   if (error) {
     logger.error(`${LOG_PREFIX} erro ao cancelar`, { error })
@@ -48,6 +79,91 @@ export async function cancelarComanda(formData: FormData) {
   }
 
   await clearComandaCookie()
+  revalidatePath('/comanda')
+}
+
+export async function removerItemComanda(formData: FormData) {
+  const validated = removerItemComandaSchema.parse(Object.fromEntries(formData))
+  const { getComandaCookie } = await import('@/lib/comanda-cookie')
+  const comandaId = await getComandaCookie()
+
+  if (!comandaId) {
+    throw new Error('Nenhuma comanda vinculada.')
+  }
+
+  const supabase = getSupabaseAdmin()
+
+  const { error } = await supabase
+    .from('comanda_itens')
+    .update({ status: 'cancelado' })
+    .eq('id', validated.itemId)
+    .eq('comanda_id', comandaId)
+
+  if (error) {
+    logger.error(`${LOG_PREFIX} erro ao remover item`, {
+      itemId: validated.itemId,
+      error: error.message,
+    })
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/comanda')
+}
+
+export async function alterarQuantidadeItemComanda(formData: FormData) {
+  const validated = alterarQuantidadeItemSchema.parse(Object.fromEntries(formData))
+  const { getComandaCookie } = await import('@/lib/comanda-cookie')
+  const comandaId = await getComandaCookie()
+
+  if (!comandaId) {
+    throw new Error('Nenhuma comanda vinculada.')
+  }
+
+  const supabase = getSupabaseAdmin()
+
+  const { data: item, error: fetchError } = await supabase
+    .from('comanda_itens')
+    .select('quantidade, preco_unitario')
+    .eq('id', validated.itemId)
+    .eq('comanda_id', comandaId)
+    .single()
+
+  if (fetchError || !item) {
+    logger.error(`${LOG_PREFIX} erro ao buscar item para alterar`, {
+      itemId: validated.itemId,
+      error: fetchError?.message,
+    })
+    throw new Error('Item não encontrado.')
+  }
+
+  const qtdAtual = Number(item.quantidade ?? 0)
+  const precoUnitario = Number(item.preco_unitario ?? 0)
+  const novaQuantidade = qtdAtual + validated.delta
+
+  if (novaQuantidade < 1) {
+    const formData = new FormData()
+    formData.append('itemId', validated.itemId)
+    await removerItemComanda(formData)
+    revalidatePath('/comanda')
+    return
+  }
+
+  const novoSubtotal = precoUnitario * novaQuantidade
+
+  const { error } = await supabase
+    .from('comanda_itens')
+    .update({ quantidade: novaQuantidade, subtotal: novoSubtotal })
+    .eq('id', validated.itemId)
+    .eq('comanda_id', comandaId)
+
+  if (error) {
+    logger.error(`${LOG_PREFIX} erro ao alterar quantidade`, {
+      itemId: validated.itemId,
+      error: error.message,
+    })
+    throw new Error(error.message)
+  }
+
   revalidatePath('/comanda')
 }
 
@@ -106,8 +222,15 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
     return { ...rest, produto }
   })
 
+  const valorTotalCalculado = itensFormatados.reduce(
+    (acc: number, item: Record<string, unknown>) =>
+      acc + Number(item.subtotal ?? 0),
+    0
+  )
+
   return {
     ...comanda,
+    valor_total: valorTotalCalculado,
     itens: itensFormatados,
   }
 }

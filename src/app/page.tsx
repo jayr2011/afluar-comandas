@@ -14,7 +14,7 @@ export type HomePageToggles = {
 export default async function Home() {
   const comandaId = await getComandaCookie()
   const comanda = comandaId ? await getComandaData(comandaId) : null
-  const comandaAberta = comanda?.status === 'aberta'
+  const comandaAberta = comanda?.status === 'aberta' || comanda?.status === 'confirmada'
 
   return (
     <div className="w-full -mt-px">
@@ -33,10 +33,10 @@ export default async function Home() {
               </CardHeader>
 
               <CardContent className="flex flex-col gap-10">
-                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-2xl">
                   <Link href="/cardapio">Ir pro cardápio</Link>
                 </Button>
-                <Button asChild size="lg" className="w-full sm:w-auto">
+                <Button asChild size="lg" className="w-full sm:w-auto text-2xl">
                   <Link href="/comanda">Ir para comanda</Link>
                 </Button>
               </CardContent>

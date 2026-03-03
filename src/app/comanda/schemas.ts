@@ -22,6 +22,22 @@ export const fecharComandaSchema = z.object({
   formaPagamento: z.string().optional(),
 })
 
+export const confirmarPedidoComandaSchema = z.object({
+  comandaId: z.string().uuid(),
+})
+
 export const cancelarComandaSchema = z.object({
   comandaId: z.string().uuid(),
+})
+
+export const removerItemComandaSchema = z.object({
+  itemId: z.string().uuid(),
+})
+
+export const alterarQuantidadeItemSchema = z.object({
+  itemId: z.string().uuid(),
+  delta: z
+    .string()
+    .transform(Number)
+    .refine((n) => n === 1 || n === -1, 'Delta deve ser 1 ou -1'),
 })

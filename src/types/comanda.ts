@@ -3,7 +3,7 @@ export interface Comanda {
   numero_comanda: number
   cliente_nome: string
   garcom_id: string
-  status: 'aberta' | 'fechada' | 'cancelada'
+  status: 'aberta' | 'confirmada' | 'fechada' | 'cancelada'
   valor_total: number
   observacoes: string | null
   created_at: string
