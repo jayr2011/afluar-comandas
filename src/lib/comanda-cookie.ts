@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
 export const COMANDA_COOKIE_NAME = 'comanda_id'
-const COMANDA_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 dias
+const COMANDA_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
 export async function setComandaCookie(comandaId: string): Promise<void> {
   const store = await cookies()

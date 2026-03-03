@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { adicionarItemComandaAction } from '@/app/comanda/action'
 import { ShoppingCart, Minus, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { clampQuantidade, isMensagemSucesso } from './utils'
 
 const QUANTIDADE_MIN = 1
 const QUANTIDADE_MAX = 99
@@ -63,7 +64,7 @@ export function AdicionarComandaButton({
               variant="ghost"
               size={isSmall ? 'sm' : 'default'}
               className="h-full shrink-0 px-2.5"
-              onClick={() => setQuantidade(q => Math.max(QUANTIDADE_MIN, q - 1))}
+              onClick={() => setQuantidade(q => clampQuantidade(q - 1, QUANTIDADE_MIN, QUANTIDADE_MAX))}
               disabled={quantidade <= QUANTIDADE_MIN}
               aria-label="Diminuir quantidade"
             >
@@ -83,7 +84,7 @@ export function AdicionarComandaButton({
               variant="ghost"
               size={isSmall ? 'sm' : 'default'}
               className="h-full shrink-0 px-2.5"
-              onClick={() => setQuantidade(q => Math.min(QUANTIDADE_MAX, q + 1))}
+              onClick={() => setQuantidade(q => clampQuantidade(q + 1, QUANTIDADE_MIN, QUANTIDADE_MAX))}
               disabled={quantidade >= QUANTIDADE_MAX}
               aria-label="Aumentar quantidade"
             >
@@ -109,13 +110,13 @@ export function AdicionarComandaButton({
       {message && (
         <p
           className={`text-sm ${
-            message?.includes('adicionado') || message?.includes('Item')
+            isMensagemSucesso(message)
               ? 'text-emerald-600'
               : 'text-destructive'
           }`}
         >
           {message}
-          {message?.includes('adicionado') || message?.includes('Item') ? (
+          {isMensagemSucesso(message) ? (
             <a href="/comanda" className="ml-2 underline">
               Ver comanda
             </a>

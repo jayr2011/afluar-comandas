@@ -49,6 +49,15 @@ import {
 import { type CriarComandaState } from '@/app/comanda/schemas'
 import type { ComandaComItens, ComandaItem, PedidoComanda } from '@/types/comanda'
 import { formatPrice } from '@/lib/utils'
+import {
+  isComandaAberta,
+  isComandaConfirmada,
+  temItensCarrinho,
+  calcularTotalCarrinho,
+  calcularTotalPedidos,
+  getBadgeVariant,
+  formatarLabelItens,
+} from './utils'
 import { SaudacaoCliente } from '@/components/SaudacaoCliente'
 import { Trash2, Minus, Plus } from 'lucide-react'
 
@@ -134,9 +143,9 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
     INITIAL_FECHAR_STATE
   )
 
-  const isAberta = comanda.status === 'aberta'
-  const isConfirmada = comanda.status === 'confirmada'
-  const temItensCarrinho = comanda.itens && comanda.itens.length > 0
+  const isAberta = isComandaAberta(comanda.status)
+  const isConfirmada = isComandaConfirmada(comanda.status)
+  const temItens = temItensCarrinho(comanda.itens)
   const pedidos = comanda.pedidos ?? []
   const temPedidos = pedidos.length > 0
 
@@ -256,13 +265,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
             </div>
             {comanda.status !== 'confirmada' && (
               <Badge
-                variant={
-                  comanda.status === 'aberta'
-                    ? 'default'
-                    : comanda.status === 'fechada'
-                      ? 'secondary'
-                      : 'destructive'
-                }
+                variant={getBadgeVariant(comanda.status)}
               >
                 {comanda.status}
               </Badge>
@@ -271,7 +274,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {temItensCarrinho ? (
+          {temItens ? (
             <>
               <Separator />
               <ul className="space-y-2">{comanda.itens!.map(item => renderItem(item, true))}</ul>
@@ -279,7 +282,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total do carrinho</span>
                 <span className="text-primary">
-                  {formatPrice(comanda.itens!.reduce((acc, i) => acc + Number(i.subtotal ?? 0), 0))}
+                  {formatPrice(calcularTotalCarrinho(comanda.itens!))}
                 </span>
               </div>
             </>
@@ -295,7 +298,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
             <Button asChild variant="outline" size="sm" className="w-full">
               <Link href="/cardapio">Adicionar itens</Link>
             </Button>
-            {temItensCarrinho && (
+            {temItens && (
               <form action={confirmarAction} className="w-full">
                 <input type="hidden" name="comandaId" value={comanda.id} />
                 <Button type="submit" size="sm" disabled={isConfirmando} className="w-full">
@@ -303,7 +306,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                 </Button>
               </form>
             )}
-            {isConfirmada && !temItensCarrinho && (
+            {isConfirmada && !temItens && (
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
@@ -331,7 +334,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                           <AccordionTrigger className="py-2.5 hover:no-underline text-sm">
                             <span className="font-medium flex items-center gap-2">
                               Pedido {pedido.numero} — {pedido.itens.length}{' '}
-                              {pedido.itens.length === 1 ? 'item' : 'itens'} —{' '}
+                              {formatarLabelItens(pedido.itens.length)} —{' '}
                               {formatPrice(pedido.valor_total)}
                               <Badge variant="secondary" className="text-xs">
                                 confirmada
@@ -354,7 +357,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span>Total</span>
                       <span className="text-primary">
-                        {formatPrice(pedidos.reduce((acc, p) => acc + p.valor_total, 0))}
+                        {formatPrice(calcularTotalPedidos(pedidos))}
                       </span>
                     </div>
                   </div>
@@ -426,7 +429,7 @@ export function ComandaDetalhe({ comanda }: ComandaDetalheProps) {
                 <AccordionTrigger className="py-3 hover:no-underline">
                   <span className="font-medium flex items-center gap-2">
                     Pedido {pedido.numero} — {pedido.itens.length}{' '}
-                    {pedido.itens.length === 1 ? 'item' : 'itens'} —{' '}
+                    {formatarLabelItens(pedido.itens.length)} —{' '}
                     {formatPrice(pedido.valor_total)}
                     <Badge variant="secondary">confirmada</Badge>
                   </span>
