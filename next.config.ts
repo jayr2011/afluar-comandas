@@ -18,16 +18,16 @@ const nextConfig: NextConfig = {
     const supabaseHost = getSupabaseHostname()
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://sdk.mercadopago.com https://http2.mlstatic.com 'wasm-unsafe-eval' 'inline-speculation-rules' https://va.vercel-scripts.com;
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' 'inline-speculation-rules' https://va.vercel-scripts.com;
       style-src 'self' 'unsafe-inline';
-      img-src 'self' blob: data: https://${supabaseHost} https://picsum.photos https://*.mlstatic.com https://*.mercadolivre.com https://*.mercadolibre.com;
+      img-src 'self' blob: data: https://${supabaseHost} https://picsum.photos;
       font-src 'self' data:;
       object-src 'none';
       base-uri 'self';
       form-action 'self' mailto:;
       navigate-to 'self' mailto: https:;
-      connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://*.mercadopago.com https://*.mercadolivre.com https://*.mercadolibre.com https://http2.mlstatic.com https://viacep.com.br https://vitals.vercel-insights.com;
-      frame-src 'self' https://*.mercadopago.com https://*.mercadopago.com.br https://*.mercadolivre.com https://*.mercadolibre.com;
+      connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://viacep.com.br https://vitals.vercel-insights.com;
+      frame-src 'self';
     `
       .replace(/\s{2,}/g, ' ')
       .trim()

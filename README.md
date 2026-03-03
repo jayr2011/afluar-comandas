@@ -54,7 +54,6 @@ afluar/
 │   │   │   │   └── produtos/upload-image/ # Upload de imagens de produtos
 │   │   │   ├── checkout/
 │   │   │   │   ├── actions.ts           # Server Actions do checkout
-│   │   │   │   └── process-payment/     # Webhook do Mercado Pago
 │   │   │   ├── produtos/                # Endpoints de produtos
 │   │   │   └── revalidate/              # Revalidação de cache
 │   │   ├── admin/                       # Painel administrativo
@@ -96,7 +95,6 @@ afluar/
 │   │   ├── supabase.ts                  # Cliente Supabase (genérico)
 │   │   ├── supabase-browser.ts          # Cliente Supabase (client-side)
 │   │   ├── supabase-server.ts           # Cliente Supabase (server-side)
-│   │   ├── mercadopago.ts               # Integração Mercado Pago
 │   │   ├── feature-toggles.ts           # Sistema de feature toggles
 │   │   ├── logger.ts                    # Logger com Winston
 │   │   ├── applyRealTimeEvent.ts        # Aplicação de eventos real-time
@@ -130,7 +128,6 @@ afluar/
 
 - Node.js 18+ instalado
 - Conta no [Supabase](https://supabase.com)
-- Conta no [Mercado Pago](https://www.mercadopago.com.br/developers) para pagamentos
 
 ### Instalação
 
@@ -152,11 +149,6 @@ npm install
 Copie o arquivo `.env.example` para `.env` e preencha com suas credenciais:
 
 ```env
-# Mercado Pago (OBRIGATÓRIO para pagamentos)
-MERCADOPAGO_ACCESS_TOKEN=seu_access_token_aqui
-MP_PUBLIC_KEY=sua_chave_publica_aqui
-NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=TEST-sua_chave_publica_aqui
-
 # Supabase (OBRIGATÓRIO - sem fallback)
 NEXT_PUBLIC_SUPABASE_URL=https://seu_projeto.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_aqui
@@ -200,7 +192,6 @@ CREATE TABLE pedidos (
   itens_json JSONB NOT NULL,
   valor_total DECIMAL(10, 2) NOT NULL,
   status_pagamento TEXT DEFAULT 'pendente',
-  mercado_pago_id TEXT,
   external_reference TEXT
 );
 
@@ -290,7 +281,6 @@ interface Pedido {
   itens_json: ItemPedido[]
   valor_total: number
   status_pagamento: 'pendente' | 'pago' | 'cancelado' | 'reembolsado' | 'estornado' | 'em disputa'
-  mercado_pago_id?: string
   external_reference: string
 }
 ```
@@ -315,8 +305,6 @@ interface CartItem {
 | `NEXT_PUBLIC_SUPABASE_URL`           | URL do projeto Supabase           |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | Chave anônima pública do Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY`          | Chave de serviço (server-side)    |
-| `MERCADOPAGO_ACCESS_TOKEN`           | Token de acesso do Mercado Pago   |
-| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | Chave pública do Mercado Pago     |
 | `ADMIN_API_KEY`                      | Chave para API de administração   |
 
 ## 🎨 Personalização

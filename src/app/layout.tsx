@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://afluar.com.br'),
   title: 'Afluar - Culinária Amazônica',
   description:
-    'Sabores da Amazônia em Belém: restaurante em Belém no centro histórico, vista para a Baía do Guajará. Cardápio online, delivery e pagamento pelo Mercado Pago. Peixe frescos.',
+    'Sabores da Amazônia em Belém: restaurante em Belém no centro histórico, vista para a Baía do Guajará. Cardápio online e delivery. Peixe frescos.',
   keywords: [
     'restaurante Belém',
     'culinária amazônica',
