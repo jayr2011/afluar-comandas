@@ -45,10 +45,50 @@ export async function confirmarPedidoComanda(formData: FormData) {
   }
 
   const supabase = getSupabaseAdmin()
+  const confirmadaEm = new Date().toISOString()
+
+  const { count } = await supabase
+    .from('pedidos_comanda')
+    .select('*', { count: 'exact', head: true })
+    .eq('comanda_id', validated.comandaId)
+
+  const proximoNumero = (count ?? 0) + 1
+
+  const { data: novoPedido, error: erroPedido } = await supabase
+    .from('pedidos_comanda')
+    .insert({
+      comanda_id: validated.comandaId,
+      numero: proximoNumero,
+      confirmado_em: confirmadaEm,
+    })
+    .select('id')
+    .single()
+
+  if (erroPedido || !novoPedido) {
+    logger.error(`${LOG_PREFIX} erro ao criar pedido`, {
+      comandaId: validated.comandaId,
+      error: erroPedido?.message,
+    })
+    throw new Error('Não foi possível criar o pedido.')
+  }
+
+  const { error: erroUpdateItens } = await supabase
+    .from('comanda_itens')
+    .update({ pedido_id: novoPedido.id })
+    .eq('comanda_id', validated.comandaId)
+    .is('pedido_id', null)
+    .neq('status', 'cancelado')
+
+  if (erroUpdateItens) {
+    logger.error(`${LOG_PREFIX} erro ao vincular itens ao pedido`, {
+      error: erroUpdateItens.message,
+    })
+    throw new Error('Não foi possível vincular itens ao pedido.')
+  }
 
   const { error } = await supabase
     .from('comandas')
-    .update({ status: 'confirmada' })
+    .update({ status: 'confirmada', confirmada_em: confirmadaEm })
     .eq('id', validated.comandaId)
     .eq('status', 'aberta')
 
@@ -93,6 +133,17 @@ export async function removerItemComanda(formData: FormData) {
 
   const supabase = getSupabaseAdmin()
 
+  const { data: item } = await supabase
+    .from('comanda_itens')
+    .select('pedido_id')
+    .eq('id', validated.itemId)
+    .eq('comanda_id', comandaId)
+    .single()
+
+  if (item?.pedido_id) {
+    throw new Error('Itens de pedidos confirmados não podem ser removidos.')
+  }
+
   const { error } = await supabase
     .from('comanda_itens')
     .update({ status: 'cancelado' })
@@ -120,6 +171,17 @@ export async function alterarQuantidadeItemComanda(formData: FormData) {
   }
 
   const supabase = getSupabaseAdmin()
+
+  const { data: itemCheck } = await supabase
+    .from('comanda_itens')
+    .select('pedido_id')
+    .eq('id', validated.itemId)
+    .eq('comanda_id', comandaId)
+    .single()
+
+  if (itemCheck?.pedido_id) {
+    throw new Error('Itens de pedidos confirmados não podem ser alterados.')
+  }
 
   const { data: item, error: fetchError } = await supabase
     .from('comanda_itens')
@@ -173,15 +235,15 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
 
   logger.info(`${LOG_PREFIX} getComandaData iniciando`, { comandaId })
 
-  const { data: comanda, error: comandaError } = await supabase
+  const { data: comandaBase, error: comandaError } = await supabase
     .from('comandas')
     .select(
-      'id, numero_comanda, cliente_nome, garcom_id, status, valor_total, observacoes, created_at, updated_at, fechada_em, cancelada_em'
+      'id, numero_comanda, cliente_nome, garcom_id, status, valor_total, observacoes, created_at, updated_at, fechada_em, cancelada_em, confirmada_em'
     )
     .eq('id', comandaId)
     .single()
 
-  if (comandaError || !comanda) {
+  if (comandaError || !comandaBase) {
     logger.info(`${LOG_PREFIX} getComandaData - comanda não encontrada`, {
       comandaId,
       error: comandaError?.message,
@@ -190,31 +252,36 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
     return null
   }
 
+  let garcomNome: string | null = null
+  if (comandaBase.garcom_id) {
+    const { data: garcom } = await supabase
+      .from('garcons')
+      .select('nome')
+      .eq('id', comandaBase.garcom_id)
+      .maybeSingle()
+    garcomNome = garcom?.nome ?? null
+  }
+  const comanda = { ...comandaBase, garcom_nome: garcomNome }
+
   logger.info(`${LOG_PREFIX} getComandaData - comanda encontrada`, {
     comandaId,
     numeroComanda: comanda.numero_comanda,
   })
 
-  const { data: itens, error: itensError } = await supabase
+  const { data: itensCarrinho, error: itensError } = await supabase
     .from('comanda_itens')
     .select(
-      'id, comanda_id, produto_id, quantidade, preco_unitario, subtotal, observacoes, status, produtos(id, nome)'
+      'id, comanda_id, produto_id, quantidade, preco_unitario, subtotal, observacoes, status, created_at, pedido_id, produtos(id, nome)'
     )
     .eq('comanda_id', comandaId)
     .neq('status', 'cancelado')
-
-  logger.info(`${LOG_PREFIX} getComandaData - itens buscados`, {
-    comandaId,
-    itensCount: itens?.length ?? 0,
-    itensError: itensError?.message ?? null,
-    itensRaw: itens ?? [],
-  })
+    .is('pedido_id', null)
 
   if (itensError) {
-    logger.warn(`${LOG_PREFIX} erro ao buscar itens`, { error: itensError.message })
+    logger.warn(`${LOG_PREFIX} erro ao buscar itens do carrinho`, { error: itensError.message })
   }
 
-  const itensFormatados = (itens ?? []).map((item: Record<string, unknown>) => {
+  const formatarItem = (item: Record<string, unknown>) => {
     const { produtos, ...rest } = item
     const p = produtos as { id: string; nome: string } | null | undefined
     const produto =
@@ -222,18 +289,62 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
         ? { id: p.id, nome: p.nome }
         : undefined
     return { ...rest, produto }
-  })
+  }
 
-  const valorTotalCalculado = itensFormatados.reduce(
-    (acc: number, item: Record<string, unknown>) =>
-      acc + Number(item.subtotal ?? 0),
+  const itensFormatados = (itensCarrinho ?? []).map(formatarItem)
+  const valorTotalCarrinho = itensFormatados.reduce(
+    (acc: number, item: Record<string, unknown>) => acc + Number(item.subtotal ?? 0),
     0
   )
 
+  const { data: pedidosRaw } = await supabase
+    .from('pedidos_comanda')
+    .select('id, numero, confirmado_em')
+    .eq('comanda_id', comandaId)
+    .order('numero', { ascending: true })
+
+  const pedidos: Array<{
+    id: string
+    comanda_id: string
+    numero: number
+    confirmado_em: string
+    itens: ComandaComItens['itens']
+    valor_total: number
+  }> = []
+
+  if (pedidosRaw) {
+    for (const ped of pedidosRaw) {
+      const { data: itensPedido } = await supabase
+        .from('comanda_itens')
+        .select(
+          'id, comanda_id, produto_id, quantidade, preco_unitario, subtotal, observacoes, status, created_at, pedido_id, produtos(id, nome)'
+        )
+        .eq('pedido_id', ped.id)
+        .neq('status', 'cancelado')
+
+      const itensPedFormatados = (itensPedido ?? []).map(formatarItem) as ComandaComItens['itens']
+      const valorPedido = itensPedFormatados.reduce(
+        (acc: number, item) => acc + Number(item.subtotal ?? 0),
+        0
+      )
+      pedidos.push({
+        id: ped.id,
+        comanda_id: comandaId,
+        numero: ped.numero,
+        confirmado_em: ped.confirmado_em,
+        itens: itensPedFormatados,
+        valor_total: valorPedido,
+      })
+    }
+  }
+
+  const valorTotalGeral = valorTotalCarrinho + pedidos.reduce((acc, p) => acc + p.valor_total, 0)
+
   return {
     ...comanda,
-    valor_total: valorTotalCalculado,
+    valor_total: valorTotalGeral,
     itens: itensFormatados as ComandaComItens['itens'],
+    pedidos,
   }
 }
 
@@ -245,32 +356,88 @@ export async function adicionarItemComanda(
 ): Promise<{ ok: boolean; message: string }> {
   const supabase = getSupabaseAdmin()
 
-  const params = {
-    p_comanda_id: comandaId,
-    p_produto_id: produtoId,
-    p_quantidade: quantidade,
-    p_observacoes: observacoes ?? null,
-  }
-  logger.info(`${LOG_PREFIX} adicionarItemComanda - chamando RPC`, params)
+  const { data: comandaStatus } = await supabase
+    .from('comandas')
+    .select('status')
+    .eq('id', comandaId)
+    .single()
 
-  const { data: rpcData, error } = await supabase.rpc('adicionar_item_comanda', params)
+  const usarInsertDireto = comandaStatus?.status === 'confirmada'
 
-  if (error) {
-    logger.error(`${LOG_PREFIX} erro ao adicionar item`, {
+  const fazerInsertDireto = async () => {
+    const { data: produto } = await supabase
+      .from('produtos')
+      .select('preco')
+      .eq('id', produtoId)
+      .single()
+
+    if (!produto || produto.preco == null) {
+      logger.error(`${LOG_PREFIX} produto não encontrado ou sem preço`, { produtoId })
+      return { ok: false, message: 'Produto não encontrado.' }
+    }
+
+    const precoUnitario = Number(produto.preco)
+    const subtotal = precoUnitario * quantidade
+
+    const { error: insertError } = await supabase.from('comanda_itens').insert({
+      comanda_id: comandaId,
+      produto_id: produtoId,
+      quantidade,
+      preco_unitario: precoUnitario,
+      subtotal,
+      observacoes: observacoes ?? null,
+      status: 'pendente',
+    })
+
+    if (insertError) {
+      logger.error(`${LOG_PREFIX} erro ao inserir item`, {
+        comandaId,
+        produtoId,
+        error: insertError.message,
+      })
+      return { ok: false, message: insertError.message }
+    }
+
+    logger.info(`${LOG_PREFIX} adicionarItemComanda - insert direto sucesso`, {
       comandaId,
       produtoId,
-      error: error.message,
     })
-    return { ok: false, message: error.message }
+    return { ok: true, message: 'Item adicionado.' }
   }
 
-  logger.info(`${LOG_PREFIX} adicionarItemComanda - RPC sucesso`, {
-    comandaId,
-    produtoId,
-    rpcData,
-  })
+  if (usarInsertDireto) {
+    logger.info(`${LOG_PREFIX} adicionarItemComanda - comanda confirmada, usando insert direto`, {
+      comandaId,
+      produtoId,
+    })
+    const result = await fazerInsertDireto()
+    if (!result.ok) return result
+  } else {
+    const params = {
+      p_comanda_id: comandaId,
+      p_produto_id: produtoId,
+      p_quantidade: quantidade,
+      p_observacoes: observacoes ?? null,
+    }
+    logger.info(`${LOG_PREFIX} adicionarItemComanda - chamando RPC`, params)
+
+    const { error } = await supabase.rpc('adicionar_item_comanda', params)
+
+    if (error) {
+      logger.warn(`${LOG_PREFIX} RPC falhou, tentando insert direto`, {
+        comandaId,
+        produtoId,
+        error: error.message,
+      })
+      const result = await fazerInsertDireto()
+      if (!result.ok) return result
+    } else {
+      logger.info(`${LOG_PREFIX} adicionarItemComanda - RPC sucesso`, { comandaId, produtoId })
+    }
+  }
 
   revalidatePath('/comanda')
+  revalidatePath('/cardapio')
   return { ok: true, message: 'Item adicionado.' }
 }
 

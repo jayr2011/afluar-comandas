@@ -11,15 +11,21 @@ export function getPrimeiroNome(nome: string): string {
 
 type SaudacaoClienteProps = {
   clienteNome?: string | null
+  garcomNome?: string | null
   className?: string
 }
 
-export function SaudacaoCliente({ clienteNome, className }: SaudacaoClienteProps) {
+export function SaudacaoCliente({ clienteNome, garcomNome, className }: SaudacaoClienteProps) {
   const saudacao = getSaudacao()
 
   const texto = clienteNome
     ? `${saudacao}, ${getPrimeiroNome(clienteNome)}! Seja bem-vindo ao Afluar.`
     : `${saudacao}! Seja bem-vindo ao Afluar.`
 
-  return <p className={className ?? 'text-lg text-muted-foreground'}>{texto}</p>
+  return (
+    <div className="space-y-1">
+      <p className={className ?? 'text-lg text-muted-foreground'}>{texto}</p>
+      {garcomNome && <p className="text-sm text-muted-foreground/80">Seu garçom: {garcomNome}</p>}
+    </div>
+  )
 }

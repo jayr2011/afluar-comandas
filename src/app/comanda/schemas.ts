@@ -39,5 +39,5 @@ export const alterarQuantidadeItemSchema = z.object({
   delta: z
     .string()
     .transform(Number)
-    .refine((n) => n === 1 || n === -1, 'Delta deve ser 1 ou -1'),
+    .refine(n => n === 1 || n === -1, 'Delta deve ser 1 ou -1'),
 })
