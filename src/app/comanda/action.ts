@@ -175,7 +175,9 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
 
   const { data: comanda, error: comandaError } = await supabase
     .from('comandas')
-    .select('*')
+    .select(
+      'id, numero_comanda, cliente_nome, garcom_id, status, valor_total, observacoes, created_at, updated_at, fechada_em, cancelada_em'
+    )
     .eq('id', comandaId)
     .single()
 
@@ -231,7 +233,7 @@ export async function getComandaData(comandaId: string): Promise<ComandaComItens
   return {
     ...comanda,
     valor_total: valorTotalCalculado,
-    itens: itensFormatados,
+    itens: itensFormatados as ComandaComItens['itens'],
   }
 }
 

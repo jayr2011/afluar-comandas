@@ -13,6 +13,7 @@
 .github
 CLAUDE.md
 .roo
+/.agents
 /.agent
 # cursor
 .cursor

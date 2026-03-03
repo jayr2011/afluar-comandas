@@ -5,6 +5,28 @@ import logger from '@/lib/logger'
 
 const LOG_PREFIX = '[produtos]'
 
+/** Colunas de produto usadas nas queries (evita select *) */
+const PRODUTO_COLUMNS =
+  'id, nome, descricao, preco, categoria, destaque, imagem, ingredientes, disponivel, created_at, updated_at'
+
+/** Codifica cursor para paginação (nome, id) */
+function encodeCursor(nome: string, id: string): string {
+  return Buffer.from(JSON.stringify({ n: nome, i: id }), 'utf-8').toString('base64url')
+}
+
+/** Decodifica cursor retornado pelo cliente */
+function decodeCursor(cursor: string): { nome: string; id: string } | null {
+  try {
+    const decoded = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf-8'))
+    if (decoded?.n != null && decoded?.i != null) {
+      return { nome: String(decoded.n), id: String(decoded.i) }
+    }
+  } catch {
+    // cursor inválido
+  }
+  return null
+}
+
 export async function getCachedProdutos(categoria?: string) {
   'use cache'
   cacheTag('produtos')
@@ -36,7 +58,7 @@ export async function getCachedDestaques() {
 export class ProdutosService {
   async findAll(): Promise<Produto[]> {
     logger.debug(`${LOG_PREFIX} findAll - iniciando consulta`)
-    const { data, error } = await supabase.from('produtos').select('*')
+    const { data, error } = await supabase.from('produtos').select(PRODUTO_COLUMNS)
     if (error) {
       logger.error(`${LOG_PREFIX} findAll - erro ao buscar produtos`, {
         error: error?.message ?? error,
@@ -50,7 +72,7 @@ export class ProdutosService {
 
   async findById(id: string): Promise<Produto | null> {
     logger.debug(`${LOG_PREFIX} findById - buscando produto`, { produtoId: id })
-    const { data, error } = await supabase.from('produtos').select('*').eq('id', id)
+    const { data, error } = await supabase.from('produtos').select(PRODUTO_COLUMNS).eq('id', id)
     if (error) {
       logger.error(`${LOG_PREFIX} findById - erro`, {
         produtoId: id,
@@ -70,7 +92,10 @@ export class ProdutosService {
 
   async findByCategoria(categoria: string): Promise<Produto[]> {
     logger.debug(`${LOG_PREFIX} findByCategoria - iniciando consulta`, { categoria })
-    const { data, error } = await supabase.from('produtos').select('*').eq('categoria', categoria)
+    const { data, error } = await supabase
+      .from('produtos')
+      .select(PRODUTO_COLUMNS)
+      .eq('categoria', categoria)
     if (error) {
       logger.error(`${LOG_PREFIX} findByCategoria - erro`, {
         categoria,
@@ -85,7 +110,10 @@ export class ProdutosService {
 
   async findDestaques(): Promise<Produto[]> {
     logger.debug(`${LOG_PREFIX} findDestaques - iniciando consulta`)
-    const { data, error } = await supabase.from('produtos').select('*').eq('destaque', true)
+    const { data, error } = await supabase
+      .from('produtos')
+      .select(PRODUTO_COLUMNS)
+      .eq('destaque', true)
     if (error) {
       logger.error(`${LOG_PREFIX} findDestaques - erro`, { error: error?.message ?? error })
       throw error
@@ -95,11 +123,87 @@ export class ProdutosService {
     return items
   }
 
+  /**
+   * Paginação por cursor (keyset) - O(1) independente da profundidade.
+   * Preferir sobre findAllPaginated (offset) para escalabilidade.
+   */
+  async findAllPaginatedByCursor(
+    cursor: string | null,
+    limit: number
+  ): Promise<{ data: Produto[]; nextCursor: string | null }> {
+    logger.debug(`${LOG_PREFIX} findAllPaginatedByCursor`, { limit, hasCursor: !!cursor })
+
+    let query = supabase
+      .from('produtos')
+      .select(PRODUTO_COLUMNS)
+      .order('nome', { ascending: true })
+      .order('id', { ascending: true })
+      .limit(limit + 1)
+
+    if (cursor) {
+      const decoded = decodeCursor(cursor)
+      if (decoded) {
+        const n = `"${String(decoded.nome).replace(/"/g, '\\"')}"`
+        const i = decoded.id
+        query = query.or(`nome.gt.${n},and(nome.eq.${n},id.gt.${i})`)
+      }
+    }
+
+    const { data, error } = await query
+    if (error) {
+      logger.error(`${LOG_PREFIX} findAllPaginatedByCursor - erro`, { error: error.message })
+      throw error
+    }
+
+    const items = data ?? []
+    const hasMore = items.length > limit
+    const result = hasMore ? items.slice(0, limit) : items
+    const last = result[result.length - 1]
+    const nextCursor = hasMore && last ? encodeCursor(String(last.nome), String(last.id)) : null
+
+    return { data: result as Produto[], nextCursor }
+  }
+
+  async findByCategoriaPaginatedByCursor(
+    categoria: string,
+    cursor: string | null,
+    limit: number
+  ): Promise<{ data: Produto[]; nextCursor: string | null }> {
+    let query = supabase
+      .from('produtos')
+      .select(PRODUTO_COLUMNS)
+      .eq('categoria', categoria)
+      .order('nome', { ascending: true })
+      .order('id', { ascending: true })
+      .limit(limit + 1)
+
+    if (cursor) {
+      const decoded = decodeCursor(cursor)
+      if (decoded) {
+        const n = `"${String(decoded.nome).replace(/"/g, '\\"')}"`
+        const i = decoded.id
+        query = query.or(`nome.gt.${n},and(nome.eq.${n},id.gt.${i})`)
+      }
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+
+    const items = data ?? []
+    const hasMore = items.length > limit
+    const result = hasMore ? items.slice(0, limit) : items
+    const last = result[result.length - 1]
+    const nextCursor = hasMore && last ? encodeCursor(String(last.nome), String(last.id)) : null
+
+    return { data: result as Produto[], nextCursor }
+  }
+
+  /** @deprecated Use findAllPaginatedByCursor. Mantido para compatibilidade. */
   async findAllPaginated(offset: number, limit: number): Promise<Produto[]> {
     logger.debug(`${LOG_PREFIX} findAllPaginated - iniciando consulta`, { offset, limit })
     const { data, error } = await supabase
       .from('produtos')
-      .select('*')
+      .select(PRODUTO_COLUMNS)
       .range(offset, offset + limit - 1)
       .order('nome')
     if (error) {
@@ -145,7 +249,7 @@ export class ProdutosService {
     })
     const { data, error } = await supabase
       .from('produtos')
-      .select('*')
+      .select(PRODUTO_COLUMNS)
       .eq('categoria', categoria)
       .range(offset, offset + limit - 1)
       .order('nome')

@@ -23,32 +23,51 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const categoria = searchParams.get('categoria')
   const destaque = searchParams.get('destaque')
+  const cursor = searchParams.get('cursor')
   const page = parseInt(searchParams.get('page') || '1', 10)
   const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
-  const offset = (page - 1) * limit
 
   try {
     let dados
     let total = 0
+    let nextCursor: string | null = null
 
-    if (categoria) {
-      dados = await productsService.findByCategoriaPaginated(categoria, offset, limit)
-      total = await productsService.countByCategoria(categoria)
-    } else if (destaque === 'true') {
+    if (destaque === 'true') {
       dados = await getCachedDestaques()
       total = dados.length
+    } else if (cursor) {
+      if (categoria) {
+        const result = await productsService.findByCategoriaPaginatedByCursor(
+          categoria,
+          cursor,
+          limit
+        )
+        dados = result.data
+        nextCursor = result.nextCursor
+      } else {
+        const result = await productsService.findAllPaginatedByCursor(cursor, limit)
+        dados = result.data
+        nextCursor = result.nextCursor
+      }
     } else {
-      dados = await productsService.findAllPaginated(offset, limit)
-      total = await productsService.countAll()
+      const offset = (page - 1) * limit
+      if (categoria) {
+        dados = await productsService.findByCategoriaPaginated(categoria, offset, limit)
+        total = await productsService.countByCategoria(categoria)
+      } else {
+        dados = await productsService.findAllPaginated(offset, limit)
+        total = await productsService.countAll()
+      }
     }
 
     return NextResponse.json({
       data: dados,
       pagination: {
-        page,
+        page: cursor ? undefined : page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: cursor ? undefined : total,
+        totalPages: cursor ? undefined : (total ? Math.ceil(total / limit) : undefined),
+        nextCursor: nextCursor ?? undefined,
       },
     })
   } catch (error) {

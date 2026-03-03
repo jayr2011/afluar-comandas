@@ -18,24 +18,24 @@ export const INITIAL_CRIAR_COMANDA_STATE: CriarComandaState = {
 }
 
 export const fecharComandaSchema = z.object({
-  comandaId: z.string().uuid(),
+  comandaId: z.uuid(),
   formaPagamento: z.string().optional(),
 })
 
 export const confirmarPedidoComandaSchema = z.object({
-  comandaId: z.string().uuid(),
+  comandaId: z.uuid(),
 })
 
 export const cancelarComandaSchema = z.object({
-  comandaId: z.string().uuid(),
+  comandaId: z.uuid(),
 })
 
 export const removerItemComandaSchema = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.uuid(),
 })
 
 export const alterarQuantidadeItemSchema = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.uuid(),
   delta: z
     .string()
     .transform(Number)
