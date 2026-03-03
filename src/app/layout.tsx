@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
 import { Navbar } from '@/components/bavbar'
 import { Footer } from '@/components/footer/Footer'
+import { VoltarAoTopo } from '@/components/VoltarAoTopo'
+import { VoltarAoInicio } from '@/components/VoltarAoInicio'
 import { Suspense } from 'react'
 import './globals.css'
 import { Montserrat, Roboto } from 'next/font/google'
@@ -196,11 +198,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Navbar />
         </Suspense>
         <main id="main-content" className="min-h-screen">
+          <VoltarAoInicio />
           {children}
         </main>
         <Suspense fallback={<div>Loading...</div>}>
           <Footer />
         </Suspense>
+        <VoltarAoTopo />
         <Analytics />
         <SpeedInsights />
       </body>

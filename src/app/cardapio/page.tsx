@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { getCachedProdutos } from '@/services/productsService'
 import logger from '@/lib/logger'
+import { SaudacaoCliente } from '@/components/SaudacaoCliente'
+import { getComandaCookie } from '@/lib/comanda-cookie'
+import { getComandaData } from '@/app/comanda/action'
 import { CardapioGrid } from './CardapioGrid'
 import { CardapioErrorAction } from './CardapioErrorAction'
 import { EmptyState, ErrorState } from '@/components/feedback'
@@ -39,6 +42,9 @@ export const metadata: Metadata = {
 export default async function Cardapio() {
   let produtos
   let error: string | null = null
+  const comandaId = await getComandaCookie()
+  const comanda = comandaId ? await getComandaData(comandaId) : null
+  const clienteNome = comanda?.cliente_nome
 
   try {
     produtos = await getCachedProdutos()
@@ -74,6 +80,10 @@ export default async function Cardapio() {
 
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center mb-12">
+            <SaudacaoCliente
+              clienteNome={clienteNome}
+              className="text-muted-foreground mb-4"
+            />
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <ShoppingCart className="h-4 w-4" />
               Cardápio

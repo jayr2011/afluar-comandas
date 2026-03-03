@@ -4,6 +4,7 @@ import { VincularComandaDialog } from '@/components/comanda/VincularComandaDialo
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { SaudacaoCliente } from '@/components/SaudacaoCliente'
 import { getComandaCookie } from '@/lib/comanda-cookie'
 import { getComandaData } from '@/app/comanda/action'
 
@@ -15,10 +16,12 @@ export default async function Home() {
   const comandaId = await getComandaCookie()
   const comanda = comandaId ? await getComandaData(comandaId) : null
   const comandaAberta = comanda?.status === 'aberta' || comanda?.status === 'confirmada'
+  const clienteNome = comanda?.cliente_nome
 
   return (
     <div className="w-full -mt-px">
       <div className="container mx-auto max-w-6xl px-4 pt-4">
+        <SaudacaoCliente clienteNome={clienteNome} className="text-lg text-muted-foreground pb-4" />
         <Separator className="bg-border/70" />
 
         <section className="py-8">

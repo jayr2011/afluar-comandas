@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { unstable_noStore } from 'next/cache'
 import logger from '@/lib/logger'
 import { Button } from '@/components/ui/button'
+import { SaudacaoCliente } from '@/components/SaudacaoCliente'
 import { getComandaCookie, setComandaCookie } from '@/lib/comanda-cookie'
 import { getComandaData } from '@/app/comanda/action'
 import { VincularComandaDialog } from '@/components/comanda/VincularComandaDialog'
@@ -41,6 +42,10 @@ export default async function ComandaPage({
   return (
     <div className="w-full -mt-px">
       <section className="container mx-auto max-w-6xl px-4 pt-6 pb-10 space-y-6">
+        <SaudacaoCliente
+          clienteNome={comanda?.cliente_nome}
+          className="text-lg text-muted-foreground pb-2"
+        />
         <Separator className="bg-border/70" aria-hidden="true" />
 
         <div className="space-y-2">
