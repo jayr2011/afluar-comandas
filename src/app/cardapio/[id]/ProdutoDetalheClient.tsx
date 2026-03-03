@@ -14,9 +14,10 @@ import { AdicionarComandaButton } from '@/components/comanda/AdicionarComandaBut
 
 interface ProdutoDetalheClientProps {
   produto: Produto
+  comandaAberta?: boolean
 }
 
-export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
+export function ProdutoDetalheClient({ produto, comandaAberta = false }: ProdutoDetalheClientProps) {
   const [imageLoading, setImageLoading] = useState(true)
 
   const categoriaFormatada = produto.categoria
@@ -76,7 +77,7 @@ export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
                   <p className="text-3xl font-bold text-primary">{formatPrice(produto.preco)}</p>
-                  <AdicionarComandaButton produtoId={produto.id} />
+                  {comandaAberta && <AdicionarComandaButton produtoId={produto.id} />}
                 </div>
               </div>
             </div>

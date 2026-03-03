@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { getCachedProduto } from '@/services/productsService'
+import { getComandaCookie } from '@/lib/comanda-cookie'
+import { getComandaData } from '@/app/comanda/action'
 import { ErrorState } from '@/components/feedback'
 import { Button } from '@/components/ui/button'
 import { ProdutoDetalheClient } from './ProdutoDetalheClient'
@@ -78,5 +80,10 @@ export default async function ProdutoDetalhePage({ params }: PageProps) {
     )
   }
 
-  return <ProdutoDetalheClient produto={produto} />
+  const comandaId = await getComandaCookie()
+  const comanda = comandaId ? await getComandaData(comandaId) : null
+  const comandaAberta =
+    !!comanda && (comanda.status === 'aberta' || comanda.status === 'confirmada')
+
+  return <ProdutoDetalheClient produto={produto} comandaAberta={comandaAberta} />
 }

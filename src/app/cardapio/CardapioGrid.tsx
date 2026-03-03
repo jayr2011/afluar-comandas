@@ -12,9 +12,10 @@ import { useRealtimeProdutos } from '@/hooks/useRealtimeProdutos'
 
 interface CardapioGridProps {
   produtos: Produto[]
+  comandaAberta?: boolean
 }
 
-export function CardapioGrid({ produtos }: CardapioGridProps) {
+export function CardapioGrid({ produtos, comandaAberta = false }: CardapioGridProps) {
   const setProducts = useProductsStore(state => state.setProducts)
   const [filtroSelecionado, setFiltroSelecionado] = useState<SlugCategoria | 'destaques' | null>(
     null
@@ -119,6 +120,7 @@ export function CardapioGrid({ produtos }: CardapioGridProps) {
             product={produto}
             priority={produto.destaque}
             href={`/cardapio/${produto.id}`}
+            showAddToComanda={comandaAberta}
           />
         ))}
       </div>

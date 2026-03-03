@@ -32,10 +32,12 @@ interface ProductCardProps {
   className?: string
   href?: string
   onAddToCart?: (product: Product) => void
+  /** Exibe o botão de adicionar à comanda. Padrão: false */
+  showAddToComanda?: boolean
 }
 
 export const ProductCard = memo(
-  ({ product, children, className, href, onAddToCart }: ProductCardProps) => {
+  ({ product, children, className, href, onAddToCart, showAddToComanda = false }: ProductCardProps) => {
   const [imageLoading, setImageLoading] = useState(true)
   const [descricaoExpandida, setDescricaoExpandida] = useState(false)
   const headingId = useId()
@@ -123,10 +125,12 @@ export const ProductCard = memo(
       <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0 relative z-10 gap-2 flex-wrap">
         <p className="text-3xl font-bold text-primary">{formatPrice(product.preco)}</p>
         <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-          <AdicionarComandaButton
-            produtoId={product.id}
-            size="sm"
-          />
+          {showAddToComanda && (
+            <AdicionarComandaButton
+              produtoId={product.id}
+              size="sm"
+            />
+          )}
           {onAddToCart && (
             <Button
               type="button"

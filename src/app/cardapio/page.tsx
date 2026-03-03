@@ -45,6 +45,8 @@ export default async function Cardapio() {
   const comandaId = await getComandaCookie()
   const comanda = comandaId ? await getComandaData(comandaId) : null
   const clienteNome = comanda?.cliente_nome
+  const comandaAberta =
+    !!comanda && (comanda.status === 'aberta' || comanda.status === 'confirmada')
 
   try {
     produtos = await getCachedProdutos()
@@ -99,7 +101,7 @@ export default async function Cardapio() {
 
       <section className="py-4 px-4">
         <div className="container mx-auto max-w-6xl">
-          <CardapioGrid produtos={produtos} />
+          <CardapioGrid produtos={produtos} comandaAberta={comandaAberta} />
         </div>
       </section>
 
