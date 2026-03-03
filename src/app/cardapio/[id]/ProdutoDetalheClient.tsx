@@ -10,6 +10,7 @@ import { IngredientesSection } from '@/components/ingredientes-section'
 import { ArrowLeft } from 'lucide-react'
 import { Produto } from '@/types/produtos'
 import { formatPrice } from '@/lib/utils'
+import { AdicionarComandaButton } from '@/components/comanda/AdicionarComandaButton'
 
 interface ProdutoDetalheClientProps {
   produto: Produto
@@ -75,6 +76,7 @@ export function ProdutoDetalheClient({ produto }: ProdutoDetalheClientProps) {
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-auto pt-4">
                   <p className="text-3xl font-bold text-primary">{formatPrice(produto.preco)}</p>
+                  <AdicionarComandaButton produtoId={produto.id} />
                 </div>
               </div>
             </div>

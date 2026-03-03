@@ -1,5 +1,9 @@
 'use client'
 
+import { useEffect, useActionState } from 'react'
+import { useRouter } from 'next/navigation'
+import { criarComandaAction } from '@/app/comanda/action'
+import { INITIAL_CRIAR_COMANDA_STATE, type CriarComandaState } from '@/app/comanda/schemas'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,6 +23,18 @@ type VincularComandaDialogProps = {
 export function VincularComandaDialog({
   triggerLabel = 'Vincular comanda',
 }: VincularComandaDialogProps) {
+  const router = useRouter()
+  const [state, formAction, isPending] = useActionState<CriarComandaState, FormData>(
+    criarComandaAction,
+    INITIAL_CRIAR_COMANDA_STATE
+  )
+
+  useEffect(() => {
+    if (state.ok && state.comandaId) {
+      router.push(`/comanda?c=${state.comandaId}`)
+    }
+  }, [state.ok, state.comandaId, router])
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,19 +51,25 @@ export function VincularComandaDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form className="space-y-4" onSubmit={event => event.preventDefault()}>
+        <form className="space-y-4" action={formAction}>
+          <div className="space-y-2">
+            <Label htmlFor="nome-cliente">Nome do cliente</Label>
+            <Input id="nome-cliente" name="nomeCliente" type="text" required />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="nome-garcom">Nome do garçom</Label>
-            <Input id="nome-garcom" name="nomeGarcom" type="text" />
+            <Input id="nome-garcom" name="nomeGarcom" type="text" required />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="numero-comanda">Numero da comanda</Label>
-            <Input id="numero-comanda" name="numeroComanda" type="text" />
-          </div>
+          {state.message ? (
+            <p className={state.ok ? 'text-sm text-emerald-600' : 'text-sm text-destructive'}>
+              {state.message}
+            </p>
+          ) : null}
 
-          <Button type="submit" className="w-full">
-            Vincular
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? 'Vinculando...' : 'Vincular'}
           </Button>
         </form>
       </DialogContent>

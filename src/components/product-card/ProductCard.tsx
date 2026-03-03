@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AdicionarComandaButton } from '@/components/comanda/AdicionarComandaButton'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatPrice } from '@/lib/utils'
@@ -119,22 +120,29 @@ export const ProductCard = memo(
       )}
     >
       {contentBlock}
-      <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0 relative z-10">
+      <CardFooter className="flex flex-row items-center justify-between px-6 pb-6 pt-0 relative z-10 gap-2 flex-wrap">
         <p className="text-3xl font-bold text-primary">{formatPrice(product.preco)}</p>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
+        <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+          <AdicionarComandaButton
+            produtoId={product.id}
             size="sm"
-            onClick={e => {
-              e.preventDefault()
-              e.stopPropagation()
-              onAddToCart?.(product)
-            }}
-            disabled={product.disponivel === false}
-            aria-label={`Adicionar ${product.nome} ao carrinho`}
-          >
-            Adicionar ao pedido
-          </Button>
+          />
+          {onAddToCart && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                onAddToCart(product)
+              }}
+              disabled={product.disponivel === false}
+              aria-label={`Adicionar ${product.nome} ao carrinho`}
+            >
+              Adicionar ao pedido
+            </Button>
+          )}
           {children}
         </div>
       </CardFooter>

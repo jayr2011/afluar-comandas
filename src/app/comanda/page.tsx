@@ -1,9 +1,43 @@
 import Link from 'next/link'
+import { unstable_noStore } from 'next/cache'
+import logger from '@/lib/logger'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { getComandaCookie, setComandaCookie } from '@/lib/comanda-cookie'
+import { getComandaData } from '@/app/comanda/action'
+import { VincularComandaDialog } from '@/components/comanda/VincularComandaDialog'
+import { ComandaDetalhe } from '@/components/comanda/ComandaDetalhe'
 import { Separator } from '@/components/ui/separator'
 
-export default function ComandaPage() {
+export default async function ComandaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ c?: string }>
+}) {
+  unstable_noStore()
+  const params = await searchParams
+  const comandaIdFromUrl = params.c
+
+  let comandaIdCookie = await getComandaCookie()
+  if (comandaIdFromUrl && !comandaIdCookie) {
+    await setComandaCookie(comandaIdFromUrl)
+    comandaIdCookie = comandaIdFromUrl
+  }
+  const comandaId = comandaIdFromUrl ?? comandaIdCookie
+
+  logger.info('[comanda] page render', {
+    comandaIdFromUrl: comandaIdFromUrl ?? null,
+    comandaIdCookie: comandaIdCookie ?? null,
+    comandaIdResolvido: comandaId ?? null,
+  })
+
+  const comanda = comandaId ? await getComandaData(comandaId) : null
+
+  logger.info('[comanda] page - getComandaData retornou', {
+    comandaId,
+    comandaExiste: !!comanda,
+    itensCount: comanda?.itens?.length ?? 0,
+  })
+
   return (
     <div className="w-full -mt-px">
       <section className="container mx-auto max-w-6xl px-4 pt-6 pb-10 space-y-6">
@@ -12,30 +46,23 @@ export default function ComandaPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Minha comanda</h1>
           <p className="text-muted-foreground">
-            Aqui voce acompanha os itens selecionados e finaliza seu pedido.
+            Acompanhe os itens do seu pedido e finalize quando desejar.
           </p>
         </div>
 
-        <Card className="border-primary/10">
-          <CardHeader>
-            <CardTitle>Comanda vazia</CardTitle>
-            <CardDescription>
-              Ainda nao ha itens adicionados. Explore o cardapio e monte seu pedido.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Esta e uma pagina generica inicial da comanda.
+        {comanda ? (
+          <ComandaDetalhe comanda={comanda} />
+        ) : (
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Nenhuma comanda vinculada. Abra uma comanda para começar.
             </p>
-          </CardContent>
-
-          <CardFooter>
-            <Button asChild>
-              <Link href="/cardapio">Ir para o cardapio</Link>
+            <VincularComandaDialog triggerLabel="Abrir comanda" />
+            <Button asChild variant="outline">
+              <Link href="/cardapio">Ver cardápio</Link>
             </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        )}
       </section>
     </div>
   )
